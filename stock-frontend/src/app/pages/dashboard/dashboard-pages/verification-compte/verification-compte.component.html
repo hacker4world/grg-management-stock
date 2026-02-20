@@ -1,0 +1,94 @@
+<div class="header">
+  <h1><i class="fa fa-user me-2"></i>Informations du Compte</h1>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Liste Des Vérification Compte</div>
+
+    <div class="card-search">
+      <input type="text" placeholder="Cherchez Entrées" class="search-bar" />
+
+      <button class="filter-button" (click)="setModals({ showFilterModal: true })">
+        <i class="fa-solid fa-filter"></i>
+      </button>
+
+      <button class="sort-button" (click)="setModals({ showSortModal: true })">
+        <i class="fas fa-sort"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let compte of comptes">
+          <td>{{ compte.nom }}</td>
+          <td>{{ compte.prenom }}</td>
+          <td>{{ compte.username }}</td>
+          <td>{{ compte.role }}</td>
+          <td class="text-danger">Non Validé</td>
+          <td>
+            <button class="green-button btn-size" (click)="modifierCompte()">
+              Valider
+            </button>
+            <button class="red-button btn-size" (click)="supprimerCompte()">
+              Rejeter
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-top: 25px;">
+  <h4><i class="fa fa-list me-2"></i>Gestion Des Comptes</h4>
+
+  <div class="card-search">
+    <input type="text" placeholder="Cherchez Entrées" class="search-bar" />
+
+    <button class="filter-button" (click)="setModals({ showFilterModal: true })">
+      <i class="fa-solid fa-filter"></i>
+    </button>
+
+    <button class="sort-button" (click)="setModals({ showSortModal: true })">
+      <i class="fas fa-sort"></i>
+    </button>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let compte of comptes">
+          <td>{{ compte.nom }}</td>
+          <td>{{ compte.prenom }}</td>
+          <td>{{ compte.username }}</td>
+          <td>{{ compte.role }}</td>
+          <td class="text-success">Actif</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

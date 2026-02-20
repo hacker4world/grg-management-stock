@@ -1,0 +1,12 @@
+.alert {
+  background-color: #1c1c1c; /* Red color */
+  color: white;
+  padding: 15px 15px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+  font-family: Arial, sans-serif;
+  width: 100%;
+}

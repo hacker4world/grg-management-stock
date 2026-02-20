@@ -1,0 +1,53 @@
+<div class="modal-overlay" id="filter-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer liste des comptes</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <form [formGroup]="filterForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Code :</label>
+            <input type="text" class="form-control" formControlName="code" />
+          </div>
+          <div class="form-group">
+            <label>Prénom :</label>
+            <input type="text" class="form-control" formControlName="prenom" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nom d'utilisateur :</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nomUtilisateur"
+            />
+          </div>
+          <div class="form-group">
+            <label>Rôle :</label>
+            <select class="form-control" formControlName="role">
+              <option value="">Tous les rôles</option>
+              <option value="admin">Administrateur</option>
+              <option value="admin2">Administrateur 2</option>
+              <option value="responsable-chantier">Responsable chantier</option>
+              <option value="magazinier">Magasinier</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button" (click)="onFilter()">Filtrer</button>
+    </div>
+  </div>
+</div>

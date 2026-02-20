@@ -1,0 +1,55 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer liste des retours</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="filterForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Chantier</label>
+            <select formControlName="chantierId" class="form-control">
+              <option [ngValue]="undefined">-- Tous les chantiers --</option>
+              <option *ngFor="let c of chantiers" [ngValue]="c.code">
+                {{ c.nom }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" formControlName="date" class="form-control" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Article</label>
+            <select formControlName="articleId" class="form-control">
+              <option [ngValue]="undefined">-- Tous les articles --</option>
+              <option *ngFor="let a of articles" [ngValue]="a.id">
+                {{ a.nom }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Statut</label>
+            <select formControlName="status" class="form-control">
+              <option value="">-- Tous les statuts --</option>
+              <option value="pending">En attente</option>
+              <option value="confirmed">Approuvé</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button" (click)="onFilter()">Filtrer</button>
+    </div>
+  </div>
+</div>

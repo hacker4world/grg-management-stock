@@ -1,0 +1,25 @@
+<div class="modal-overlay" id="family-details-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Supprimer famille : {{ familleName }}</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form>
+        <input type="checkbox" id="check" (change)="onCheck($event)" />
+        <label class="choice-label" for="check"
+          >Supprimer les sous-familles et les catégories associées à cette
+          famille</label
+        >
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button red-button" (click)="onConfirm()">Confirmer</button>
+    </div>
+  </div>
+</div>

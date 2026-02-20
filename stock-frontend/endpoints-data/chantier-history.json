@@ -1,0 +1,346 @@
+{
+  "endpoint": {
+    "method": "GET",
+    "path": "/api/chantier/summary/:chantierId",
+    "description": "Retrieves detailed summary information for a specific chantier, including all related movements (sorties, demandes, and retours)"
+  },
+  "pathParameters": {
+    "chantierId": {
+      "type": "integer",
+      "required": true,
+      "description": "The unique identifier of the chantier to retrieve summary for"
+    }
+  },
+  "response": {
+    "200": {
+      "description": "Successful response with chantier summary",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "chantier": {
+            "type": "object",
+            "description": "The chantier details",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "description": "The unique identifier of the chantier"
+              },
+              "nom": {
+                "type": "string",
+                "description": "The name of the chantier"
+              },
+              "adresse": {
+                "type": "string",
+                "description": "The address of the chantier"
+              },
+              "compte": {
+                "type": "object",
+                "description": "The responsible account for the chantier",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "The account ID"
+                  },
+                  "nom": {
+                    "type": "string",
+                    "description": "The last name of the account holder"
+                  },
+                  "prenom": {
+                    "type": "string",
+                    "description": "The first name of the account holder"
+                  },
+                  "nom_utilisateur": {
+                    "type": "string",
+                    "description": "The username of the account holder"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "The email address of the account holder"
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "The role of the account holder (e.g., 'responsable-chantier')"
+                  },
+                  "confirme": {
+                    "type": "boolean",
+                    "description": "Whether the account is confirmed"
+                  }
+                }
+              }
+            }
+          },
+          "summary": {
+            "type": "object",
+            "description": "Summary of all movements related to the chantier",
+            "properties": {
+              "sorties": {
+                "type": "array",
+                "description": "List of all article exits (sorties) for this chantier",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The sortie ID"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The date and time of the sortie"
+                    },
+                    "chantier": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "articleSorties": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "quantite": {
+                            "type": "integer"
+                          },
+                          "article": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "nom": {
+                                "type": "string"
+                              },
+                              "reference": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "demandes": {
+                "type": "array",
+                "description": "List of all article requests (demandes) for this chantier",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The demande ID"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The date and time of the demande"
+                    },
+                    "chantier": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "quantite": {
+                            "type": "integer"
+                          },
+                          "article": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "nom": {
+                                "type": "string"
+                              },
+                              "reference": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "retours": {
+                "type": "array",
+                "description": "List of all article returns (retours) for this chantier",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The retour ID"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The date and time of the retour"
+                    },
+                    "chantier": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "quantite": {
+                            "type": "integer"
+                          },
+                          "article": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "nom": {
+                                "type": "string"
+                              },
+                              "reference": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "Chantier not found",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Chantier introuvable"
+          }
+        }
+      }
+    }
+  },
+  "exampleRequest": {
+    "url": "http://localhost:4000/api/chantier/summary/123",
+    "method": "GET",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "exampleResponse": {
+    "status": 200,
+    "body": {
+      "chantier": {
+        "code": 123,
+        "nom": "Chantier Principal",
+        "adresse": "123 Rue de la Construction",
+        "compte": {
+          "id": 45,
+          "nom": "Dupont",
+          "prenom": "Jean",
+          "nom_utilisateur": "jean.dupont",
+          "email": "jean.dupont@example.com",
+          "role": "responsable-chantier",
+          "confirme": true
+        }
+      },
+      "summary": {
+        "sorties": [
+          {
+            "id": 1,
+            "date": "2023-06-15T10:30:00Z",
+            "chantier": {
+              "code": 123
+            },
+            "articleSorties": [
+              {
+                "id": 1,
+                "quantite": 10,
+                "article": {
+                  "id": 5,
+                  "nom": "Ciment",
+                  "reference": "CIM-001"
+                }
+              }
+            ]
+          }
+        ],
+        "demandes": [
+          {
+            "id": 1,
+            "date": "2023-06-14T09:15:00Z",
+            "chantier": {
+              "code": 123
+            },
+            "items": [
+              {
+                "id": 1,
+                "quantite": 5,
+                "article": {
+                  "id": 5,
+                  "nom": "Ciment",
+                  "reference": "CIM-001"
+                }
+              }
+            ]
+          }
+        ],
+        "retours": [
+          {
+            "id": 1,
+            "date": "2023-06-16T14:45:00Z",
+            "chantier": {
+              "code": 123
+            },
+            "items": [
+              {
+                "id": 1,
+                "quantite": 2,
+                "article": {
+                  "id": 5,
+                  "nom": "Ciment",
+                  "reference": "CIM-001"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

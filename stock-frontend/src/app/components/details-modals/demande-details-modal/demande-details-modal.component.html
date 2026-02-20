@@ -1,0 +1,97 @@
+<div class="modal-overlay" id="entry-details-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du demande #{{ demande?.id }}</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="demande">
+      <form>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Chantier</label>
+            <input
+              type="text"
+              readonly
+              class="form-control"
+              [value]="demande.chantier.nom"
+            />
+          </div>
+          <div class="form-group">
+            <label>Adresse chantier</label>
+            <input
+              type="text"
+              readonly
+              class="form-control"
+              [value]="demande.chantier.adresse"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input
+              type="text"
+              readonly
+              class="form-control"
+              [value]="demande.date | date: 'dd/MM/yyyy'"
+            />
+          </div>
+          <div class="form-group">
+            <label>Statut</label>
+            <input
+              type="text"
+              readonly
+              class="form-control"
+              [value]="
+                demande.status == 'confirmed' ? 'Confirmé' : 'En attente'
+              "
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1">
+            <label>Observation</label>
+            <textarea
+              readonly
+              class="form-control"
+              rows="3"
+              [value]="demande.observation || 'Aucune observation'"
+              style="resize: none"
+            ></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer" *ngIf="role != 'responsable-chantier'">
+      <button
+        class="button red-button"
+        (click)="confirmationModal = true"
+        *ngIf="demande?.status === 'pending'"
+      >
+        Refuser
+      </button>
+      <button
+        class="button green-button"
+        (click)="onConfirm()"
+        *ngIf="demande?.status === 'pending'"
+      >
+        Confirmer
+      </button>
+      <button class="button black-button" (click)="downloadBandeCommande()">
+        Exporter bon de commande
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="confirmationModal">
+  <app-confirm-delete
+    [resource]="'demande article'"
+    (close)="confirmationModal = false"
+    (confirm)="onDelete(); confirmationModal = false"
+  ></app-confirm-delete>
+</div>

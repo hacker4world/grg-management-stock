@@ -1,0 +1,126 @@
+<div class="header">
+  <h1 class="page-title">Liste des entrées confirmées</h1>
+  <div class="user-menu">
+    <button
+      (click)="setModals({ showExportModal: true })"
+      class="button black-button"
+    >
+      Exporter entrées
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" id="compte-count">
+      {{ entrees.length }}
+      {{ entrees.length === 1 ? "Entrée affichée" : "Entrées affichées" }}
+    </div>
+    <div class="card-search">
+      <form [formGroup]="searchForm" (submit)="onSearch()" style="width: 100%">
+        <input
+          type="text"
+          placeholder="Cherchez entrée par code"
+          class="search-bar"
+          formControlName="code"
+          (keyup.enter)="onSearch()"
+        />
+      </form>
+      <button
+        class="filter-button"
+        (click)="setModals({ showFilterModal: true })"
+      >
+        <i class="fa-solid fa-filter"></i>
+      </button>
+    </div>
+  </div>
+
+  <app-error *ngIf="error.show" [message]="error.message"></app-error>
+  <app-alert
+    *ngIf="alert.show"
+    [message]="alert.message"
+    (restore)="onRestore()"
+  ></app-alert>
+
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Articles</th>
+          <th>Date</th>
+          <th>Fournisseur</th>
+          <th id="last-col">Magazinier</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let e of entrees"
+          (click)="onSelectEntree(e.id)"
+          style="cursor: pointer"
+        >
+          <td>{{ e.id }}</td>
+          <td>
+            <button
+              class="button black-button"
+              (click)="openArticlesModal($event, e)"
+            >
+              Voir articles
+            </button>
+          </td>
+          <td>{{ e.date | date: "dd/MM/yyyy" }}</td>
+          <td>{{ e.fournisseur.nom }}</td>
+          <td>{{ e.compte.nom + " " + e.compte.prenom }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<br />
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des entrées</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
+<div
+  *ngIf="!pagination.lastPage && !error.show && !loading"
+  style="display: flex; justify-content: center"
+>
+  <button class="button gray-button" (click)="loadMore()">Afficher Plus</button>
+</div>
+
+<!-- Articles Modal -->
+<app-entree-articles
+  *ngIf="showArticlesModal"
+  [articleList]="selectedArticles"
+  (close)="closeArticlesModal()"
+>
+</app-entree-articles>
+
+<!-- Filter Modal -->
+<app-filter-entrees-confirmes-modal
+  *ngIf="modalSettings.showFilterModal"
+  [articles]="articles"
+  [fournisseurs]="fournisseurs"
+  [fabriquants]="fabriquants"
+  (close)="setModals({ showFilterModal: false })"
+  (filter)="onFilter($event)"
+></app-filter-entrees-confirmes-modal>
+
+<!-- Details Modal -->
+<app-entrees-confirmes-details
+  *ngIf="modalSettings.showDetailsModal && selectedEntree"
+  [entree]="selectedEntree"
+  (close)="modalSettings.showDetailsModal = false"
+  (delete)="onDelete()"
+></app-entrees-confirmes-details>
+
+<!-- Export Modal -->
+<app-export-modal
+  *ngIf="modalSettings.showExportModal"
+  resource="entrées-confirmées"
+  (close)="setModals({ showExportModal: false })"
+  (export)="onExport($event)"
+></app-export-modal>

@@ -1,0 +1,258 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Fournisseur (Supplier) API",
+    "version": "1.0.0",
+    "description": "CRUD operations on suppliers.  \nBase-URL: http://localhost:4000/api"
+  },
+  "servers": [{ "url": "http://localhost:4000/api" }],
+  "components": {
+    "schemas": {
+      "Fournisseur": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "example": 12 },
+          "nom": { "type": "string", "example": "PharmaPlus" },
+          "adresse": {
+            "type": "string",
+            "example": "14 rue de la Paix, Paris"
+          },
+          "contact": { "type": "string", "example": "+33 1 42 42 42 42" }
+        }
+      },
+      "AjouterFournisseurBody": {
+        "type": "object",
+        "required": ["nom", "adresse", "contact"],
+        "properties": {
+          "nom": { "type": "string", "minLength": 1 },
+          "adresse": { "type": "string", "minLength": 1 },
+          "contact": { "type": "string", "minLength": 1 }
+        }
+      },
+      "ModifierFournisseurBody": {
+        "allOf": [
+          { "$ref": "#/components/schemas/AjouterFournisseurBody" },
+          {
+            "type": "object",
+            "required": ["code_fournisseur"],
+            "properties": {
+              "code_fournisseur": { "type": "integer" }
+            }
+          }
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/fournisseur/liste": {
+      "get": {
+        "summary": "List suppliers (paginated & filtered)",
+        "tags": ["Fournisseur"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/nom" },
+          { "$ref": "#/components/parameters/contact" },
+          { "$ref": "#/components/parameters/adresse" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fournisseurs": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Fournisseur" }
+                    },
+                    "count": { "type": "integer" },
+                    "totalPages": { "type": "integer" },
+                    "lastPage": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fournisseur/ajouter": {
+      "post": {
+        "summary": "Create a new supplier",
+        "tags": ["Fournisseur"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AjouterFournisseurBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Fournisseur ajouté."
+                    },
+                    "fournisseur": {
+                      "$ref": "#/components/schemas/Fournisseur"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fournisseur/modifier": {
+      "put": {
+        "summary": "Update an existing supplier",
+        "tags": ["Fournisseur"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModifierFournisseurBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Fournisseur est modifié"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Supplier not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fournisseur/supprimer": {
+      "delete": {
+        "summary": "Delete a supplier",
+        "tags": ["Fournisseur"],
+        "parameters": [
+          {
+            "name": "code_fournisseur",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Fournisseur est supprimé"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "page": {
+        "name": "page",
+        "in": "query",
+        "schema": { "type": "integer", "minimum": 0, "default": 1 },
+        "description": "0 = all rows, ≥1 = paginated"
+      },
+      "nom": {
+        "name": "nom",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Case-insensitive filter on name"
+      },
+      "contact": {
+        "name": "contact",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Case-insensitive filter on contact"
+      },
+      "adresse": {
+        "name": "adresse",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Case-insensitive filter on address"
+      }
+    }
+  }
+}

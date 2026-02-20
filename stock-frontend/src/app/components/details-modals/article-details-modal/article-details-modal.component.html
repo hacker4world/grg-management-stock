@@ -1,0 +1,119 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Détails de l'article</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <app-error *ngIf="error.show" [message]="error.message"></app-error>
+      <form [formGroup]="articleForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Nom de l'article : </label>
+            <input type="text" class="form-control" formControlName="nom" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock Minimum : </label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="stockMin"
+            />
+          </div>
+          <div class="form-group">
+            <label>Unité : </label>
+            <select class="form-control" formControlName="uniteId">
+              <option [value]="null">Sélectionner une unité</option>
+              <option *ngFor="let unite of unites" [value]="unite.id">
+                {{ unite.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Famille :</label>
+            <select class="form-control" formControlName="familleId">
+              <option [value]="null">Sélectionner une famille</option>
+              <option *ngFor="let famille of familles" [value]="famille.id">
+                {{ famille.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sous-famille :</label>
+            <select class="form-control" formControlName="sousFamilleId">
+              <option [value]="null">Sélectionner une sous-famille</option>
+              <option
+                *ngFor="let sousFamille of sousFamilles"
+                [value]="sousFamille.id"
+              >
+                {{ sousFamille.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Catégorie :</label>
+            <select class="form-control" formControlName="categorieId">
+              <option [value]="null">Sélectionner une catégorie</option>
+              <option
+                *ngFor="let categorie of categories"
+                [value]="categorie.id"
+              >
+                {{ categorie.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Dépôt :</label>
+            <select class="form-control" formControlName="depotId">
+              <option [value]="null">Sélectionner un dépôt</option>
+              <option *ngFor="let depot of depots" [value]="depot.id">
+                {{ depot.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer" *ngIf="role != 'magazinier'">
+      <button
+        [disabled]="loading.update || loading.delete"
+        class="button red-button"
+        style="margin-right: auto"
+        (click)="confirmationModal = true"
+      >
+        <span *ngIf="!loading.delete">Supprimer</span>
+        <app-loading *ngIf="loading.delete"></app-loading>
+      </button>
+
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+
+      <button
+        [disabled]="loading.update || loading.delete"
+        class="button green-button"
+        (click)="onUpdate()"
+      >
+        <span *ngIf="!loading.update">Enregistrer</span>
+        <app-loading *ngIf="loading.update"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="confirmationModal">
+  <app-confirm-delete
+    [resource]="'article'"
+    (close)="confirmationModal = false"
+    (confirm)="onDelete()"
+  ></app-confirm-delete>
+</div>

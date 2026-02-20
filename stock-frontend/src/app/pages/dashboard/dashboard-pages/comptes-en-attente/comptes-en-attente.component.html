@@ -1,0 +1,105 @@
+<div class="header">
+  <h1 class="page-title">Liste des comptes en attente</h1>
+  <div class="user-menu">
+    <button
+      class="button black-button"
+      (click)="setModals({ showExportModal: true })"
+    >
+      Exporter les comptes
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      {{ comptes.length }}
+      {{ comptes.length > 1 ? "Comptes affichés" : "Compte affiché" }}
+    </div>
+
+    <div class="card-search">
+      <form [formGroup]="searchForm" (submit)="onSearch()" style="width: 100%">
+        <input
+          type="text"
+          placeholder="Cherchez des comptes par nom"
+          class="search-bar"
+          formControlName="nom"
+        />
+      </form>
+      <button
+        class="filter-button"
+        (click)="setModals({ showFilterModal: true })"
+      >
+        <i class="fa-solid fa-filter"></i>
+      </button>
+    </div>
+  </div>
+
+  <app-error *ngIf="error.show" [message]="error.message"></app-error>
+  <app-alert
+    *ngIf="alert.show"
+    [message]="alert.message"
+    (restore)="onRestore()"
+  ></app-alert>
+
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Nom d'utilisateur</th>
+          <th id="last-col">Rôle</th>
+        </tr>
+      </thead>
+      <tbody id="compte-list">
+        <tr *ngFor="let compte of comptes" (click)="onSelectCompte(compte.id)">
+          <td>{{ compte.id }}</td>
+          <td>{{ compte.nom }}</td>
+          <td>{{ compte.prenom }}</td>
+          <td>{{ compte.nom_utilisateur }}</td>
+          <td>{{ compte.role }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<br />
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des comptes</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
+<div
+  *ngIf="!pagination.lastPage && !error.show && !loading"
+  style="display: flex; justify-content: center"
+>
+  <button (click)="loadMore()" class="button gray-button">Afficher plus</button>
+</div>
+
+<div *ngIf="modalSettings.showDetailsModal">
+  <app-compte-en-attente-details-modal
+    [compte]="compteDetails"
+    (close)="setModals({ showDetailsModal: false })"
+    (accepted)="onAccepted()"
+    (refused)="onRefused()"
+  ></app-compte-en-attente-details-modal>
+</div>
+
+<div *ngIf="modalSettings.showFilterModal">
+  <app-filter-comptes-en-attente-modal
+    (close)="setModals({ showFilterModal: false })"
+    (filter)="onFilter($event)"
+  ></app-filter-comptes-en-attente-modal>
+</div>
+
+<div *ngIf="modalSettings.showExportModal">
+  <app-export-modal
+    [resource]="'comptes'"
+    (close)="setModals({ showExportModal: false })"
+    (export)="onExport($event)"
+  ></app-export-modal>
+</div>

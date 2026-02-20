@@ -1,0 +1,83 @@
+<div class="modal-overlay" id="entry-details-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du sortie</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+      <form [formGroup]="sortieForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Article :</label>
+            <input
+              type="text"
+              class="form-control"
+              value="Bois Chêne Massif 200x50mm"
+              readonly
+            />
+          </div>
+          <div class="form-group">
+            <label>Chantier :</label>
+            <input
+              type="text"
+              class="form-control"
+              value="Parking Silo Centre-Ville Rouen"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock sortie :</label>
+            <input readonly type="number" class="form-control" value="10" />
+          </div>
+          <div class="form-group">
+            <label>Date :</label>
+            <input
+              readonly
+              type="text"
+              class="form-control"
+              value="25/12/2025"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Magazinier :</label>
+            <input type="text" class="form-control" value="Mohamed Juini" />
+          </div>
+          <div class="form-group">
+            <label>Observation :</label>
+            <input type="text" class="form-control" />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <div style="margin-left: auto; display: flex">
+        <button class="button black-button" style="margin-right: 7px">
+          Exporter BL
+        </button>
+        <button class="button red-button" (click)="confirmDelete = true">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="confirmDelete">
+  <app-confirm-delete
+    [resource]="'sortie'"
+    (close)="confirmDelete = false"
+    (confirm)="confirmDelete = false"
+  ></app-confirm-delete>
+</div>

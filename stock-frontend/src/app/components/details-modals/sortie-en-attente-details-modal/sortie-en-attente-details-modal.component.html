@@ -1,0 +1,76 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <!-- HEADER -->
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du sortie</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <!-- BODY -->
+    <div class="modal-body">
+      <app-error *ngIf="error.show" [message]="error.message"></app-error>
+
+      <form>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input
+              type="text"
+              class="form-control"
+              readonly
+              [value]="sortie.date"
+            />
+          </div>
+          <div class="form-group">
+            <label>Chantier</label>
+            <input
+              readonly
+              type="text"
+              class="form-control"
+              [value]="sortie.chantier ? sortie.chantier.nom : 'Non associé'"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Magazinier</label>
+            <input
+              type="text"
+              readonly
+              class="form-control"
+              [value]="sortie.compte.nom + ' ' + sortie.compte.prenom"
+            />
+          </div>
+          <div class="form-group">
+            <label>Observation</label>
+            <input
+              readonly
+              type="text"
+              class="form-control"
+              [value]="sortie.observation"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <div style="margin-right: auto">
+        <button class="button red-button" (click)="confirmationModal = true">
+          Supprimer
+        </button>
+      </div>
+      <button class="button green-button" (click)="confirmer()">
+        Confirmer sortie
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="confirmationModal">
+  <app-confirm-delete
+    [resource]="'sortie'"
+    (close)="confirmationModal = false"
+    (confirm)="refuser()"
+  ></app-confirm-delete>
+</div>

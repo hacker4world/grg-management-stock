@@ -1,0 +1,261 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Fabriquant (Manufacturer) API",
+    "version": "1.0.0",
+    "description": "CRUD operations on manufacturers.  \nBase-URL: http://localhost:4000/api"
+  },
+  "servers": [{ "url": "http://localhost:4000/api" }],
+  "components": {
+    "schemas": {
+      "Fabriquant": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "example": 7 },
+          "nom": { "type": "string", "example": "Sanofi" },
+          "adresse": {
+            "type": "string",
+            "example": "55 avenue de la Boétie, 75008 Paris"
+          },
+          "contact": { "type": "string", "example": "contact@sanofi.com" }
+        }
+      },
+      "AjouterFabriquantBody": {
+        "type": "object",
+        "required": ["nom", "adresse", "contact"],
+        "properties": {
+          "nom": { "type": "string", "minLength": 1 },
+          "adresse": { "type": "string", "minLength": 1 },
+          "contact": { "type": "string", "minLength": 1 }
+        }
+      },
+      "ModifierFabriquantBody": {
+        "allOf": [
+          { "$ref": "#/components/schemas/AjouterFabriquantBody" },
+          {
+            "type": "object",
+            "required": ["code_fabriquant"],
+            "properties": {
+              "code_fabriquant": { "type": "integer" }
+            }
+          }
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/fabriquant/liste": {
+      "get": {
+        "summary": "List manufacturers (paginated & filtered)",
+        "tags": ["Fabriquant"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/query" },
+          { "$ref": "#/components/parameters/adresse" },
+          { "$ref": "#/components/parameters/contact" },
+          { "$ref": "#/components/parameters/code" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fabriquants": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Fabriquant" }
+                    },
+                    "count": { "type": "integer" },
+                    "totalPages": { "type": "integer" },
+                    "lastPage": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fabriquant/ajouter": {
+      "post": {
+        "summary": "Create a new manufacturer",
+        "tags": ["Fabriquant"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AjouterFabriquantBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Fabriquant est ajouté"
+                    },
+                    "fabriquant": { "$ref": "#/components/schemas/Fabriquant" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fabriquant/modifier": {
+      "put": {
+        "summary": "Update an existing manufacturer",
+        "tags": ["Fabriquant"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModifierFabriquantBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Fabriquant est modifié"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Manufacturer not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fabriquant/supprimer": {
+      "delete": {
+        "summary": "Delete a manufacturer",
+        "tags": ["Fabriquant"],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Fabriquant est supprimé"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "page": {
+        "name": "page",
+        "in": "query",
+        "schema": { "type": "integer", "minimum": 0, "default": 1 },
+        "description": "0 = all rows, ≥1 = paginated"
+      },
+      "query": {
+        "name": "query",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Case-insensitive filter on name"
+      },
+      "adresse": {
+        "name": "adresse",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Case-insensitive filter on address"
+      },
+      "contact": {
+        "name": "contact",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Case-insensitive filter on contact"
+      },
+      "code": {
+        "name": "code",
+        "in": "query",
+        "schema": { "type": "integer" },
+        "description": "Exact match on primary key"
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+<div class="modal-overlay" id="add-family-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Ajouter Famille</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
+      <form [formGroup]="creationForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Nom du famille : </label>
+            <input formControlName="nom" type="text" class="form-control" />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button
+        class="button green-button"
+        (click)="onSubmit()"
+        [disabled]="loading"
+      >
+        <span *ngIf="!loading">Ajouter</span>
+        <app-loading *ngIf="loading"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>

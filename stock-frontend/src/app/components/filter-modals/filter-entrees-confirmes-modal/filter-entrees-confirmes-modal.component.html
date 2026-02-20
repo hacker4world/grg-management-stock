@@ -1,0 +1,79 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer liste d'entrées confirmées</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <form [formGroup]="filterForm" (ngSubmit)="onFilter()">
+      <div class="modal-body">
+        <!-- Article Filter -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Article :</label>
+            <select class="form-control" formControlName="article">
+              <option value="">Tous les articles</option>
+              <option *ngFor="let article of articles" [value]="article.id">
+                {{ article.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Stock Entrée</label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="stock_entree"
+              placeholder="Entrez la quantité"
+              min="0"
+            />
+          </div>
+        </div>
+
+        <!-- Date and Fournisseur Filters -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" class="form-control" formControlName="date" />
+          </div>
+          <div class="form-group">
+            <label>Fournisseur</label>
+            <select class="form-control" formControlName="fournisseur">
+              <option value="">Tous les fournisseurs</option>
+              <option *ngFor="let f of fournisseurs" [value]="f.code">
+                {{ f.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fabriquant and Magazinier Filters -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fabriquant</label>
+            <select class="form-control" formControlName="fabriquant">
+              <option value="">Tous les fabriquants</option>
+              <option *ngFor="let fab of fabriquants" [value]="fab.code">
+                {{ fab.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Magazinier</label>
+            <select class="form-control" formControlName="magazinier">
+              <option value="">Tous les magaziniers</option>
+              <option [value]="magazinier.id" *ngFor="let magazinier of magaziniers" >{{ magazinier.nom }} {{ magazinier.prenom }} </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="button black-button" (click)="onClose()">
+          Annuler
+        </button>
+        <button type="submit" class="button green-button">Filtrer</button>
+      </div>
+    </form>
+  </div>
+</div>

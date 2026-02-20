@@ -1,0 +1,40 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Liste des articles du demande</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="car-count">{{ articles.length }} Article(s) affiché(s)</div>
+        </div>
+
+        <div class="table-container" style="margin-top: 20px">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th id="first-col">Article</th>
+                <th>Stock minimum</th>
+                <th>Stock actuel</th>
+                <th id="last-col">Quantité demandée</th>
+              </tr>
+            </thead>
+            <tbody id="article-list">
+              <tr *ngFor="let item of articles">
+                <td>{{ item.article.nom }}</td>
+                <td>{{ item.article.stockMinimum }}</td>
+                <td>{{ item.article.stockActuel }}</td>
+                <td>{{ item.quantite }}</td>
+              </tr>
+              <tr *ngIf="articles.length === 0">
+                <td colspan="6" class="no-data">Aucun article</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

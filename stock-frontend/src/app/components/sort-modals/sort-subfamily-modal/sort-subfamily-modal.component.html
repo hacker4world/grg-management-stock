@@ -1,0 +1,38 @@
+<div class="modal-overlay" id="sort-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Trier Sous Familles</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group" style="width: 100%">
+          <label>Trier Par : </label>
+          <select class="form-control">
+            <option>Catégories</option>
+          </select>
+        </div>
+        <div class="form-group" style="width: 100%">
+          <label>Ordre : </label>
+          <select class="form-control">
+            <option>Croissant</option>
+            <option>Décroissant</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button" onclick="sortCarList()">
+        Trier liste
+      </button>
+    </div>
+  </div>
+</div>

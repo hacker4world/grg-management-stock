@@ -1,0 +1,219 @@
+{
+  "baseUrl": "http://localhost:4000/api",
+  "resource": "entrees",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/entrees/liste",
+      "description": "List all stock entries (entrees) with optional filters and pagination.",
+      "authentication": false,
+      "queryParameters": {
+        "page": {
+          "type": "number",
+          "default": 1,
+          "description": "Page number for pagination"
+        },
+        "articleId": {
+          "type": "string",
+          "description": "Filter by article id"
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD",
+          "description": "Filter by exact entry date"
+        },
+        "fournisseurId": {
+          "type": "string",
+          "description": "Filter by supplier code"
+        },
+        "fabriquantId": {
+          "type": "string",
+          "description": "Filter by manufacturer code"
+        },
+        "prix": {
+          "type": "string",
+          "description": "Filter by exact unit price"
+        },
+        "stockEntree": {
+          "type": "string",
+          "description": "Filter by exact quantity received"
+        },
+        "confirmed": {
+          "type": "string",
+          "enum": ["true", "false"],
+          "description": "true = only confirmed, false = only pending/denied"
+        }
+      },
+      "successResponse": {
+        "status": 200,
+        "body": {
+          "entrees": [
+            {
+              "id": 12,
+              "date": "2024-05-18",
+              "observation": "Optional remark",
+              "prix": 125.5,
+              "stockEntree": 100,
+              "status": "pending|confirmed",
+              "article": {
+                "id": 3,
+                "nom": "Article X",
+                "stockMinimum": 10,
+                "stockActuel": 250,
+                "prixMoyenne": 120
+              },
+              "fournisseur": {
+                "code": 5,
+                "nom": "Supplier ABC",
+                "contact": "0123456789",
+                "adresse": "123 St"
+              },
+              "fabriquant": {
+                "code": 7,
+                "nom": "Maker Ltd",
+                "adresse": "456 Ave",
+                "contact": "0987654321"
+              },
+              "documents": [
+                {
+                  "id": 21,
+                  "type": "bande_commande|bande_livraison",
+                  "filename": "bande_commande_1716041234567.pdf",
+                  "originalName": "PO_123.pdf",
+                  "mimeType": "application/pdf",
+                  "size": 102400
+                }
+              ]
+            }
+          ],
+          "count": 1,
+          "totalPages": 3,
+          "lastPage": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/entrees/ajouter",
+      "description": "Create a new stock entry (entree) and upload mandatory documents.",
+      "authentication": true,
+      "roles": ["ADMIN", "MAGAZINIER"],
+      "contentType": "multipart/form-data",
+      "bodyFields": {
+        "articleId": {
+          "type": "number",
+          "required": true,
+          "description": "Existing article id"
+        },
+        "fournisseurId": {
+          "type": "number",
+          "required": true,
+          "description": "Existing supplier code"
+        },
+        "fabriquantId": {
+          "type": "number",
+          "required": true,
+          "description": "Existing manufacturer code"
+        },
+        "stockEntree": {
+          "type": "number",
+          "required": true,
+          "description": "Quantity received"
+        },
+        "prix": {
+          "type": "number",
+          "required": true,
+          "description": "Unit purchase price"
+        },
+        "observation": {
+          "type": "string",
+          "required": false,
+          "description": "Optional remark"
+        }
+      },
+      "files": {
+        "bande_commande": {
+          "required": true,
+          "description": "Purchase order file (PDF/image)"
+        },
+        "bande_livraison": {
+          "required": true,
+          "description": "Delivery note file (PDF/image)"
+        }
+      },
+      "successResponse": {
+        "status": 201,
+        "body": {
+          "message": "Entrée créée",
+          "entree": {
+            "id": 12,
+            "date": "2024-05-18",
+            "observation": null,
+            "prix": 125.5,
+            "stockEntree": 100,
+            "status": "pending",
+            "article": { "id": 3, "nom": "Article X" },
+            "fournisseur": { "code": 5, "nom": "Supplier ABC" },
+            "fabriquant": { "code": 7, "nom": "Maker Ltd" }
+          },
+          "documents": [
+            {
+              "id": 21,
+              "type": "bande_commande",
+              "filename": "bande_commande_1716041234567.pdf",
+              "originalName": "PO_123.pdf",
+              "mimeType": "application/pdf",
+              "size": 102400
+            },
+            {
+              "id": 22,
+              "type": "bande_livraison",
+              "filename": "bande_livraison_1716041234568.pdf",
+              "originalName": "BL_456.pdf",
+              "mimeType": "application/pdf",
+              "size": 95200
+            }
+          ]
+        }
+      },
+      "errorResponses": {
+        "400": { "message": "Champs obligatoires manquants ou invalides" },
+        "404": {
+          "message": "Article introuvable | Fournisseur introuvable | Fabriquant introuvable"
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/entrees/traiter",
+      "description": "Confirm or deny a pending stock entry. Confirming increases article stock.",
+      "authentication": true,
+      "roles": ["ADMIN", "MAGAZINIER"],
+      "contentType": "application/json",
+      "body": {
+        "entreeId": {
+          "type": "number",
+          "required": true,
+          "description": "Id of the pending entry"
+        },
+        "action": {
+          "type": "string",
+          "enum": ["confirm", "deny"],
+          "required": true,
+          "description": "confirm = approve & add stock, deny = delete entry"
+        }
+      },
+      "successResponse": {
+        "status": 200,
+        "body": {
+          "confirm": { "message": "Entrée confirmée" },
+          "deny": { "message": "Entrée refusée et supprimée" }
+        }
+      },
+      "errorResponses": {
+        "404": { "message": "Entrée introuvable" },
+        "400": { "message": "L'entrée a déjà été traitée" }
+      }
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+<div class="header">
+  <h1 class="page-title">Configurations</h1>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Liste des Dépots</div>
+    <div style="display: flex" class="button-group">
+      <button
+        class="button green-button"
+        (click)="this.modalSettings.showAddDepotModal = true"
+      >
+        Ajouter Dépot
+      </button>
+      <button
+        style="margin-left: 7px"
+        class="button black-button"
+        (click)="modalSettings.showExportDepotModal = true"
+      >
+        Exporter Dépots
+      </button>
+    </div>
+  </div>
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Nom</th>
+          <th>Adresse</th>
+          <!-- Add this -->
+          <th id="last-col">Nombre d'articles</th>
+        </tr>
+      </thead>
+      <tbody id="compte-list">
+        <tr *ngFor="let d of depots" (click)="openDepotDetail(d)">
+          <td>{{ d.id }}</td>
+          <td>{{ d.nom }}</td>
+          <td>{{ d.adresse }}</td>
+          <!-- Add this -->
+          <td>{{ d.nombreArticles ?? 0 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br /><br />
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Liste des Unités</div>
+    <div style="display: flex" class="button-group">
+      <button
+        style="margin-left: 7px"
+        class="button green-button"
+        (click)="this.modalSettings.showAddUniteModal = true"
+      >
+        Ajouter Unité
+      </button>
+      <button
+        class="button black-button"
+        (click)="modalSettings.showExportUniteModal = true"
+      >
+        Exporter Unités
+      </button>
+    </div>
+  </div>
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Nom</th>
+          <th id="last-col">Nombre d'articles</th>
+        </tr>
+      </thead>
+      <tbody id="compte-list">
+        <tr *ngFor="let u of unites" (click)="openUniteDetail(u)">
+          <td>{{ u.id }}</td>
+          <td>{{ u.nom }}</td>
+          <td>{{ u.nombreArticles ?? 0 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<app-add-depot-modal
+  *ngIf="modalSettings.showAddDepotModal"
+  (close)="modalSettings.showAddDepotModal = false"
+  (depotAdded)="onDepotAdded()"
+></app-add-depot-modal>
+
+<app-add-unite-modal
+  *ngIf="modalSettings.showAddUniteModal"
+  (close)="modalSettings.showAddUniteModal = false"
+  (uniteAdded)="onUniteAdded()"
+></app-add-unite-modal>
+
+<app-depot-details-modal
+  *ngIf="modalSettings.showDepotDetailsModal"
+  [depot]="selectedDepot!"
+  (close)="modalSettings.showDepotDetailsModal = false"
+  (depotUpdated)="onDepotUpdated()"
+  (depotDeleted)="onDepotDeleted()"
+></app-depot-details-modal>
+
+<app-unite-details-modal
+  *ngIf="modalSettings.showUniteDetailsModal"
+  [unite]="selectedUnite!"
+  (close)="modalSettings.showUniteDetailsModal = false"
+  (uniteUpdated)="onUniteUpdated()"
+  (uniteDeleted)="onUniteDeleted()"
+></app-unite-details-modal>
+
+<app-export-modal
+  *ngIf="modalSettings.showExportDepotModal"
+  [resource]="'dépots'"
+  (close)="modalSettings.showExportDepotModal = false"
+  (export)="onExportDepots($event)"
+></app-export-modal>
+
+<app-export-modal
+  *ngIf="modalSettings.showExportUniteModal"
+  [resource]="'unités'"
+  (close)="modalSettings.showExportUniteModal = false"
+  (export)="onExportUnites($event)"
+></app-export-modal>

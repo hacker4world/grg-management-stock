@@ -1,0 +1,123 @@
+<div class="header">
+  <h1 class="page-title">Liste des Fournisseurs</h1>
+  <div class="user-menu">
+    <button
+      class="button green-button"
+      (click)="setModals({ showAddModal: true })"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Ajouter Fournisseur
+    </button>
+    <button
+      class="button black-button"
+      (click)="modalSettings.showExportModal = true"
+    >
+      Exporter fournisseurs
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" id="fournisseur-count">
+      {{ fournisseurs.length }}
+      {{
+        fournisseurs.length > 1
+          ? "fournisseurs affichés"
+          : "fournisseur affiché"
+      }}
+    </div>
+
+    <div class="card-search">
+      <form style="width: 100%" [formGroup]="searchForm" (submit)="onSearch()">
+        <input
+          type="text"
+          placeholder="Cherchez Fournisseurs par nom"
+          class="search-bar"
+          formControlName="search"
+        />
+      </form>
+      <button
+        class="filter-button"
+        style="margin-left: 5px"
+        (click)="setModals({ showFilterModal: true })"
+      >
+        <i class="fas fa-filter"></i>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="listOptions.searching || listOptions.filtering">
+    <app-alert message="Liste filtrée" (restore)="onRestore()"></app-alert>
+  </div>
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Nom</th>
+          <th>Contact</th>
+          <th id="last-col">Adresse</th>
+        </tr>
+      </thead>
+      <tbody class="car-list">
+        <tr *ngFor="let f of fournisseurs" (click)="selectFournisseur(f.code)">
+          <td>{{ f.code }}</td>
+          <td>{{ f.nom }}</td>
+          <td>{{ f.contact }}</td>
+          <td>{{ f.adresse }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br />
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des fournisseurs</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
+<div
+  *ngIf="!pagination.lastPage && !error.show && !loading && !loading"
+  style="display: flex; justify-content: center"
+>
+  <button (click)="loadMore()" class="button gray-button">Afficher Plus</button>
+</div>
+
+<div *ngIf="modalSettings.showAddModal">
+  <app-add-fournisseur-modal
+    (create)="onFournisseurCreated($event)"
+    (close)="setModals({ showAddModal: false })"
+  ></app-add-fournisseur-modal>
+</div>
+
+<div *ngIf="modalSettings.showDetailsModal">
+  <app-fourniseeur-details-modal
+    [fournisseur]="fournisseurDetails"
+    (close)="setModals({ showDetailsModal: false })"
+    (update)="onFournisseurUpdate($event)"
+    (delete)="onFournisseurDelete()"
+  ></app-fourniseeur-details-modal>
+</div>
+
+<div *ngIf="modalSettings.showSortModal">
+  <app-sort-fournisseurs-modal
+    (close)="setModals({ showSortModal: false })"
+  ></app-sort-fournisseurs-modal>
+</div>
+
+<div *ngIf="modalSettings.showFilterModal">
+  <app-filter-fournisseurs-modal
+    (close)="setModals({ showFilterModal: false })"
+    (filter)="onFilterFournisseurs($event)"
+  >
+  </app-filter-fournisseurs-modal>
+</div>
+
+<div *ngIf="modalSettings.showExportModal">
+  <app-export-modal
+    [resource]="'fournisseurs'"
+    (close)="setModals({ showExportModal: false })"
+    (export)="onExport($event)"
+  ></app-export-modal>
+</div>

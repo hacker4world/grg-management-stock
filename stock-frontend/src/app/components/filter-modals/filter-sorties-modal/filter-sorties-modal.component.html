@@ -1,0 +1,76 @@
+<div class="modal-overlay" id="filter-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer liste des sorties</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Matricule agent -->
+
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
+      <form [formGroup]="filterForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Article : </label>
+            <select class="form-control">
+              <option value="">Tous les articles</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Stock sortie :</label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="stockSortie"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Date</label>
+            <input class="form-control" type="date" formControlName="date" />
+          </div>
+          <div class="form-group" style="width: 100%">
+            <label>Chantier : </label>
+            <select
+              class="form-control"
+              placeholder="Entrez marque"
+              formControlName="chantier"
+            >
+              <option value="">Tous les chantiers</option>
+              <option value="-1">Non associé</option>
+              <option
+                value=""
+                *ngFor="let chantier of chantiers"
+                [value]="chantier.code"
+              >
+                {{ chantier.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Magazinier</label>
+            <select class="form-control"></select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button" (click)="onFilter()">Filtrer</button>
+    </div>
+  </div>
+</div>

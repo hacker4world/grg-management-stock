@@ -1,0 +1,14 @@
+.dashboard {
+  background-color: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 240px;
+  width: 100%;
+  padding: 20px;
+}

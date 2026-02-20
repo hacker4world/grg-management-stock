@@ -1,0 +1,32 @@
+<div class="modal-overlay" id="filter-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer liste des sous familles</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="filterForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Famille : </label>
+            <select class="form-control" formControlName="famille">
+              <option value="no-family">Non Associé</option>
+              <option [value]="famille.id" *ngFor="let famille of familles">
+                {{ famille.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button" (click)="onFilter()">Filtrer</button>
+    </div>
+  </div>
+</div>

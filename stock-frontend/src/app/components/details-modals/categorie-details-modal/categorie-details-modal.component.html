@@ -1,0 +1,82 @@
+<div class="modal-overlay" id="category-details-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du Catégorie</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
+      <form [formGroup]="categoryForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Nom du catégorie : </label>
+            <input type="text" class="form-control" formControlName="nom" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Famille : </label>
+            <select
+              (change)="onFamilleChange($event)"
+              class="form-control"
+              formControlName="famille"
+            >
+              <option value="no-family">Non associé</option>
+              <option [value]="famille.id" *ngFor="let famille of familles">
+                {{ famille.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 100%">
+            <label>Sous Famille : </label>
+            <select class="form-control" formControlName="sousFamille">
+              <option value="no-subfamily">Non associé</option>
+              <option
+                [value]="subFamily.id"
+                *ngFor="let subFamily of sousFamilles"
+              >
+                {{ subFamily.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button
+        [disabled]="loading.update || loading.delete"
+        class="button red-button"
+        (click)="this.confirmationModal = true"
+      >
+        <span *ngIf="!loading.delete">Supprimer</span>
+        <app-loading *ngIf="loading.delete"></app-loading>
+      </button>
+
+      <button
+        [disabled]="loading.update || loading.delete"
+        class="button green-button"
+        (click)="onUpdate()"
+      >
+        <span *ngIf="!loading.update">Enregistrer</span>
+        <app-loading *ngIf="loading.update"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="confirmationModal">
+  <app-confirm-delete
+    [resource]="'catégorie'"
+    (close)="this.confirmationModal = false"
+    (confirm)="onDelete()"
+  ></app-confirm-delete>
+</div>

@@ -1,0 +1,94 @@
+{
+  "resource": "Dépôt (warehouse)",
+  "basePath": "/api/depot",
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/liste",
+      "description": "Paginated list of warehouses with optional search.",
+      "query": {
+        "page": {
+          "type": "number",
+          "default": 1,
+          "description": "Page number (1-based)."
+        },
+        "query": {
+          "type": "string",
+          "required": false,
+          "description": "Case-insensitive search on warehouse name."
+        }
+      },
+      "success": {
+        "status": 200,
+        "schema": {
+          "depots": [
+            {
+              "id": "number",
+              "nom": "string",
+              "nombreArticles": "number  // how many articles are stored in this warehouse"
+            }
+          ],
+          "count": "number  // items on current page",
+          "totalPages": "number",
+          "lastPage": "boolean"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/ajouter",
+      "description": "Create a new warehouse.",
+      "body": {
+        "nom": { "type": "string", "min": 1, "max": 255, "required": true }
+      },
+      "success": {
+        "status": 200,
+        "schema": {
+          "message": "Dépôt est ajouté",
+          "depot": { "id": "number", "nom": "string" }
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/modifier",
+      "description": "Rename an existing warehouse.",
+      "body": {
+        "id": {
+          "type": "number",
+          "integer": true,
+          "positive": true,
+          "required": true
+        },
+        "nom": { "type": "string", "min": 1, "max": 255, "required": true }
+      },
+      "success": {
+        "status": 200,
+        "schema": { "message": "Dépôt est modifié" }
+      },
+      "error": {
+        "404": { "message": "Dépôt n'est pas trouvé" }
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/supprimer",
+      "description": "Delete a warehouse (query-string id).",
+      "query": {
+        "id": {
+          "type": "number",
+          "integer": true,
+          "positive": true,
+          "required": true
+        }
+      },
+      "success": {
+        "status": 200,
+        "schema": { "message": "Dépôt est supprimé" }
+      },
+      "error": {
+        "404": { "message": "Dépôt introuvable" }
+      }
+    }
+  ]
+}

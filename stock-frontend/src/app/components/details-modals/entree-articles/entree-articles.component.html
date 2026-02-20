@@ -1,0 +1,38 @@
+<p>entree-articles works!</p>
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Articles de l'entrée</h3>
+      <button class="close-button" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th id="first-col">Article</th>
+              <th>Stock Entrée</th>
+              <th id="last-col">Prix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of articleList">
+              <td>{{ item.article.nom }}</td>
+              <td>{{ item.stockEntree }}</td>
+              <td>{{ item.prix }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="button gray-button" (click)="onClose()">
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>

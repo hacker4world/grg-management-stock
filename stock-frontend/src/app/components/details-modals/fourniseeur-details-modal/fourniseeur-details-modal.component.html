@@ -1,0 +1,81 @@
+<div class="modal-overlay" id="fournisseur-details-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du Fournisseur</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
+      <form [formGroup]="fournisseurForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Nom du fournisseur : </label>
+            <input
+              type="text"
+              class="form-control"
+              id="nom"
+              formControlName="nom"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Contact : </label>
+            <input
+              min="0"
+              type="text"
+              class="form-control"
+              id="contact"
+              formControlName="contact"
+            />
+          </div>
+          <div class="form-group">
+            <label>Adresse : </label>
+            <input
+              min="0"
+              type="text"
+              class="form-control"
+              id="adresse"
+              formControlName="adresse"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        [disabled]="loading.delete || loading.update"
+        class="button red-button"
+        (click)="this.confirmationModal = true"
+      >
+        <span *ngIf="!loading.delete"> Supprimer</span>
+        <app-loading *ngIf="loading.delete"></app-loading>
+      </button>
+
+      <button
+        [disabled]="loading.delete || loading.update"
+        class="button green-button"
+        (click)="onFournisseurUpdate()"
+      >
+        <span *ngIf="!loading.update"> Enregistrer</span>
+        <app-loading *ngIf="loading.update"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="confirmationModal">
+  <app-confirm-delete
+    [resource]="'fournisseur'"
+    (close)="this.confirmationModal = false"
+    (confirm)="onDelete()"
+  ></app-confirm-delete>
+</div>

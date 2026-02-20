@@ -1,0 +1,91 @@
+<div class="modal-overlay" id="filter-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer liste des entrées</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Matricule agent -->
+
+      <div class="form-row">
+        <div class="form-group" style="width: 100%">
+          <label>Article : </label>
+          <select class="form-control">
+            <option value="">Tous les articles</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="width: 100%">
+          <label>Date du : </label>
+          <input class="form-control" type="date" />
+        </div>
+        <div class="form-group" style="width: 100%">
+          <label>Date au : </label>
+          <input class="form-control" type="date" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Stock du :</label>
+          <input type="number" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Stock au :</label>
+          <input type="number" class="form-control" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="width: 100%">
+          <label>Famille : </label>
+          <select class="form-control" placeholder="Entrez marque">
+            <option value="">Tous les familles</option>
+          </select>
+        </div>
+        <div class="form-group" style="width: 100%">
+          <label>Sous famille : </label>
+          <select class="form-control" placeholder="Entrez marque">
+            <option value="">Tous les sous familles</option>
+          </select>
+        </div>
+        <div class="form-row"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="width: 100%">
+          <label>Categorie : </label>
+          <select class="form-control" placeholder="Entrez marque">
+            <option value="">Tous les categories</option>
+          </select>
+        </div>
+        <div class="form-group" style="width: 100%">
+          <label>Fournisseur : </label>
+          <select class="form-control" placeholder="Entrez marque">
+            <option value="">Tous les fournisseurs</option>
+          </select>
+        </div>
+        <div class="form-row"></div>
+      </div>
+      <div class="form-group">
+        <label>Fabriquant : </label>
+        <select class="form-control">
+          <option value="">Tous les fabriquants</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button">Filtrer</button>
+    </div>
+  </div>
+</div>

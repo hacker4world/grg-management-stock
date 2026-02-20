@@ -1,0 +1,436 @@
+{
+  "endpoint": {
+    "method": "POST",
+    "path": "/create",
+    "baseUrl": "http://localhost:4000/api/sortie",
+    "fullUrl": "http://localhost:4000/api/sortie/create",
+    "description": "Create a new sortie (stock exit) with type-specific validation and field handling"
+  },
+  "authorization": {
+    "required": true,
+    "allowedRoles": ["ADMIN", "ADMIN1", "MAGAZINIER"]
+  },
+  "inputSchema": {
+    "description": "The request body must match one of four sortie type DTOs",
+    "types": [
+      {
+        "typeName": "CreateSortieInterneDepotDto",
+        "typeSortie": "interne_depot",
+        "description": "Internal sortie to a depot",
+        "fields": {
+          "articles": {
+            "type": "Array<{articleId: number, stockSortie: number}>",
+            "required": true,
+            "description": "List of articles to exit with quantities"
+          },
+          "observation": {
+            "type": "string",
+            "required": false,
+            "description": "Optional observation notes"
+          },
+          "compteId": {
+            "type": "number",
+            "required": true,
+            "description": "ID of the account creating the sortie (must be ADMIN, ADMIN1, or MAGAZINIER)"
+          },
+          "typeSortie": {
+            "type": "string",
+            "required": true,
+            "value": "interne_depot",
+            "description": "Fixed value indicating internal depot sortie"
+          },
+          "depotId": {
+            "type": "number",
+            "required": true,
+            "description": "ID of the destination depot"
+          },
+          "nomTransporteur": {
+            "type": "string",
+            "required": true,
+            "description": "Name of the transporter"
+          },
+          "matriculeTransporteur": {
+            "type": "string",
+            "required": true,
+            "description": "Registration number of the transporter"
+          }
+        }
+      },
+      {
+        "typeName": "CreateSortieInterneChantierDto",
+        "typeSortie": "interne_chantier",
+        "description": "Internal sortie to a construction site (chantier)",
+        "fields": {
+          "articles": {
+            "type": "Array<{articleId: number, stockSortie: number}>",
+            "required": true,
+            "description": "List of articles to exit with quantities"
+          },
+          "observation": {
+            "type": "string",
+            "required": false,
+            "description": "Optional observation notes"
+          },
+          "compteId": {
+            "type": "number",
+            "required": true,
+            "description": "ID of the account creating the sortie"
+          },
+          "typeSortie": {
+            "type": "string",
+            "required": true,
+            "value": "interne_chantier",
+            "description": "Fixed value indicating internal chantier sortie"
+          },
+          "chantierId": {
+            "type": "number",
+            "required": true,
+            "description": "Code/ID of the destination construction site"
+          },
+          "nomTransporteur": {
+            "type": "string",
+            "required": true,
+            "description": "Name of the transporter"
+          },
+          "matriculeTransporteur": {
+            "type": "string",
+            "required": true,
+            "description": "Registration number of the transporter"
+          }
+        }
+      },
+      {
+        "typeName": "CreateSortieExterneAvecTransporteurDto",
+        "typeSortie": "externe",
+        "sousTypeSortieExterne": "avec_transporteur",
+        "description": "External sortie with a transporter",
+        "fields": {
+          "articles": {
+            "type": "Array<{articleId: number, stockSortie: number}>",
+            "required": true,
+            "description": "List of articles to exit with quantities"
+          },
+          "observation": {
+            "type": "string",
+            "required": false,
+            "description": "Optional observation notes"
+          },
+          "compteId": {
+            "type": "number",
+            "required": true,
+            "description": "ID of the account creating the sortie"
+          },
+          "typeSortie": {
+            "type": "string",
+            "required": true,
+            "value": "externe",
+            "description": "Fixed value indicating external sortie"
+          },
+          "sousTypeSortieExterne": {
+            "type": "string",
+            "required": true,
+            "value": "avec_transporteur",
+            "description": "Sub-type indicating external sortie with transporter"
+          },
+          "nomEntreprise": {
+            "type": "string",
+            "required": true,
+            "description": "Name of the external company"
+          },
+          "adresseEntreprise": {
+            "type": "string",
+            "required": true,
+            "description": "Address of the external company"
+          },
+          "matriculeFiscalEntreprise": {
+            "type": "string",
+            "required": true,
+            "description": "Tax registration number of the company"
+          },
+          "nomClient": {
+            "type": "string",
+            "required": true,
+            "description": "Name of the client"
+          },
+          "nomTransporteur": {
+            "type": "string",
+            "required": true,
+            "description": "Name of the transporter"
+          },
+          "matriculeTransporteur": {
+            "type": "string",
+            "required": true,
+            "description": "Registration number of the transporter"
+          }
+        }
+      },
+      {
+        "typeName": "CreateSortieExterneSansTransporteurDto",
+        "typeSortie": "externe",
+        "sousTypeSortieExterne": "sans_transporteur",
+        "description": "External sortie without a transporter",
+        "fields": {
+          "articles": {
+            "type": "Array<{articleId: number, stockSortie: number}>",
+            "required": true,
+            "description": "List of articles to exit with quantities"
+          },
+          "observation": {
+            "type": "string",
+            "required": false,
+            "description": "Optional observation notes"
+          },
+          "compteId": {
+            "type": "number",
+            "required": true,
+            "description": "ID of the account creating the sortie"
+          },
+          "typeSortie": {
+            "type": "string",
+            "required": true,
+            "value": "externe",
+            "description": "Fixed value indicating external sortie"
+          },
+          "sousTypeSortieExterne": {
+            "type": "string",
+            "required": true,
+            "value": "sans_transporteur",
+            "description": "Sub-type indicating external sortie without transporter"
+          },
+          "nomEntreprise": {
+            "type": "string",
+            "required": true,
+            "description": "Name of the external company"
+          },
+          "adresseEntreprise": {
+            "type": "string",
+            "required": true,
+            "description": "Address of the external company"
+          },
+          "matriculeFiscalEntreprise": {
+            "type": "string",
+            "required": true,
+            "description": "Tax registration number of the company"
+          },
+          "nomClient": {
+            "type": "string",
+            "required": true,
+            "description": "Name of the client"
+          }
+        }
+      }
+    ]
+  },
+  "outputSchema": {
+    "successResponse": {
+      "statusCode": 201,
+      "contentType": "application/json",
+      "structure": {
+        "message": {
+          "type": "string",
+          "value": "Sortie créée",
+          "description": "Success message"
+        },
+        "sortie": {
+          "type": "object",
+          "description": "The created sortie object with all relations",
+          "fields": {
+            "id": {
+              "type": "number",
+              "description": "Unique identifier of the sortie"
+            },
+            "date": {
+              "type": "string",
+              "format": "YYYY-MM-DD",
+              "description": "Date of sortie creation (current date)"
+            },
+            "typeSortie": {
+              "type": "string",
+              "enum": ["interne_depot", "interne_chantier", "externe"],
+              "description": "Type of sortie"
+            },
+            "sousTypeSortieExterne": {
+              "type": "string | null",
+              "enum": ["avec_transporteur", "sans_transporteur", null],
+              "description": "Sub-type for external sorties, null for internal"
+            },
+            "status": {
+              "type": "string",
+              "value": "pending",
+              "description": "Initial status of the sortie"
+            },
+            "observation": {
+              "type": "string | null",
+              "description": "Optional observation notes"
+            },
+            "depot": {
+              "type": "object | null",
+              "description": "Associated depot (for interne_depot type)"
+            },
+            "chantier": {
+              "type": "object | null",
+              "description": "Associated construction site (for interne_chantier type)"
+            },
+            "compte": {
+              "type": "object",
+              "description": "Account that created the sortie"
+            },
+            "nomTransporteurDepot": {
+              "type": "string | null",
+              "description": "Transporter name for depot sorties"
+            },
+            "matriculeTransporteurDepot": {
+              "type": "string | null",
+              "description": "Transporter registration for depot sorties"
+            },
+            "nomTransporteurChantier": {
+              "type": "string | null",
+              "description": "Transporter name for chantier sorties"
+            },
+            "matriculeTransporteurChantier": {
+              "type": "string | null",
+              "description": "Transporter registration for chantier sorties"
+            },
+            "nomEntreprise": {
+              "type": "string | null",
+              "description": "External company name (for externe type)"
+            },
+            "adresseEntreprise": {
+              "type": "string | null",
+              "description": "External company address (for externe type)"
+            },
+            "matriculeFiscalEntreprise": {
+              "type": "string | null",
+              "description": "Tax registration of external company (for externe type)"
+            },
+            "nomClient": {
+              "type": "string | null",
+              "description": "Client name (for externe type)"
+            },
+            "nomTransporteurExterne": {
+              "type": "string | null",
+              "description": "Transporter name for external sorties with transporter"
+            },
+            "matriculeTransporteurExterne": {
+              "type": "string | null",
+              "description": "Transporter registration for external sorties with transporter"
+            },
+            "articleSorties": {
+              "type": "Array<ArticleSortie>",
+              "description": "Array of article lines in the sortie",
+              "itemStructure": {
+                "id": "number",
+                "sortie": "object",
+                "article": "object",
+                "stockSortie": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "errorResponses": [
+      {
+        "statusCode": 400,
+        "scenario": "Validation error",
+        "structure": {
+          "message": "string",
+          "details": "string[]"
+        },
+        "examples": [
+          {
+            "message": "Validation error",
+            "details": ["Field X is required", "Field Y must be a number"]
+          },
+          {
+            "message": "Compte introuvable"
+          },
+          {
+            "message": "Le compte doit être un admin ou un magazinier"
+          },
+          {
+            "message": "Type de sortie invalide"
+          }
+        ]
+      },
+      {
+        "statusCode": 404,
+        "scenario": "Resource not found",
+        "structure": {
+          "message": "string"
+        },
+        "examples": [
+          {
+            "message": "Article {articleId} inconnu"
+          },
+          {
+            "message": "Dépôt introuvable"
+          },
+          {
+            "message": "Chantier introuvable"
+          }
+        ]
+      },
+      {
+        "statusCode": 500,
+        "scenario": "Server error",
+        "structure": {
+          "message": "string",
+          "detail": "string"
+        },
+        "example": {
+          "message": "Erreur lors de la création de la sortie",
+          "detail": "Error message details"
+        }
+      }
+    ]
+  },
+  "processFlow": {
+    "step1": "Validate request body against appropriate DTO schema based on typeSortie",
+    "step2": "Verify compte exists and has appropriate role (ADMIN, ADMIN1, or MAGAZINIER)",
+    "step3": "Build sortie object based on type with type-specific field validation",
+    "step4": "Validate related entities (depot, chantier) exist if required",
+    "step5": "Save sortie to database",
+    "step6": "Create article lines (ArticleSortie) for each article in the request",
+    "step7": "Reload sortie with all relations",
+    "step8": "Return created sortie with 201 status code"
+  },
+  "validationRules": {
+    "articles": {
+      "minItems": 1,
+      "description": "At least one article must be provided"
+    },
+    "stockSortie": {
+      "type": "number",
+      "minValue": 1,
+      "description": "Stock quantity must be positive"
+    },
+    "compteId": {
+      "type": "number",
+      "description": "Must reference an existing compte with appropriate role"
+    },
+    "depotId": {
+      "required": "only for interne_depot type",
+      "description": "Must reference an existing depot"
+    },
+    "chantierId": {
+      "required": "only for interne_chantier type",
+      "description": "Must reference an existing chantier by code"
+    },
+    "typeSortie": {
+      "enum": ["interne_depot", "interne_chantier", "externe"],
+      "required": true
+    },
+    "sousTypeSortieExterne": {
+      "enum": ["avec_transporteur", "sans_transporteur"],
+      "required": "only for externe type"
+    }
+  },
+  "notes": {
+    "note1": "The method uses a custom middleware validateCreateSortie for validation instead of standard Joi schema",
+    "note2": "All null fields are explicitly set based on sortie type to ensure clean data",
+    "note3": "The sortie is created with status 'pending' and must be confirmed before stock is decremented",
+    "note4": "Date is automatically set to current date in YYYY-MM-DD format",
+    "note5": "All related entities (articles, depot, chantier, compte) are loaded in the response"
+  }
+}

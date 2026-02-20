@@ -1,0 +1,39 @@
+<div class="modal-overlay" id="filter-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer liste des fabriquants</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <form [formGroup]="filterForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Code :</label>
+            <input type="text" class="form-control" formControlName="code" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Adresse :</label>
+            <input type="text" class="form-control" formControlName="adresse" />
+          </div>
+          <div class="form-group">
+            <label>Contact :</label>
+            <input type="text" class="form-control" formControlName="contact" />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button" (click)="onFilter()">Filtrer</button>
+    </div>
+  </div>
+</div>

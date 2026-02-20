@@ -1,0 +1,143 @@
+<div class="header">
+  <h1 class="page-title">Liste des Catégories</h1>
+  <div class="user-menu">
+    <button
+      class="button green-button"
+      (click)="setModals({ showAddModal: true })"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Ajouter Catégorie
+    </button>
+    <button
+      class="button black-button"
+      (click)="setModals({ showExportModal: true })"
+    >
+      <i class="fa-solid fa-file"></i>
+      Exporter Catégories
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" id="fournisseur-count">
+      {{ categories.length }}
+      {{ categories.length > 1 ? "Catégories" : "Catégorie" }}
+      {{ categories.length > 1 ? "Affichés" : "Affiché" }}
+    </div>
+
+    <div class="card-search">
+      <form style="width: 100%" [formGroup]="searchForm" (submit)="onSearch()">
+        <input
+          type="text"
+          placeholder="Cherchez catégories par nom"
+          class="search-bar"
+          formControlName="query"
+        />
+      </form>
+      <button
+        (click)="setModals({ showFilterModal: true })"
+        class="filter-button"
+      >
+        <i class="fa-solid fa-filter"></i>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="alert.show">
+    <app-alert [message]="alert.message" (restore)="onRestore()"></app-alert>
+  </div>
+
+  <div *ngIf="error.show">
+    <app-error [message]="error.message"></app-error>
+  </div>
+
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Nom</th>
+          <th>Sous famille</th>
+
+          <th id="last-col">Famille</th>
+        </tr>
+      </thead>
+      <tbody class="car-list">
+        <tr
+          *ngFor="let categorie of categories"
+          (click)="selectCategorie(categorie.id)"
+        >
+          <td>{{ categorie.id }}</td>
+          <td>{{ categorie.nom }}</td>
+          <td>
+            {{
+              categorie.sous_famille
+                ? categorie.sous_famille.nom
+                : "Non associé"
+            }}
+          </td>
+          <td>
+            {{
+              categorie.sous_famille
+                ? categorie.sous_famille.famille
+                  ? categorie.sous_famille.famille.nom
+                  : "Non associé"
+                : "Non associé"
+            }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des catégories</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
+<br />
+
+<div
+  *ngIf="!pagination.lastPage && !error.show && !loading"
+  style="display: flex; justify-content: center"
+>
+  <button class="button gray-button" (click)="afficherPlus()">
+    Afficher Plus
+  </button>
+</div>
+
+<div *ngIf="modalSettings.showAddModal">
+  <app-add-categorie-modal
+    [familles]="familles"
+    (close)="setModals({ showAddModal: false })"
+    (create)="onCreate($event)"
+  ></app-add-categorie-modal>
+</div>
+
+<div *ngIf="modalSettings.showDetailsModal">
+  <app-categorie-details-modal
+    (close)="setModals({ showDetailsModal: false })"
+    [categorie]="categorieDetails"
+    [familles]="familles"
+    (update)="onUpdate($event)"
+    (delete)="onDelete($event)"
+  ></app-categorie-details-modal>
+</div>
+
+<div *ngIf="modalSettings.showFilterModal">
+  <app-filter-categorie-modal
+    (close)="setModals({ showFilterModal: false })"
+    [familles]="familles"
+    (filter)="onFilter($event)"
+  ></app-filter-categorie-modal>
+</div>
+
+<div *ngIf="modalSettings.showExportModal">
+  <app-export-modal
+    [resource]="'catégories'"
+    (close)="setModals({ showExportModal: false })"
+    (export)="onExport($event)"
+  ></app-export-modal>
+</div>

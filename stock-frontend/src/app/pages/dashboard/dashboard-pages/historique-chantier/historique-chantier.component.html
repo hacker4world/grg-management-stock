@@ -1,0 +1,125 @@
+<div class="header">
+  <h1 class="page-title">
+    Historique du chantier: {{ chantierData?.chantier?.nom }}
+  </h1>
+</div>
+
+<div *ngIf="loading" class="loading-state">Chargement...</div>
+
+<div *ngIf="!loading && chantierData">
+  <!-- Sorties Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Sorties du chantier</div>
+    </div>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Articles</th>
+            <th>Date</th>
+            <th>Magazinier</th>
+            <th>Observation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sortie of chantierData.summary.sorties">
+            <td>
+              <button
+                class="button black-button"
+                (click)="displaySortieArticles(sortie)"
+              >
+                Voir articles
+              </button>
+            </td>
+            <td>{{ sortie.date | date: "dd/MM/yyyy HH:mm" }}</td>
+            <td>{{ sortie.compte.nom + " " + sortie.compte.prenom }}</td>
+            <td>{{ sortie.observation || "-" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <br />
+
+  <!-- Demandes Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Demandes d'article du chantier</div>
+    </div>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Articles</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let demande of chantierData.summary.demandes">
+            <td>
+              <button
+                class="button black-button"
+                (click)="displayDemandeArticles(demande)"
+              >
+                Voir articles
+              </button>
+            </td>
+            <td>{{ demande.date | date: "dd/MM/yyyy HH:mm" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <br />
+
+  <!-- Retours Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Retours du chantier</div>
+    </div>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Articles</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let retour of chantierData.summary.retours">
+            <td>
+              <button
+                (click)="displayRetourArticles(retour)"
+                class="button black-button"
+              >
+                Voir articles
+              </button>
+            </td>
+            <td>{{ retour.date | date: "dd/MM/yyyy HH:mm" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-sortie-articles
+  *ngIf="modalSettings.sortieArticlesModal"
+  [articleList]="articlesDisplay"
+  (close)="modalSettings.sortieArticlesModal = false"
+></app-sortie-articles>
+
+<app-articles-list-modal
+  *ngIf="modalSettings.demandeArticlesModal"
+  [articles]="articlesDisplay"
+  (close)="modalSettings.demandeArticlesModal = false"
+></app-articles-list-modal>
+
+<app-retour-articles-list
+  *ngIf="modalSettings.retourArticlesModal"
+  [retour]="retour"
+  (close)="modalSettings.retourArticlesModal = false"
+></app-retour-articles-list>

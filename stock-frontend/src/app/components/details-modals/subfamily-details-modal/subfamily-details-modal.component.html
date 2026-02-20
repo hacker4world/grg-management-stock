@@ -1,0 +1,66 @@
+<div class="modal-overlay" id="subfamily-details-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du sous famille</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
+      <form [formGroup]="sousFamilleForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Nom du sous famille : </label>
+            <input formControlName="nom" type="text" class="form-control" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Famille : </label>
+            <select formControlName="famille" class="form-control">
+              <option value="-1">Non Associé</option>
+              <option [value]="famille.id" *ngFor="let famille of familles">
+                {{ famille.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button
+        class="button red-button"
+        (click)="setConfirmation(true)"
+        [disabled]="loading.update || loading.delete"
+      >
+        <span *ngIf="!loading.delete"> Supprimer </span>
+        <app-loading *ngIf="loading.delete"></app-loading>
+      </button>
+
+      <button
+        [disabled]="loading.update || loading.delete"
+        class="button green-button"
+        (click)="onUpdate()"
+      >
+        <span *ngIf="!loading.update">Enregistrer</span>
+        <app-loading *ngIf="loading.update"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="deleteConfirmModal">
+  <app-confirm-delete-subfamily
+    (close)="setConfirmation(false)"
+    (confirm)="onConfirmDelete($event)"
+  ></app-confirm-delete-subfamily>
+</div>

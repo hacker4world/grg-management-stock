@@ -1,0 +1,165 @@
+.sidebar {
+  width: 240px;
+  background-color: var(--dark-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  overflow: auto;
+}
+
+.sidebar-header {
+  padding: 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: center; /* Vertically centers the logo with the text */
+  gap: 12px; /* Adds spacing between the image and the title */
+}
+
+/* Styling for the circular logo */
+.sidebar-logo {
+  width: 40px; /* Adjust size as needed */
+  height: 40px; /* Must match width for a perfect circle */
+  border-radius: 50%; /* Makes the image circular */
+  object-fit: cover; /* Ensures the image isn't stretched */
+  border: 1px solid #eee; /* Optional: adds a subtle border */
+}
+
+/* Optional: Ensure the title text looks good next to the logo */
+.logo span {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.logo-icon {
+  color: var(--primary);
+  font-size: 24px;
+}
+
+.nav-section {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-section-title {
+  padding: 0 16px 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nav-items {
+  list-style-type: none;
+}
+
+.nav-item {
+  padding: 10px 17px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.red-nav-item {
+  padding: 10px 17px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background-color: rgba(62, 207, 142, 0.1);
+  color: var(--primary);
+  border-radius: 5px;
+}
+
+.red-nav-item:hover {
+  background-color: #eb5757;
+  color: white;
+  border-radius: 5px;
+}
+
+.nav-item.active {
+  border-left: 2px solid var(--primary);
+}
+
+.nav-item i {
+  text-align: center;
+}
+
+#sub-categories {
+  background-color: #1f1f1f;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.sub-category {
+  margin-left: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  margin-top: 15px;
+  background: rgba(255, 255, 255, 0.05); /* Subtle background contrast */
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Avatar Style */
+.user-avatar {
+  font-size: 32px;
+  color: #3498db; /* Or your primary brand color */
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+/* Info Wrapper */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Name Style */
+.user-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Role Style */
+.user-role {
+  color: #bdc3c7; /* Light gray */
+  font-size: 11px;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}

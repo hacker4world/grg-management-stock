@@ -1,0 +1,15 @@
+<div class="alert" role="alert">
+  <i class="fas fa-exclamation-circle alert-icon"></i>
+  <div class="alert-message">{{ message }}</div>
+
+  <!-- button is rendered only when hideRestore is NOT true -->
+  <button
+    *ngIf="!hideRestore"
+    (click)="onRestore()"
+    class="button gray-button"
+    style="margin-left: auto; display: flex"
+  >
+    <i class="fas fa-times"></i>
+    Restorer
+  </button>
+</div>

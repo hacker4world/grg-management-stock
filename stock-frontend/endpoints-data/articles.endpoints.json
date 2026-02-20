@@ -1,0 +1,383 @@
+{
+  "baseUrl": "http://localhost:4000/api",
+  "resource": "articles",
+  "routes": [
+    {
+      "path": "/articles/liste",
+      "method": "GET",
+      "description": "Retrieve a paginated list of articles with optional filtering",
+      "parameters": {
+        "type": "query",
+        "properties": {
+          "page": {
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "description": "Page number for pagination"
+          },
+          "query": {
+            "type": "string",
+            "required": false,
+            "description": "Search term to filter articles by name (case-insensitive partial match)"
+          },
+          "depotId": {
+            "type": "number",
+            "required": false,
+            "description": "Filter articles by depot ID"
+          },
+          "categorieId": {
+            "type": "number",
+            "required": false,
+            "description": "Filter articles by category ID"
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Successfully retrieved list of articles",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "articles": {
+                    "type": "array",
+                    "description": "Array of article objects with full relations",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "number" },
+                        "nom": { "type": "string" },
+                        "stockMinimum": { "type": "number" },
+                        "stockActuel": { "type": "number" },
+                        "prixMoyenne": { "type": "number" },
+                        "depot": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "number" },
+                            "nom": { "type": "string" }
+                          }
+                        },
+                        "unite": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "number" },
+                            "nom": { "type": "string" }
+                          }
+                        },
+                        "categorie": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "number" },
+                            "nom": { "type": "string" },
+                            "sous_famille": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "number" },
+                                "nom": { "type": "string" },
+                                "famille": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": { "type": "number" },
+                                    "nom": { "type": "string" }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "count": {
+                    "type": "number",
+                    "description": "Number of articles in current page"
+                  },
+                  "totalPages": {
+                    "type": "number",
+                    "description": "Total number of pages available"
+                  },
+                  "lastPage": {
+                    "type": "boolean",
+                    "description": "Indicates if this is the last page"
+                  }
+                }
+              },
+              "example": {
+                "articles": [
+                  {
+                    "id": 1,
+                    "nom": "Vis à tête hexagonale",
+                    "stockMinimum": 10,
+                    "stockActuel": 25,
+                    "prixMoyenne": 0.5,
+                    "depot": { "id": 1, "nom": "Dépôt principal" },
+                    "unite": { "id": 2, "nom": "Pièce" },
+                    "categorie": {
+                      "id": 5,
+                      "nom": "Visserie",
+                      "sous_famille": {
+                        "id": 2,
+                        "nom": "Quincaillerie",
+                        "famille": { "id": 1, "nom": "Consommables" }
+                      }
+                    }
+                  }
+                ],
+                "count": 1,
+                "totalPages": 5,
+                "lastPage": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "path": "/articles/creer",
+      "method": "POST",
+      "description": "Create a new article",
+      "parameters": {
+        "type": "body",
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["nom", "stockMin", "depotId", "uniteId", "categorieId"],
+          "properties": {
+            "nom": {
+              "type": "string",
+              "description": "Name of the article"
+            },
+            "stockMin": {
+              "type": "number",
+              "description": "Minimum stock threshold"
+            },
+            "depotId": {
+              "type": "number",
+              "description": "ID of the depot where the article is stored"
+            },
+            "uniteId": {
+              "type": "number",
+              "description": "ID of the unit of measurement"
+            },
+            "categorieId": {
+              "type": "number",
+              "description": "ID of the category"
+            }
+          }
+        },
+        "example": {
+          "nom": "Écrou M6",
+          "stockMin": 50,
+          "depotId": 1,
+          "uniteId": 2,
+          "categorieId": 5
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Article successfully created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "article": {
+                    "type": "object",
+                    "description": "The created article object"
+                  }
+                }
+              },
+              "example": {
+                "message": "Article créé",
+                "article": {
+                  "id": 42,
+                  "nom": "Écrou M6",
+                  "stockMinimum": 50,
+                  "stockActuel": 0,
+                  "prixMoyenne": 0,
+                  "depot": { "id": 1, "nom": "Dépôt principal" },
+                  "unite": { "id": 2, "nom": "Pièce" },
+                  "categorie": { "id": 5, "nom": "Visserie" }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Referenced entity not found",
+          "content": {
+            "application/json": {
+              "examples": {
+                "depotNotFound": {
+                  "value": { "message": "Dépôt introuvable" }
+                },
+                "uniteNotFound": {
+                  "value": { "message": "Unité introuvable" }
+                },
+                "categorieNotFound": {
+                  "value": { "message": "Catégorie introuvable" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "path": "/articles/modifier",
+      "method": "PUT",
+      "description": "Update an existing article",
+      "parameters": {
+        "type": "body",
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "required": [
+            "id",
+            "nom",
+            "stockMin",
+            "depotId",
+            "uniteId",
+            "categorieId"
+          ],
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "ID of the article to update"
+            },
+            "nom": {
+              "type": "string",
+              "description": "Updated name of the article"
+            },
+            "stockMin": {
+              "type": "number",
+              "description": "Updated minimum stock threshold"
+            },
+            "depotId": {
+              "type": "number",
+              "description": "Updated depot ID"
+            },
+            "uniteId": {
+              "type": "number",
+              "description": "Updated unit ID"
+            },
+            "categorieId": {
+              "type": "number",
+              "description": "Updated category ID"
+            }
+          }
+        },
+        "example": {
+          "id": 42,
+          "nom": "Écrou M6 - Modifié",
+          "stockMin": 75,
+          "depotId": 2,
+          "uniteId": 2,
+          "categorieId": 6
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Article successfully updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              },
+              "example": {
+                "message": "Article modifié"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Article or referenced entity not found",
+          "content": {
+            "application/json": {
+              "examples": {
+                "articleNotFound": {
+                  "value": { "message": "Article introuvable" }
+                },
+                "depotNotFound": {
+                  "value": { "message": "Dépôt introuvable" }
+                },
+                "uniteNotFound": {
+                  "value": { "message": "Unité introuvable" }
+                },
+                "categorieNotFound": {
+                  "value": { "message": "Catégorie introuvable" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "path": "/articles/supprimer",
+      "method": "DELETE",
+      "description": "Delete an article",
+      "parameters": {
+        "type": "query",
+        "required": true,
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID of the article to delete"
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Article successfully deleted",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              },
+              "example": {
+                "message": "Article supprimé"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Article not found",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "Article introuvable"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation error - ID is required",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "Article id est obligatoire"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "notes": {
+    "pagination": "List endpoint uses server-side pagination with page size controlled by MAX_PER_PAGE environment variable (default: 20).",
+    "search": "Search is case-insensitive and performs partial matching on article names.",
+    "relations": "All endpoints return full relational data including depot, unit, category, sub-family, and family information.",
+    "validation": "POST and PUT endpoints use Joi schema validation. Invalid requests will return 422 status with validation error details."
+  }
+}

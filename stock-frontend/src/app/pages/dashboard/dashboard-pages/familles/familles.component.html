@@ -1,0 +1,110 @@
+<div class="header">
+  <h1 class="page-title">Liste des Familles</h1>
+  <div class="user-menu">
+    <button
+      class="button green-button"
+      (click)="setModals({ showAddModal: true })"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Ajouter Famille
+    </button>
+    <button
+      class="button black-button"
+      (click)="setModals({ showExportModal: true })"
+    >
+      <i class="fa-solid fa-file"></i>
+      Exporter Familles
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" id="entry-count">
+      {{ familles.length }}
+      {{ familles.length > 1 ? "Familles" : "Famille" }}
+      {{ familles.length > 1 ? "Affichées" : "Affiché" }}
+    </div>
+
+    <div class="card-search">
+      <form style="width: 100%" [formGroup]="searchForm" (submit)="onSearch()">
+        <input
+          formControlName="search"
+          type="text"
+          placeholder="Cherchez familles par nom"
+          class="search-bar"
+        />
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="error.show">
+    <app-error [message]="error.message"></app-error>
+  </div>
+
+  <div *ngIf="alert.show">
+    <app-alert [message]="alert.message" (restore)="onRestore()"></app-alert>
+  </div>
+
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th id="last-col">Nom du Famille</th>
+        </tr>
+      </thead>
+      <tbody id="family-list">
+        <tr
+          *ngFor="let famille of familles"
+          (click)="selectFamille(famille.id)"
+        >
+          <td>{{ famille.id }}</td>
+          <td>{{ famille.nom }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<br />
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des familles</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
+<br />
+
+<div
+  *ngIf="!pagination.lastPage && !error.show && !loading"
+  style="display: flex; justify-content: center"
+>
+  <button (click)="fetchMore()" class="button gray-button">
+    Afficher Plus
+  </button>
+</div>
+
+<div *ngIf="modalSettings.showAddModal">
+  <app-add-family-modal
+    (created)="onFamilyCreated($event)"
+    (close)="setModals({ showAddModal: false })"
+  ></app-add-family-modal>
+</div>
+
+<div *ngIf="modalSettings.showDetailsModal">
+  <app-family-details-modal
+    (update)="onFamilleUpdate($event)"
+    [famille]="familleDetails"
+    (close)="setModals({ showDetailsModal: false })"
+    (delete)="onFamilleDelete($event)"
+  ></app-family-details-modal>
+</div>
+
+<div *ngIf="modalSettings.showExportModal">
+  <app-export-modal
+    [resource]="'familles'"
+    (close)="setModals({ showExportModal: false })"
+    (export)="onExport($event)"
+  ></app-export-modal>
+</div>

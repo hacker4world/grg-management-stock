@@ -1,0 +1,47 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Liste des fournisseurs de l'article</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="car-count">Liste des fournisseurs</div>
+        </div>
+
+        <div class="table-container" style="margin-top: 20px">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th id="first-col">Code</th>
+                <th>Nom</th>
+                <th>Adresse</th>
+                <th>Stock Total</th>
+                <th id="last-col">Contact</th>
+              </tr>
+            </thead>
+            <tbody id="article-list">
+              <tr *ngFor="let fournisseur of fournisseurs">
+                <td>{{ fournisseur.code }}</td>
+                <td>{{ fournisseur.nom }}</td>
+                <td>{{ fournisseur.adresse }}</td>
+                <td> {{ fournisseur.stockTotal }} </td>
+                <td>{{ fournisseur.contact }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showConfirmationModal">
+  <app-confirm-delete
+    [resource]="'fournisseur'"
+    (close)="showConfirmationModal = false"
+    (confirm)="showConfirmationModal = false"
+  ></app-confirm-delete>
+</div>

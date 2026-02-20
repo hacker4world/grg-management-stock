@@ -1,0 +1,70 @@
+{
+  "endpoints": [
+    {
+      "path": "/api/entree/liste-confirme",
+      "description": "Lists all entries with status 'confirmed'"
+    },
+    {
+      "path": "/api/entree/liste-pending",
+      "description": "Lists all entries with status 'pending'"
+    }
+  ],
+  "method": "GET",
+  "query_parameters": {
+    "page": {
+      "type": "number",
+      "default": 1,
+      "description": "Pagination page number"
+    },
+    "compteId": {
+      "type": "number",
+      "description": "Filter by the responsible account ID"
+    },
+    "articleId": {
+      "type": "number",
+      "description": "Filter entries containing a specific article"
+    },
+    "fournisseurId": {
+      "type": "number",
+      "description": "Filter by supplier code"
+    },
+    "fabriquantId": {
+      "type": "number",
+      "description": "Filter by manufacturer code"
+    },
+    "date": {
+      "type": "string",
+      "format": "YYYY-MM-DD",
+      "description": "Filter by specific entry date"
+    }
+  },
+  "response_structure": {
+    "200": {
+      "body": {
+        "entrees": [
+          {
+            "id": "number",
+            "date": "string",
+            "observation": "string",
+            "status": "confirmed | pending",
+            "fournisseur": "object",
+            "fabriquant": "object",
+            "compte": "object",
+            "documents": "array",
+            "entreeArticleItems": [
+              {
+                "id": "number",
+                "stockEntree": "number",
+                "prix": "number",
+                "article": "object"
+              }
+            ]
+          }
+        ],
+        "count": "number (items in current page)",
+        "totalPages": "number",
+        "lastPage": "boolean"
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+<div class="header">
+  <h1 class="page-title">Liste des notifications</h1>
+  <div class="user-menu">
+    <button
+      class="button black-button"
+      (click)="setModals({ showExportModal: true })"
+    >
+      Exporter notifications
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Notifications</div>
+    <div class="card-search">
+      <form style="width: 100%">
+        <input
+          type="text"
+          placeholder="Cherchez notifications par code"
+          class="search-bar"
+          formControlName="nom"
+        />
+      </form>
+      <button
+        class="filter-button"
+        (click)="setModals({ showFilterModal: true })"
+      >
+        <i class="fa-solid fa-filter"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container" style="margin-top: 20px">
+    <app-alert
+      *ngIf="alert.show"
+      [message]="alert.message"
+      (restore)="onRestore()"
+    ></app-alert>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Message</th>
+          <th>Article</th>
+          <th>Stock minimum</th>
+          <th>Stock actuel</th>
+          <th id="last-col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          (click)="onSelectNotification(notification)"
+          *ngFor="let notification of notifications"
+        >
+          <td>{{ notification.message }}</td>
+          <td>{{ notification.article.nom }}</td>
+          <td>{{ notification.stockMinimum }}</td>
+          <td>{{ notification.stockActuel }}</td>
+          <td>{{ notification.createdAt | date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="modalSettings.showDetailsModal">
+  <app-notification-details
+    [notification]="notificationDetails"
+    (close)="setModals({ showDetailsModal: false })"
+    (delete)="onDelete()"
+  ></app-notification-details>
+</div>
+
+<app-export-modal
+  *ngIf="modalSettings.showExportModal"
+  [resource]="'notifications'"
+  (close)="setModals({ showExportModal: false })"
+  (export)="onExport($event)"
+>
+</app-export-modal>
+
+<app-filter-notifications
+  *ngIf="modalSettings.showFilterModal"
+  (close)="setModals({ showFilterModal: false })"
+  (filter)="onFilter($event)"
+></app-filter-notifications>

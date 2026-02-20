@@ -1,0 +1,49 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Modifier dépot</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <app-error *ngIf="error.show" [message]="error.message"> </app-error>
+      <form [formGroup]="form" (ngSubmit)="onUpdate()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nom du dépot :</label>
+            <input type="text" class="form-control" formControlName="nom" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Adresse :</label>
+            <input type="text" class="form-control" formControlName="adresse" />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">
+        <span>Annuler</span>
+      </button>
+      <button
+        type="button"
+        class="button red-button"
+        (click)="deleteConfirmationModal = true"
+      >
+        Supprimer
+      </button>
+      <button type="button" class="button green-button" (click)="onUpdate()">
+        Modifier
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-confirm-delete
+  *ngIf="deleteConfirmationModal"
+  (close)="deleteConfirmationModal = false"
+  (confirm)="onDelete()"
+  [resource]="'dépôt'"
+></app-confirm-delete>

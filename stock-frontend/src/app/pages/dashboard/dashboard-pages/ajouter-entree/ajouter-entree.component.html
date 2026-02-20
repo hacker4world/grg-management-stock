@@ -1,0 +1,130 @@
+<div class="card">
+  <app-error
+    *ngIf="error.show"
+    [message]="error.message"
+    (close)="error.show = false"
+  ></app-error>
+
+  <app-alert
+    *ngIf="alert.show"
+    [message]="alert.message"
+    [hideRestore]="true"
+  ></app-alert>
+
+  <form [formGroup]="addForm" (ngSubmit)="onSubmit()">
+    <!-- article -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Article :</label>
+        <select class="form-control" formControlName="code_article">
+          <option value="" disabled>Sélectionnez un article</option>
+          <option *ngFor="let a of articles" [value]="a.id">{{ a.nom }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- date / observation -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date :</label>
+        <input class="form-control" type="date" formControlName="date" />
+      </div>
+      <div class="form-group">
+        <label>Observation :</label>
+        <input class="form-control" type="text" formControlName="observation" />
+      </div>
+    </div>
+
+    <!-- fournisseur / fabriquant -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fournisseur</label>
+        <select class="form-control" formControlName="code_fournisseur">
+          <option value="" disabled>Sélectionnez un fournisseur</option>
+          <option *ngFor="let f of fournisseurs" [value]="f.code">
+            {{ f.nom }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Fabricant</label>
+        <select class="form-control" formControlName="code_fabriquant">
+          <option value="" disabled>Sélectionnez un fabricant</option>
+          <option *ngFor="let fab of fabriquants" [value]="fab.code">
+            {{ fab.nom }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- stock / prix -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Stock d'entrée</label>
+        <input
+          type="number"
+          class="form-control"
+          formControlName="stock_entree"
+        />
+      </div>
+      <div class="form-group">
+        <label>Prix</label>
+        <input type="number" class="form-control" formControlName="prix" />
+      </div>
+    </div>
+
+    <!-- files -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Bon de commande (PDF/image)</label>
+        <input
+          type="file"
+          class="form-control"
+          (change)="onFileChange($event, 'bc')"
+          accept=".pdf,.jpg,.jpeg,.png"
+        />
+      </div>
+      <div class="form-group">
+        <label>Bon de livraison (PDF/image)</label>
+        <input
+          type="file"
+          class="form-control"
+          (change)="onFileChange($event, 'bl')"
+          accept=".pdf,.jpg,.jpeg,.png"
+        />
+      </div>
+    </div>
+  </form>
+
+  <!-- buttons -->
+  <div style="display: flex; justify-content: space-between; margin-top: 20px">
+    <div style="width: 40%">
+      <label><small>Articles ajoutés :</small></label>
+      <select class="form-control">
+        <option *ngFor="let item of itemsAjoutes">
+          {{ item.articleName }} : {{ item.stockEntree }} -
+          {{ item.prix }}
+        </option>
+      </select>
+    </div>
+
+    <div style="display: flex; align-items: flex-end">
+      <button
+        class="button black-button"
+        style="margin-right: 7px"
+        (click)="onAddItem()"
+      >
+        Ajouter l'article
+      </button>
+
+      <button
+        class="button green-button"
+        [disabled]="loading"
+        (click)="onSubmit()"
+      >
+        <span *ngIf="loading">En cours…</span>
+        <span *ngIf="!loading">Enregistrer Tout</span>
+      </button>
+    </div>
+  </div>
+</div>

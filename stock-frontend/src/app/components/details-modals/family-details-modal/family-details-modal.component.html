@@ -1,0 +1,54 @@
+<div class="modal-overlay" id="family-details-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du Famille</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
+      <form [formGroup]="detailsForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Nom du Famille : </label>
+            <input formControlName="nom" type="text" class="form-control" />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="button red-button"
+        (click)="setConfirmationModal(true)"
+        [disabled]="loading.update || loading.delete"
+      >
+        <span *ngIf="!loading.delete">Supprimer</span>
+        <app-loading *ngIf="loading.delete"></app-loading>
+      </button>
+
+      <button
+        class="button green-button"
+        (click)="onUpdate()"
+        [disabled]="loading.update || loading.delete"
+      >
+        <span *ngIf="!loading.update">Enregistrer</span>
+        <app-loading *ngIf="loading.update"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showConfirmationModal">
+  <app-confirm-delete-famille
+    [familleName]="famille.nom"
+    (close)="setConfirmationModal(false)"
+    (confirm)="onDelete($event)"
+  ></app-confirm-delete-famille>
+</div>

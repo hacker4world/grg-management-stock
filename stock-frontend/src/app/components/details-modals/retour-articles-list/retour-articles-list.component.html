@@ -1,0 +1,38 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Liste des articles du retour</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="car-count">{{ retour?.items.length || 0 }} Article(s) affiché(s)</div>
+        </div>
+
+        <div class="table-container" style="margin-top: 20px">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th id="first-col">Article</th>
+                <th>Stock retourné</th>
+                <th id="last-col">Raison</th>
+              </tr>
+            </thead>
+            <tbody id="article-list">
+              <tr *ngFor="let item of retour?.items">
+                <td>{{ item.article.nom }}</td>
+                <td>{{ item.quantite }}</td>
+                <td>{{ item.reason }}</td>
+              </tr>
+              <tr *ngIf="!retour?.items || retour.items.length === 0">
+                <td colspan="3" class="no-data">Aucun article</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

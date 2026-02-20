@@ -1,0 +1,80 @@
+<div class="modal-overlay" id="entry-details-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du compte</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+      <form [formGroup]="compteForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nom :</label>
+            <input type="text" class="form-control" formControlName="nom" />
+          </div>
+          <div class="form-group">
+            <label>Prénom :</label>
+            <input type="text" class="form-control" formControlName="prenom" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nom d'utilisateur :</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nomUtilisateur"
+            />
+          </div>
+          <div class="form-group">
+            <label>Rôle :</label>
+            <select class="form-control" formControlName="role">
+              <option value="">Sélectionnez un rôle</option>
+              <option value="admin">Administrateur</option>
+              <option value="admin1">Administrateur 1</option>
+              <option value="admin2">Administrateur 2</option>
+              <option value="responsable-chantier">Responsable chantier</option>
+              <option value="magazinier">Magasinier</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button
+        [disabled]="loadingState.update || loadingState.delete"
+        class="button red-button"
+        (click)="this.confirmationModal = true"
+      >
+        <span *ngIf="!loadingState.delete">Supprimer</span>
+        <app-loading *ngIf="loadingState.delete" [size]="15"></app-loading>
+      </button>
+
+      <button
+        [disabled]="loadingState.update || loadingState.delete"
+        class="button green-button"
+        (click)="onUpdate()"
+      >
+        <span *ngIf="!loadingState.update">Enregistrer</span>
+        <app-loading *ngIf="loadingState.update" [size]="15"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="confirmationModal">
+  <app-confirm-delete
+    [resource]="'compte'"
+    (close)="this.confirmationModal = false"
+    (confirm)="onDelete()"
+  ></app-confirm-delete>
+</div>

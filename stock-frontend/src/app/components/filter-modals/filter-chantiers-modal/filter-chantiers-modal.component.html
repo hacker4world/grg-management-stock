@@ -1,0 +1,34 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Filtrer chantiers</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Adresse :</label>
+            <input type="text" class="form-control" formControlName="adresse" />
+          </div>
+
+          <div class="form-group">
+            <label>Responsable chantier :</label>
+            <select class="form-control" formControlName="compteId">
+              <option value="">Tous les responsables</option>
+              <option *ngFor="let r of responsables" [ngValue]="r.id">
+                {{ r.prenom }} {{ r.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button green-button" (click)="onFilter()">Filtrer</button>
+    </div>
+  </div>
+</div>

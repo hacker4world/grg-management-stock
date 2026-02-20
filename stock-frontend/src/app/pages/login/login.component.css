@@ -1,0 +1,12 @@
+.login-holder {
+  background-color: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+    max-width: 650px;
+}

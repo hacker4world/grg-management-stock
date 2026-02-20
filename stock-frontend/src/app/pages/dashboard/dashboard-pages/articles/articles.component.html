@@ -1,0 +1,145 @@
+<div class="header">
+  <h1 class="page-title">Liste des articles</h1>
+  <div class="user-menu">
+    <button
+      *ngIf="role != 'magazinier'"
+      class="button green-button"
+      (click)="setModals({ showAddModal: true })"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Ajouter article
+    </button>
+    <button
+      (click)="modalSettings.showExportModal = true"
+      class="button black-button"
+    >
+      Exporter les article
+    </button>
+  </div>
+</div>
+
+<div class="card" id="articles-table">
+  <div class="card-header">
+    <div class="card-title" id="car-count">
+      {{ articles.length }}
+      {{ articles.length === 1 ? "Article affiché" : "Articles affichés" }}
+    </div>
+
+    <div class="card-search">
+      <form [formGroup]="searchForm" (submit)="onSearch()" style="width: 100%">
+        <input
+          type="text"
+          placeholder="Chercher un article par nom"
+          class="search-bar"
+          formControlName="nom"
+        />
+      </form>
+      <button
+        class="filter-button"
+        (click)="setModals({ showFilterModal: true })"
+      >
+        <i class="fa-solid fa-filter"></i>
+      </button>
+    </div>
+  </div>
+
+  <app-error *ngIf="error.show" [message]="error.message"></app-error>
+  <app-alert
+    *ngIf="alert.show"
+    [message]="alert.message"
+    (restore)="onRestore()"
+  ></app-alert>
+
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Nom</th>
+          <th>Stock actuel</th>
+          <th *ngIf="role != 'magazinier'">Prix moyen</th>
+          <th>Unité</th>
+          <th>Stock minimum</th>
+          <th>Dépôt</th>
+          <th id="last-col">Fournisseurs</th>
+        </tr>
+      </thead>
+      <tbody id="article-list">
+        <tr
+          *ngFor="let article of articles"
+          (click)="onSelectArticle(article.id)"
+        >
+          <td>{{ article.id }}</td>
+          <td>{{ article.nom }}</td>
+          <td>{{ article.stockActuel }}</td>
+          <td *ngIf="role != 'magazinier'">{{ article.prixMoyenne }}</td>
+          <td>{{ article.unite?.nom }}</td>
+          <td>{{ article.stockMinimum }}</td>
+          <td>{{ article.depot?.nom }}</td>
+          <td>
+            <button
+              class="button black-button"
+              (click)="afficherFournisseurs(article); $event.stopPropagation()"
+            >
+              Afficher fournisseurs
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<br />
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des articles</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
+<div
+  *ngIf="!pagination.lastPage && !error.show && !loading"
+  style="display: flex; justify-content: center"
+>
+  <button class="button gray-button" (click)="loadMore()">Afficher plus</button>
+</div>
+
+<app-fournisseurs-list-modal
+  *ngIf="modalSettings.showFournisseursModal"
+  [article]="selectedArticle"
+  (close)="modalSettings.showFournisseursModal = false"
+></app-fournisseurs-list-modal>
+
+<app-add-article-modal
+  *ngIf="modalSettings.showAddModal"
+  [unites]="unites"
+  [depots]="depots"
+  (close)="setModals({ showAddModal: false })"
+  (create)="onCreateArticle($event)"
+></app-add-article-modal>
+
+<app-article-details-modal
+  [role]="role"
+  *ngIf="modalSettings.showDetailsModal && selectedArticle"
+  [article]="selectedArticle"
+  [unites]="unites"
+  [depots]="depots"
+  (close)="setModals({ showDetailsModal: false })"
+  (update)="onUpdateArticle($event)"
+  (delete)="onDeleteArticle()"
+></app-article-details-modal>
+
+<app-filter-articles-modal
+  *ngIf="modalSettings.showFilterModal"
+  [unites]="unites"
+  [depots]="depots"
+  (close)="setModals({ showFilterModal: false })"
+  (filter)="onFilter($event)"
+></app-filter-articles-modal>
+
+<app-export-modal
+  *ngIf="modalSettings.showExportModal"
+  [resource]="'articles'"
+  (close)="setModals({ showExportModal: false })"
+  (export)="onExport($event)"
+></app-export-modal>

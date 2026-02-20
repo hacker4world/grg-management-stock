@@ -1,0 +1,95 @@
+{
+  "resource": "Unité (measurement unit)",
+  "basePath": "/api/unite",
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/liste",
+      "description": "Paginated list of units with optional search.",
+      "query": {
+        "page": {
+          "type": "number",
+          "default": 1,
+          "description": "Page number (1-based)."
+        },
+        "query": {
+          "type": "string",
+          "required": false,
+          "description": "Case-insensitive search on unit name."
+        }
+      },
+      "success": {
+        "status": 200,
+        "schema": {
+          "unites": [
+            {
+              "id": "number",
+              "nom": "string",
+              "nombreArticles": "number  // how many articles use this unit"
+            }
+          ],
+          "count": "number  // items on current page",
+          "totalPages": "number",
+          "lastPage": "boolean"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/creer",
+      "description": "Create a new unit.",
+      "body": {
+        "nom": { "type": "string", "min": 1, "max": 255, "required": true }
+      },
+      "success": {
+        "status": 200,
+        "schema": {
+          "message": "Unité est ajoutée",
+          "unite": { "id": "number", "nom": "string" }
+        }
+      },
+      "error": { "404": "Unité non trouvée (never returned here)" }
+    },
+    {
+      "method": "PUT",
+      "path": "/modifier",
+      "description": "Rename an existing unit.",
+      "body": {
+        "id": {
+          "type": "number",
+          "integer": true,
+          "positive": true,
+          "required": true
+        },
+        "nom": { "type": "string", "min": 1, "max": 255, "required": true }
+      },
+      "success": {
+        "status": 200,
+        "schema": { "message": "Unité est modifiée" }
+      },
+      "error": {
+        "404": { "message": "Unité n'est pas trouvée" }
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/supprimer",
+      "description": "Delete a unit (query-string id).",
+      "query": {
+        "id": {
+          "type": "number",
+          "integer": true,
+          "positive": true,
+          "required": true
+        }
+      },
+      "success": {
+        "status": 200,
+        "schema": { "message": "Unité est supprimée" }
+      },
+      "error": {
+        "404": { "message": "Unité introuvable" }
+      }
+    }
+  ]
+}

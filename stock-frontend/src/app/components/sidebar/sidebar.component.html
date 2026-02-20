@@ -1,0 +1,366 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <!-- Added the logo image here -->
+      <img src="assets/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <span>Gestion Stock</span>
+    </div>
+    <div class="user-profile" *ngIf="currentUser">
+      <div class="user-info">
+        <span class="user-name"
+          >{{ currentUser?.nom }} {{ currentUser?.prenom }}</span
+        >
+        <span class="user-role">{{ currentUser?.role }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <ul class="nav-items">
+      <li *ngIf="currentPermissions.includes('comptes')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('comptes'),
+          }"
+          (click)="toggleCompteLinks()"
+        >
+          <i class="fas fa-user-circle"></i>
+          <span>Comptes</span>
+
+          <i
+            *ngIf="!showCompteLinks"
+            class="fas fa-caret-down"
+            style="margin-left: auto"
+          ></i>
+          <i
+            *ngIf="showCompteLinks"
+            class="fas fa-caret-up"
+            style="margin-left: auto"
+          ></i>
+        </a>
+      </li>
+      <div *ngIf="showCompteLinks" class="sub-category-container">
+        <li>
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('comptes/confirmes') }"
+            routerLink="./comptes/confirmes"
+          >
+            <i class="fas fa-user-alt"></i>
+            <span>Comptes confirmés</span>
+          </a>
+        </li>
+        <li>
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('comptes/en-attente') }"
+            routerLink="./comptes/en-attente"
+          >
+            <i class="fas fa-user-alt-slash"></i>
+            <span>Comptes en attente</span>
+          </a>
+        </li>
+      </div>
+      <li *ngIf="currentPermissions.includes('articles')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('/articles'),
+          }"
+          routerLink="./articles"
+        >
+          <i class="fas fa-boxes"></i>
+          <span>Articles</span>
+        </a>
+      </li>
+
+      <li
+        *ngIf="
+          currentPermissions.includes('ajouter-entree') ||
+          currentPermissions.includes('entrees-en-attente') ||
+          currentPermissions.includes('entree-confirmes')
+        "
+      >
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('entrees'),
+          }"
+          (click)="toggleEntreeLinks()"
+        >
+          <i class="fas fa-warehouse"></i>
+          <span>Entrées</span>
+
+          <i
+            *ngIf="!showEntreeLinks"
+            class="fas fa-caret-down"
+            style="margin-left: auto"
+          ></i>
+          <i
+            *ngIf="showEntreeLinks"
+            class="fas fa-caret-up"
+            style="margin-left: auto"
+          ></i>
+        </a>
+      </li>
+
+      <div *ngIf="showEntreeLinks" class="sub-category-container">
+        <li *ngIf="currentPermissions.includes('ajouter-entree')">
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('ajouter-entree') }"
+            routerLink="./ajouter-entree"
+          >
+            <i class="fas fa-plus"></i>
+            <span>Ajouter Entrée</span>
+          </a>
+        </li>
+        <li *ngIf="currentPermissions.includes('entrees-en-attente')">
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('entrees-en-attente') }"
+            routerLink="./entrees-en-attente"
+          >
+            <i class="fas fa-scroll"></i>
+            <span>Entrées en attente</span>
+          </a>
+        </li>
+        <li *ngIf="currentPermissions.includes('entrees-confirme')">
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('entrees-confirmes') }"
+            routerLink="./entrees-confirmes"
+          >
+            <i class="fas fa-box"></i>
+            <span>Entrées confirmés</span>
+          </a>
+        </li>
+      </div>
+
+      <li
+        *ngIf="
+          currentPermissions.includes('ajouter-sortie') ||
+          currentPermissions.includes('sorties-en-attente') ||
+          currentPermissions.includes('sorties-confirmes')
+        "
+      >
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('sorties'),
+          }"
+          (click)="toggleSortieLinks()"
+        >
+          <i class="fas fa-truck"></i>
+          <span>Sorties</span>
+
+          <i
+            *ngIf="!showSortieLinks"
+            class="fas fa-caret-down"
+            style="margin-left: auto"
+          ></i>
+          <i
+            *ngIf="showSortieLinks"
+            class="fas fa-caret-up"
+            style="margin-left: auto"
+          ></i>
+        </a>
+      </li>
+
+      <div *ngIf="showSortieLinks" class="sub-category-container">
+        <li *ngIf="currentPermissions.includes('ajouter-sortie')">
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('ajouter-sortie') }"
+            routerLink="./ajouter-sortie"
+          >
+            <i class="fas fa-add"></i>
+            <span>Ajouter Sortie</span>
+          </a>
+        </li>
+        <li *ngIf="currentPermissions.includes('sorties-en-attente')">
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('sorties-en-attente') }"
+            routerLink="./sorties-en-attente"
+          >
+            <i class="fas fa-box-open"></i>
+            <span>Sorties en attente</span>
+          </a>
+        </li>
+        <li *ngIf="currentPermissions.includes('sorties-confirme')">
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('sorties-confirmes') }"
+            routerLink="./sorties-confirmes"
+          >
+            <i class="fas fa-truck-loading"></i>
+            <span>Sorties confirmés</span>
+          </a>
+        </li>
+      </div>
+
+      <li *ngIf="currentPermissions.includes('fournisseurs')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('fournisseurs'),
+          }"
+          routerLink="./fournisseurs"
+        >
+          <i class="fas fa-building"></i>
+          <span>Fournisseurs</span>
+        </a>
+      </li>
+
+      <li *ngIf="currentPermissions.includes('fabriquants')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('fabriquants'),
+          }"
+          routerLink="./fabriquants"
+        >
+          <i class="fas fa-industry"></i>
+          <span>Fabriquants</span>
+        </a>
+      </li>
+
+      <li *ngIf="currentPermissions.includes('classement')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('classement'),
+          }"
+          (click)="toggleSubLinks()"
+        >
+          <i class="fas fa-table"></i>
+          <span>Classement</span>
+
+          <i
+            *ngIf="!showSubLinks"
+            class="fas fa-caret-down"
+            style="margin-left: auto"
+          ></i>
+          <i
+            *ngIf="showSubLinks"
+            class="fas fa-caret-up"
+            style="margin-left: auto"
+          ></i>
+        </a>
+      </li>
+
+      <div *ngIf="showSubLinks" class="sub-category-container">
+        <li>
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('/familles') }"
+            routerLink="./classement/familles"
+          >
+            <i class="fas fa-project-diagram"></i>
+            <span>Familles</span>
+          </a>
+        </li>
+
+        <li>
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('sous-familles') }"
+            routerLink="./classement/sous-familles"
+          >
+            <i class="fas fa-project-diagram"></i>
+            <span>Sous-Familles</span>
+          </a>
+        </li>
+
+        <li>
+          <a
+            class="nav-item sub-category"
+            [ngClass]="{ active: currentRoute.includes('categories') }"
+            routerLink="./classement/categories"
+          >
+            <i class="fas fa-project-diagram"></i>
+            <span>Catégories</span>
+          </a>
+        </li>
+      </div>
+
+      <li *ngIf="currentPermissions.includes('chantiers')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('chantiers'),
+          }"
+          routerLink="./chantiers"
+        >
+          <i class="fas fa-hard-hat"></i>
+          <span>Chantiers</span>
+        </a>
+      </li>
+
+      <li *ngIf="currentPermissions.includes('demandes')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('demandes-articles'),
+          }"
+          routerLink="./demandes-articles"
+        >
+          <i class="fas fa-scroll"></i>
+          <span>Demandes d'articles</span>
+        </a>
+      </li>
+
+      <li *ngIf="currentPermissions.includes('retours')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('retours'),
+          }"
+          routerLink="./retours"
+        >
+          <i class="far fa-arrow-alt-circle-left"></i>
+          <span>Retours article</span>
+        </a>
+      </li>
+
+      <li *ngIf="currentPermissions.includes('notifications')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('notifications'),
+          }"
+          routerLink="./notifications"
+        >
+          <i class="fas fa-bell"></i>
+          <span>Notifications</span>
+        </a>
+      </li>
+
+      <li *ngIf="currentPermissions.includes('configuration')">
+        <a
+          [ngClass]="{
+            'nav-item': true,
+            active: currentRoute.includes('configurations'),
+          }"
+          routerLink="./configurations"
+        >
+          <i class="fas fa-cog"></i>
+          <span>Configuration</span>
+        </a>
+      </li>
+
+      <li (click)="logout()">
+        <a
+          [ngClass]="{
+            'red-nav-item': true,
+          }"
+        >
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Se déconnecter</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</aside>

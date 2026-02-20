@@ -1,0 +1,84 @@
+{
+  "endpoint": "/api/demande-articles/liste",
+  "method": "GET",
+  "description": "Retrieves a paginated list of article requests (Demandes) with optional filtering by chantier, article, or date.",
+  "parameters": {
+    "query": {
+      "chantierId": {
+        "type": "number",
+        "description": "Filter by the unique code of the chantier (construction site).",
+        "required": false
+      },
+      "articleId": {
+        "type": "number",
+        "description": "Filter requests containing a specific article ID.",
+        "required": false
+      },
+      "date": {
+        "type": "string",
+        "format": "YYYY-MM-DD",
+        "description": "Filter requests by a specific date.",
+        "required": false
+      },
+      "page": {
+        "type": "number",
+        "default": 1,
+        "description": "The page number for pagination.",
+        "required": false
+      }
+    }
+  },
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "demandes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "number" },
+            "date": { "type": "string", "format": "date" },
+            "status": { "type": "string", "enum": ["pending", "confirmed"] },
+            "observation": { "type": "string", "nullable": true },
+            "chantier": {
+              "type": "object",
+              "description": "Full details of the associated chantier."
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "number" },
+                  "quantite": { "type": "number" },
+                  "article": { "type": "object" }
+                }
+              }
+            },
+            "documents": {
+              "type": "array",
+              "description": "Associated documents like 'Bon de Commande' (BC)."
+            }
+          }
+        }
+      },
+      "count": {
+        "type": "number",
+        "description": "Number of items returned in the current page."
+      },
+      "totalPages": {
+        "type": "number",
+        "description": "Total number of pages available based on filters."
+      },
+      "lastPage": {
+        "type": "boolean",
+        "description": "Indicates if the current page is the last one."
+      }
+    }
+  },
+  "logic_notes": {
+    "pagination": "Uses the MAX_PER_PAGE environment variable (defaulting to 20) to limit results.",
+    "ordering": "Results are ordered by date in descending order (newest first).",
+    "relations": "Automatically joins 'chantier', 'items.article', and 'documents' for each record."
+  }
+}

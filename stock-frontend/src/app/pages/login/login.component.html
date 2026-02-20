@@ -1,0 +1,53 @@
+<div class="login-holder">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Se connecter</h3>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
+      <form [formGroup]="loginForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nom d'utilisateur : </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nom_utilisateur"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mot de passe : </label>
+            <input
+              type="password"
+              class="form-control"
+              formControlName="motdepasse"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        [disabled]="loading"
+        class="button black-button"
+        routerLink="../signup"
+      >
+        Créer compte
+      </button>
+      <button
+        [disabled]="loading"
+        class="button green-button"
+        (click)="login()"
+      >
+        <span *ngIf="!loading">Se connecter</span>
+        <app-loading *ngIf="loading"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>

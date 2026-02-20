@@ -1,0 +1,73 @@
+{
+  "endpoint": "/api/entree/ajouter",
+  "method": "POST",
+  "description": "Creates a new stock entry (Entree) with multiple associated articles and links it to a supplier, manufacturer, and account.",
+  "content_type": "multipart/form-data",
+  "request_body": {
+    "fournisseurId": {
+      "type": "number",
+      "description": "The unique code of the supplier",
+      "required": true
+    },
+    "fabriquantId": {
+      "type": "number",
+      "description": "The unique code of the manufacturer",
+      "required": true
+    },
+    "compteId": {
+      "type": "number",
+      "description": "The ID of the account (Responsable Chantier) responsible for this entry",
+      "required": true
+    },
+    "observation": {
+      "type": "string",
+      "description": "Optional notes or observations about the entry",
+      "required": false
+    },
+    "items": {
+      "type": "array",
+      "description": "A JSON stringified array of article items",
+      "required": true,
+      "structure": [
+        {
+          "articleId": "number",
+          "stockEntree": "number",
+          "prix": "number"
+        }
+      ]
+    },
+    "bande_commande": {
+      "type": "file",
+      "description": "PDF or image of the purchase order",
+      "required": false
+    },
+    "bande_livraison": {
+      "type": "file",
+      "description": "PDF or image of the delivery note",
+      "required": false
+    }
+  },
+  "responses": {
+    "201": {
+      "description": "Entry created successfully",
+      "body": {
+        "message": "Entrée créée",
+        "entree": {
+          "id": "number",
+          "date": "YYYY-MM-DD",
+          "status": "pending",
+          "observation": "string",
+          "fournisseur": "object",
+          "fabriquant": "object",
+          "compte": "object"
+        }
+      }
+    },
+    "400": {
+      "description": "Missing required fields or invalid data"
+    },
+    "404": {
+      "description": "Supplier, Manufacturer, or Account not found"
+    }
+  }
+}

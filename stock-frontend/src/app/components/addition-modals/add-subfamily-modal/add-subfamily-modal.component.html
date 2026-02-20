@@ -1,0 +1,50 @@
+<div class="modal-overlay" id="add-subfamily-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Ajouter Sous Famille</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+      <form [formGroup]="creationForm">
+        <div class="form-row">
+          <div class="form-group" style="width: 100%">
+            <label>Nom du sous famille : </label>
+            <input formControlName="nom" type="text" class="form-control" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Famille : </label>
+            <select class="form-control" formControlName="famille">
+              <option value="-1">Non Associé</option>
+              <option *ngFor="let famille of familles" [value]="famille.id">
+                {{ famille.nom }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button
+        [disabled]="loading"
+        class="button green-button"
+        (click)="onCreate()"
+      >
+        <span *ngIf="!loading">Ajouter</span>
+        <app-loading *ngIf="loading"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>

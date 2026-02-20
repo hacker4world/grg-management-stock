@@ -1,0 +1,83 @@
+<div class="modal-overlay" id="entry-details-modal">
+  <div class="modal">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">Détails d'entrée</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group" style="width: 100%">
+          <label>Article : </label>
+          <select class="form-control"></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Stock entrée : </label>
+          <input
+            min="0"
+            type="number"
+            class="form-control"
+            id="details-actual-stock"
+          />
+        </div>
+        <div class="form-group">
+          <label>Date : </label>
+          <input min="0" type="date" class="form-control" id="details-date" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fournisseur : </label>
+          <select class="form-control" id="details-fournisseur">
+            <option value="">Sélectionnez un fournisseur</option>
+            <option value="IMPER">IMPER</option>
+            <option value="SIKA">SIKA</option>
+            <option value="KÔSTER">KÔSTER</option>
+            <option value="ETANCO">ETANCO</option>
+            <option value="GAURDIEN">GAURDIEN</option>
+            <option value="GAUARDIAN">GAUARDIAN</option>
+            <option value="ALETAS">ALETAS</option>
+            <option value="INDEX">INDEX</option>
+            <option value="RONDRUP">RONDRUP</option>
+            <option value="GRG">GRG</option>
+            <option value="MODULE">MODULE</option>
+            <option value="CELLULOSIQUE">CELLULOSIQUE</option>
+            <option value="Rubberfuse">Rubberfuse</option>
+            <option value="ASSOFLEX">ASSOFLEX</option>
+            <option value="DERBIGUM">DERBIGUM</option>
+            <option value="POLYANE">POLYANE</option>
+            <option value="ROCKACIER">ROCKACIER</option>
+            <option value="COBERLAN">COBERLAN</option>
+            <option value="ROCK-UP">ROCK-UP</option>
+            <option value="GÉOTEXTILE">GÉOTEXTILE</option>
+            <option value="NIROL">NIROL</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button
+        class="button red-button"
+        onclick="addCarSubmit()"
+        style="margin-right: auto"
+      >
+        Supprimer
+      </button>
+
+      <button class="button green-button" onclick="addCarSubmit()">
+        Enregistrer
+      </button>
+    </div>
+  </div>
+</div>

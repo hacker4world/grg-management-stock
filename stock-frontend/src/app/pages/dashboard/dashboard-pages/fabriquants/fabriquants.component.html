@@ -1,0 +1,120 @@
+<div class="header">
+  <h1 class="page-title">Liste des Fabriquants</h1>
+  <div class="user-menu">
+    <button
+      class="button green-button"
+      (click)="setModals({ showAddModal: true })"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Ajouter Fabriquant
+    </button>
+    <button
+      (click)="this.modalSettings.showExportModal = true"
+      class="button black-button"
+    >
+      Exporter fabriquants
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" id="car-count">
+      {{ fabriquants.length }}
+      {{
+        fabriquants.length > 0 ? "Fabriquants affichés" : "Fabriquant affiché"
+      }}
+    </div>
+
+    <div class="card-search">
+      <form [formGroup]="searchForm" (submit)="onSearch()" style="width: 100%">
+        <input
+          type="text"
+          placeholder="Cherchez Fabriquant par nom"
+          class="search-bar"
+          formControlName="nom"
+        />
+      </form>
+      <button
+        (click)="setModals({ showFilterModal: true })"
+        class="filter-button"
+      >
+        <i class="fa-solid fa-filter"></i>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="error.show">
+    <app-error [message]="error.message"></app-error>
+  </div>
+  <div *ngIf="alert.show">
+    <app-alert [message]="alert.message" (restore)="onRestore()"></app-alert>
+  </div>
+  <div class="table-container" style="margin-top: 20px">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="first-col">Code</th>
+          <th>Nom</th>
+          <th>Contact</th>
+          <th id="last-col">Adresse</th>
+        </tr>
+      </thead>
+      <tbody id="fabriquant-list">
+        <tr
+          *ngFor="let fabriquant of fabriquants"
+          (click)="onSelectFabriquant(fabriquant.code)"
+        >
+          <td>{{ fabriquant.code }}</td>
+          <td>{{ fabriquant.nom }}</td>
+          <td>{{ fabriquant.contact }}</td>
+          <td>{{ fabriquant.adresse }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<br />
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des fabriquants</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
+<div
+  *ngIf="!pagination.lastPage && !error.show && !loading"
+  style="display: flex; justify-content: center"
+>
+  <button (click)="loadMore()" class="button gray-button">Afficher Plus</button>
+</div>
+
+<div *ngIf="modalSettings.showAddModal">
+  <app-add-fabriquant-modal
+    (close)="setModals({ showAddModal: false })"
+    (create)="onCreateFabriquant($event)"
+  ></app-add-fabriquant-modal>
+</div>
+
+<div *ngIf="modalSettings.showDetailsModal">
+  <app-fabriquant-details-modal
+    [fabriquant]="fabriquantDetails"
+    (close)="setModals({ showDetailsModal: false })"
+    (update)="onUpdate($event)"
+    (delete)="onDelete()"
+  ></app-fabriquant-details-modal>
+</div>
+
+<div *ngIf="modalSettings.showFilterModal">
+  <app-filter-fabriquant-modal
+    (close)="setModals({ showFilterModal: false })"
+    (filter)="onFilter($event)"
+  ></app-filter-fabriquant-modal>
+</div>
+
+<div *ngIf="modalSettings.showExportModal">
+  <app-export-modal
+    [resource]="'fabriquants'"
+    (close)="setModals({ showExportModal: false })"
+    (export)="onExport($event)"
+  ></app-export-modal>
+</div>

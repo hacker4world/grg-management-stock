@@ -1,0 +1,91 @@
+<div class="modal-overlay" id="entry-details-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Détails d'entrée</h3>
+      <button class="close-button" id="close-modal" (click)="onClose()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <app-error *ngIf="error.show" [message]="error.message"></app-error>
+
+      <form [formGroup]="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="date"
+              readonly
+            />
+          </div>
+          <div class="form-group">
+            <label>Fournisseur</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="fournisseur"
+              readonly
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Magazinier</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="magazinier"
+              readonly
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <!-- documents -->
+      <button
+        style="margin-right: auto"
+        class="button black-button"
+        (click)="openDoc('bande_commande')"
+      >
+        Bon de commande
+      </button>
+      <button
+        style="margin-right: auto"
+        class="button black-button"
+        (click)="openDoc('bande_livraison')"
+      >
+        Bon de livraison
+      </button>
+
+      <!-- actions -->
+      <div>
+        <button class="button red-button" (click)="confirmationModal = true">
+          Supprimer
+        </button>
+      </div>
+      <button
+        class="button green-button"
+        [disabled]="loading.validate"
+        (click)="onValidate()"
+      >
+        Valider Entrée
+        <app-loading *ngIf="loading.validate" [size]="16"></app-loading>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- confirmation de suppression -->
+<div *ngIf="confirmationModal">
+  <app-confirm-delete
+    resource="entrée"
+    (close)="confirmationModal = false"
+    (confirm)="onDeny()"
+  ></app-confirm-delete>
+</div>
