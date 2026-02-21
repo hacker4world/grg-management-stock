@@ -56,7 +56,7 @@ export class AddUniteModalComponent {
       error: () => {
         this.error = {
           show: true,
-          message: 'Un erreur est survenu',
+          message: 'Une erreur est survenue',
         };
       },
     });

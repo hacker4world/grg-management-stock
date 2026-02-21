@@ -1,0 +1,5 @@
+articles fournisseurs
+articles prix moyenne
+sorties pages
+role based access
+notifications page

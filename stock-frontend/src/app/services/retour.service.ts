@@ -28,8 +28,9 @@ export class RetourService {
         if (options.date) queryParams += `&date=${options.date}`;
         if (options.chantierId)
           queryParams += `&chantierId=${options.chantierId}`;
-        if (options.articleId) queryParams += `&articleId=${options.articleId}`; // Added
-        if (options.status) queryParams += `&status=${options.status}`; // Added
+        if (options.articleId) queryParams += `&articleId=${options.articleId}`;
+        if (options.status) queryParams += `&status=${options.status}`;
+        if (options.id !== undefined) queryParams += `&id=${options.id}`; // ✅ ADD THIS LINE
       }
     }
 
@@ -41,6 +42,8 @@ export class RetourService {
     );
   }
   public traiterRetour(data: TraiterRetourRequest): Observable<any> {
+    console.log(data);
+
     return this.httpClient.put(`${this.url}/traiter`, data, {
       withCredentials: true,
     });

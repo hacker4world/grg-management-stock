@@ -1,7 +1,7 @@
 <div class="modal-overlay" id="entry-details-modal">
   <div class="modal">
     <div class="modal-header">
-      <h3 class="modal-title">Détails d'entrée</h3>
+      <h3 class="modal-title">Détails de l'entrée</h3>
       <button class="close-button" id="close-modal" (click)="onClose()">
         &times;
       </button>
@@ -74,7 +74,7 @@
         [disabled]="loading.validate"
         (click)="onValidate()"
       >
-        Valider Entrée
+        Valider l'entrée
         <app-loading *ngIf="loading.validate" [size]="16"></app-loading>
       </button>
     </div>

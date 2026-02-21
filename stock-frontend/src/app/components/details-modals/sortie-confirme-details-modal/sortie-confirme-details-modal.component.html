@@ -1,4 +1,3 @@
-<!-- sortie-confirme-details-modal.component.html -->
 <div class="modal-overlay">
   <div class="modal">
     <div class="modal-header">
@@ -8,7 +7,9 @@
 
     <div class="modal-body">
       <app-error *ngIf="error.show" [message]="error.message"></app-error>
+      
       <form>
+        <!-- Common Fields -->
         <div class="form-row">
           <div class="form-group">
             <label>Date</label>
@@ -20,25 +21,18 @@
             />
           </div>
           <div class="form-group">
-            <label>Chantier</label>
+            <label>Type de Sortie</label>
             <input
               readonly
               type="text"
               class="form-control"
-              [value]="sortie.chantier ? sortie.chantier.nom : 'Non associé'"
+              [value]="sortie.typeSortie === 'interne_depot' ? 'Interne Dépôt' : 
+                       sortie.typeSortie === 'interne_chantier' ? 'Interne Chantier' : 'Externe'"
             />
           </div>
         </div>
+
         <div class="form-row">
-          <div class="form-group">
-            <label>Observation</label>
-            <input
-              readonly
-              type="text"
-              class="form-control"
-              [value]="sortie.observation || 'Aucune'"
-            />
-          </div>
           <div class="form-group">
             <label>Magazinier</label>
             <input
@@ -48,25 +42,163 @@
               [value]="sortie.compte.nom + ' ' + sortie.compte.prenom"
             />
           </div>
+          <div class="form-group">
+            <label>Observation</label>
+            <input
+              readonly
+              type="text"
+              class="form-control"
+              [value]="sortie.observation || 'Aucune'"
+            />
+          </div>
+        </div>
+
+        <!-- Interne Depot Fields -->
+        <div *ngIf="sortie.typeSortie === 'interne_depot'">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Dépôt</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.depot?.nom || 'Non spécifié'"
+              />
+            </div>
+            <div class="form-group" *ngIf="hasTransporteur()">
+              <label>Transporteur</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.nomTransporteurDepot || 'Non spécifié'"
+              />
+            </div>
+          </div>
+          <div class="form-row" *ngIf="hasTransporteur()">
+            <div class="form-group">
+              <label>Matricule Transporteur</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.matriculeTransporteurDepot || 'Non spécifié'"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Interne Chantier Fields -->
+        <div *ngIf="sortie.typeSortie === 'interne_chantier'">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Chantier</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.chantier?.nom || 'Non spécifié'"
+              />
+            </div>
+            <div class="form-group" *ngIf="hasTransporteur()">
+              <label>Transporteur</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.nomTransporteurChantier || 'Non spécifié'"
+              />
+            </div>
+          </div>
+          <div class="form-row" *ngIf="hasTransporteur()">
+            <div class="form-group">
+              <label>Matricule Transporteur</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.matriculeTransporteurChantier || 'Non spécifié'"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Externe Fields -->
+        <div *ngIf="sortie.typeSortie === 'externe'">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Entreprise</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.nomEntreprise || 'Non spécifié'"
+              />
+            </div>
+            <div class="form-group">
+              <label>Client</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.nomClient || 'Non spécifié'"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Adresse Entreprise</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.adresseEntreprise || 'Non spécifié'"
+              />
+            </div>
+            <div class="form-group">
+              <label>Matricule Fiscal</label>
+              <input
+                readonly
+                type="text"
+                class="form-control"
+                [value]="sortie.matriculeFiscalEntreprise || 'Non spécifié'"
+              />
+            </div>
+          </div>
+          <div *ngIf="hasTransporteur()">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Transporteur Externe</label>
+                <input
+                  readonly
+                  type="text"
+                  class="form-control"
+                  [value]="sortie.nomTransporteurExterne || 'Non spécifié'"
+                />
+              </div>
+              <div class="form-group">
+                <label>Matricule Transporteur</label>
+                <input
+                  readonly
+                  type="text"
+                  class="form-control"
+                  [value]="sortie.matriculeTransporteurExterne || 'Non spécifié'"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </form>
     </div>
 
     <div class="modal-footer">
-      <div style="margin-right: auto">
-        <button class="button red-button" (click)="confirmationModal = true">
-          Supprimer
-        </button>
-      </div>
-      <button class="button black-button" (click)="downloadFile()" >Exporter Bon de Livraison</button>
+      <button 
+        class="button black-button" 
+        (click)="downloadBandeCommande()"
+        [disabled]="loading"
+      >
+        {{ isInterne() ? "Voir fiche d'expédition" : "Voir bon de livraison" }}
+      </button>
     </div>
   </div>
-</div>
-
-<div *ngIf="confirmationModal">
-  <app-confirm-delete
-    [resource]="'cette sortie'"
-    (close)="confirmationModal = false"
-    (confirm)="supprimer()"
-  ></app-confirm-delete>
 </div>

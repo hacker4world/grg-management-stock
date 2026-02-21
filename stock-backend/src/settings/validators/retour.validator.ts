@@ -25,4 +25,6 @@ export const listRetoursValidator = Joi.object({
 export const approveDenyRetourValidator = Joi.object({
   retourId: Joi.number().integer().positive().required(),
   action: Joi.valid("approve", "deny").required(),
+  nomTransporteur: Joi.string().max(100).optional().allow("", null),
+  matriculeTransporteur: Joi.string().max(50).optional().allow("", null),
 });

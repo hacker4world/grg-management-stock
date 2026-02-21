@@ -1,0 +1,440 @@
+{
+  "info": {
+    "name": "Stock Backend — Export Endpoints",
+    "_postman_id": "export-collection-2026",
+    "description": "Complete collection to test all export endpoints including the new Historique Chantier export.\n\nSetup:\n1. Login via /api/authentification/login to get a token\n2. The token is auto-saved to the collection variable {{token}}\n3. Replace {{chantierId}} with a real chantier code from your DB",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "chantierId",
+      "value": "1"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "0. Auth — Login (get token)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom_utilisateur\": \"admin\",\n  \"mot_de_passe\": \"admin123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/authentification/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["authentification", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.token) {",
+              "  pm.collectionVariables.set('token', jsonData.token);",
+              "  console.log('Token saved!');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "=== HISTORIQUE CHANTIER ===",
+      "item": [
+        {
+          "name": "1. Historique Chantier — Full (no date filter)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-historique-chantier/{{chantierId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-historique-chantier", "{{chantierId}}"]
+            }
+          }
+        },
+        {
+          "name": "2. Historique Chantier — With Date Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateFrom\": \"2025-01-01\",\n  \"dateTo\": \"2025-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-historique-chantier/{{chantierId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-historique-chantier", "{{chantierId}}"]
+            }
+          }
+        },
+        {
+          "name": "3. Historique Chantier — From Date Only",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateFrom\": \"2025-06-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-historique-chantier/{{chantierId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-historique-chantier", "{{chantierId}}"]
+            }
+          }
+        },
+        {
+          "name": "4. Historique Chantier — Invalid Chantier (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-historique-chantier/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-historique-chantier", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "=== SORTIES (FIXED) ===",
+      "item": [
+        {
+          "name": "5. Export Sorties — Confirmed",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirme\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-sorties",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-sorties"]
+            }
+          }
+        },
+        {
+          "name": "6. Export Sorties — Pending",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirme\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-sorties",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-sorties"]
+            }
+          }
+        },
+        {
+          "name": "7. Export Sorties — With Date Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirme\": true,\n  \"dateFrom\": \"2025-01-01\",\n  \"dateTo\": \"2025-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-sorties",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-sorties"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "=== DEMANDES (FIXED) ===",
+      "item": [
+        {
+          "name": "8. Export Demandes — All",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-demandes",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-demandes"]
+            }
+          }
+        },
+        {
+          "name": "9. Export Demandes — With Date Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateFrom\": \"2025-01-01\",\n  \"dateTo\": \"2025-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-demandes",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-demandes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "=== RETOURS (FIXED) ===",
+      "item": [
+        {
+          "name": "10. Export Retours — All",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-retours",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-retours"]
+            }
+          }
+        },
+        {
+          "name": "11. Export Retours — With Date Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateFrom\": \"2025-01-01\",\n  \"dateTo\": \"2025-06-30\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-retours",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-retours"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "=== OTHER EXPORTS ===",
+      "item": [
+        {
+          "name": "12. Export Articles",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-articles",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-articles"]
+            }
+          }
+        },
+        {
+          "name": "13. Export Chantiers",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-chantiers",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-chantiers"]
+            }
+          }
+        },
+        {
+          "name": "14. Export Entrees",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirme\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-entrees",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-entrees"]
+            }
+          }
+        },
+        {
+          "name": "15. Export Categories (Bug Fixed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-categories"]
+            }
+          }
+        },
+        {
+          "name": "16. Export Fournisseurs",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-fournisseurs",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-fournisseurs"]
+            }
+          }
+        },
+        {
+          "name": "17. Export Comptes Confirmés",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirme\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-comptes",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-comptes"]
+            }
+          }
+        },
+        {
+          "name": "18. Export Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-notifications"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "=== AUTH TESTS ===",
+      "item": [
+        {
+          "name": "19. Export Without Token (should 401)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/export/export-articles",
+              "host": ["{{baseUrl}}"],
+              "path": ["export", "export-articles"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

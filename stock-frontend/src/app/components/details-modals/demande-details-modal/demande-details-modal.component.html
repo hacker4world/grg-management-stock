@@ -1,7 +1,7 @@
 <div class="modal-overlay" id="entry-details-modal">
   <div class="modal">
     <div class="modal-header">
-      <h3 class="modal-title">Détails du demande #{{ demande?.id }}</h3>
+      <h3 class="modal-title">Détails de la demande #{{ demande?.id }}</h3>
       <button class="close-button" id="close-modal" (click)="onClose()">
         &times;
       </button>
@@ -78,11 +78,17 @@
         class="button green-button"
         (click)="onConfirm()"
         *ngIf="demande?.status === 'pending'"
+        [disabled]="isConfirming"
       >
-        Confirmer
+        <span *ngIf="!isConfirming">Confirmer</span>
+        <app-loading *ngIf="isConfirming" [size]="15"></app-loading>
       </button>
-      <button class="button black-button" (click)="downloadBandeCommande()">
-        Exporter bon de commande
+      <button
+        *ngIf="demande?.status === 'confirmed'"
+        class="button black-button"
+        (click)="downloadBandeCommande()"
+      >
+        Exporter fiche d'expédition
       </button>
     </div>
   </div>

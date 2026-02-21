@@ -60,6 +60,7 @@ export class SortiesEnAttenteComponent implements OnInit {
     chantierId: undefined, // Changed from chantier
     compteId: undefined, // Changed from responsable
     articleId: undefined,
+    id: undefined,
   };
   pagination = { page: 1, lastPage: false };
 
@@ -97,6 +98,8 @@ export class SortiesEnAttenteComponent implements OnInit {
   fetchSorties() {
     this.loading = true;
     // Pass this.listOptions here
+
+    console.log(this.listOptions);
 
     this.sortiesService
       .fetchSorties(this.pagination.page, this.listOptions)
@@ -144,10 +147,33 @@ export class SortiesEnAttenteComponent implements OnInit {
   }
 
   /* ---------- search ---------- */
+  /* ---------- search ---------- */
   onSearch() {
     const code = this.searchForm.value.code?.trim() || '';
-    this.listOptions.searching = code !== '';
-    this.listOptions.query = code;
+
+    // Check if the input is a number (ID search)
+    const isNumeric = /^\d+$/.test(code);
+
+    if (isNumeric) {
+      // Search by ID (including 0)
+      this.listOptions.searching = true;
+      this.listOptions.query = '';
+      this.listOptions.filtering = true;
+      this.listOptions.id = Number(code); // This will correctly convert "0" to 0
+    } else if (code !== '') {
+      // Search by code/query (only if not empty)
+      this.listOptions.searching = true;
+      this.listOptions.query = code;
+      this.listOptions.filtering = false;
+      this.listOptions.id = undefined;
+    } else {
+      // Empty search - reset
+      this.listOptions.searching = false;
+      this.listOptions.query = '';
+      this.listOptions.filtering = false;
+      this.listOptions.id = undefined;
+    }
+
     this.alert.show = this.listOptions.searching || this.listOptions.filtering;
     this.alert.message = 'Cette liste est filtrée';
     this.restoreList();
@@ -159,9 +185,16 @@ export class SortiesEnAttenteComponent implements OnInit {
     this.setModals({ showFilterModal: false });
     this.listOptions.filtering = true;
     this.listOptions.date = data.date;
+    this.listOptions.typeSortie = data.typeSortie || undefined;
+
+    // Only set chantierId if provided
     this.listOptions.chantierId = data.chantierId
       ? Number(data.chantierId)
       : undefined;
+
+    // Only set depotId if provided
+    this.listOptions.depotId = data.depotId ? Number(data.depotId) : undefined;
+
     this.listOptions.compteId = data.compteId
       ? Number(data.compteId)
       : undefined;
@@ -179,6 +212,7 @@ export class SortiesEnAttenteComponent implements OnInit {
   onRestore() {
     this.listOptions.searching = false;
     this.listOptions.filtering = false;
+    this.listOptions.id = undefined; // ✅ ADD THIS LINE
     this.alert.show = false;
     this.restoreList();
     this.fetchSorties();
@@ -193,6 +227,15 @@ export class SortiesEnAttenteComponent implements OnInit {
       );
       this.selectedSortie = null;
     }
+  }
+
+  getTypeSortieLabel(type: string): string {
+    const labels: { [key: string]: string } = {
+      interne_depot: 'Interne Dépôt',
+      interne_chantier: 'Interne Chantier',
+      externe: 'Externe',
+    };
+    return labels[type] || type;
   }
 
   onExport(option: string) {

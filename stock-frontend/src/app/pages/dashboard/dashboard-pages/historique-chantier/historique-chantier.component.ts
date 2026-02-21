@@ -5,7 +5,10 @@ import { CommonModule } from '@angular/common';
 import { SortieArticlesComponent } from '../../../../components/details-modals/sortie-articles/sortie-articles.component';
 import { DemandeArticlesComponent } from '../demande-articles/demande-articles.component';
 import { RetourArticlesListComponent } from '../../../../components/details-modals/retour-articles-list/retour-articles-list.component';
-import { ArticlesListModalComponent } from "../../../../components/details-modals/articles-list-modal/articles-list-modal.component";
+import { ArticlesListModalComponent } from '../../../../components/details-modals/articles-list-modal/articles-list-modal.component';
+import { ExportModalComponent } from '../../../../components/export-modal/export-modal.component';
+import { ExportService } from '../../../../services/export.service';
+import { LoadingComponent } from "../../../../components/loading/loading.component";
 
 @Component({
   selector: 'app-historique-chantier',
@@ -15,7 +18,9 @@ import { ArticlesListModalComponent } from "../../../../components/details-modal
     SortieArticlesComponent,
     DemandeArticlesComponent,
     RetourArticlesListComponent,
-    ArticlesListModalComponent
+    ArticlesListModalComponent,
+    ExportModalComponent,
+    LoadingComponent
 ],
   templateUrl: './historique-chantier.component.html',
   styleUrl: './historique-chantier.component.css',
@@ -23,6 +28,7 @@ import { ArticlesListModalComponent } from "../../../../components/details-modal
 export class HistoriqueChantierComponent implements OnInit {
   chantierData: any = null;
   loading: boolean = true;
+  chantierId: any = null;
 
   modalSettings = {
     sortieArticlesModal: false,
@@ -33,13 +39,17 @@ export class HistoriqueChantierComponent implements OnInit {
   articlesDisplay: any[] = [];
   retour = null;
 
+  exportLoading = false;
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
+    private exportService: ExportService,
   ) {}
 
   ngOnInit(): void {
     const chantierId = this.route.snapshot.paramMap.get('chantierId');
+    this.chantierId = chantierId;
     if (chantierId) {
       this.fetchChantierSummary(chantierId);
     }
@@ -47,7 +57,7 @@ export class HistoriqueChantierComponent implements OnInit {
 
   fetchChantierSummary(id: string): void {
     const url = `http://localhost:4000/api/chantier/summary/${id}`;
-    this.http.get(url, {withCredentials: true}).subscribe({
+    this.http.get(url, { withCredentials: true }).subscribe({
       next: (data: any) => {
         this.chantierData = data;
         this.loading = false;
@@ -95,5 +105,16 @@ export class HistoriqueChantierComponent implements OnInit {
       demandeArticlesModal: false,
       retourArticlesModal: true,
     };
+  }
+
+  public onExport() {
+    this.exportLoading = true;
+    this.exportService.exportChantierDetails(this.chantierId).subscribe({
+      next: (response: any) => {
+        this.exportLoading = false;
+        this.exportService.downloadFile(response, 'chantier.xlsx');
+      },
+      error: () => (this.exportLoading = false),
+    });
   }
 }

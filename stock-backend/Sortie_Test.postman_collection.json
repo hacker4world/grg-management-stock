@@ -1,0 +1,675 @@
+{
+  "info": {
+    "name": "Sortie & Documents - Test Collection",
+    "description": "Test collection for Sortie creation (3 types) and document generation.\n\n**Setup:** Run '1. Login' first to get the auth token automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "sortieId",
+      "value": ""
+    },
+    {
+      "key": "documentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Setup",
+      "item": [
+        {
+          "name": "Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    console.log('Token saved!');",
+                  "}",
+                  "pm.test('Login successful', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom_utilisateur\": \"admin\",\n  \"motdepasse\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/authentification/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["authentification", "login"]
+            }
+          }
+        },
+        {
+          "name": "List Articles (get IDs)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/articles/liste",
+              "host": ["{{baseUrl}}"],
+              "path": ["articles", "liste"]
+            }
+          }
+        },
+        {
+          "name": "List Depots (get IDs)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/depots/liste",
+              "host": ["{{baseUrl}}"],
+              "path": ["depots", "liste"]
+            }
+          }
+        },
+        {
+          "name": "List Chantiers (get IDs)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chantier/liste",
+              "host": ["{{baseUrl}}"],
+              "path": ["chantier", "liste"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Create Sortie - Interne Depot",
+      "item": [
+        {
+          "name": "Create Sortie Interne Depot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.sortie && res.sortie.id) {",
+                  "    pm.collectionVariables.set('sortieId', res.sortie.id);",
+                  "    console.log('Sortie ID saved: ' + res.sortie.id);",
+                  "}",
+                  "pm.test('Sortie created', () => pm.response.to.have.status(201));",
+                  "pm.test('Status is pending', () => pm.expect(res.sortie.status).to.eql('pending'));",
+                  "pm.test('Type is interne_depot', () => pm.expect(res.sortie.typeSortie).to.eql('interne_depot'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeSortie\": \"interne_depot\",\n  \"compteId\": 1,\n  \"depotId\": 2,\n  \"nomTransporteur\": \"Ali Ben Salem\",\n  \"matriculeTransporteur\": \"123 TUN 4567\",\n  \"observation\": \"Transfert depot Ben Arous vers Sfax\",\n  \"articles\": [\n    { \"articleId\": 1, \"stockSortie\": 5 },\n    { \"articleId\": 2, \"stockSortie\": 3 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Sortie -> Fiche d'Expedition PDF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Sortie confirmed', () => pm.response.to.have.status(200));",
+                  "pm.test('PDF generated', () => pm.expect(res.documents).to.be.an('array').with.length.greaterThan(0));",
+                  "pm.test('Document type is fiche_expedition', () => pm.expect(res.documents[0].type).to.eql('fiche_expedition'));",
+                  "if (res.documents && res.documents[0]) {",
+                  "    pm.collectionVariables.set('documentId', res.documents[0].id);",
+                  "    console.log('Document ID saved: ' + res.documents[0].id);",
+                  "    console.log('Download URL: ' + res.documents[0].downloadUrl);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/confirm-deny",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "confirm-deny"]
+            }
+          }
+        },
+        {
+          "name": "Download Fiche d'Expedition PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents/{{documentId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "{{documentId}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Create Sortie - Interne Chantier",
+      "item": [
+        {
+          "name": "Create Sortie Interne Chantier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.sortie && res.sortie.id) {",
+                  "    pm.collectionVariables.set('sortieId', res.sortie.id);",
+                  "}",
+                  "pm.test('Sortie created', () => pm.response.to.have.status(201));",
+                  "pm.test('Type is interne_chantier', () => pm.expect(res.sortie.typeSortie).to.eql('interne_chantier'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeSortie\": \"interne_chantier\",\n  \"compteId\": 1,\n  \"chantierId\": 1,\n  \"nomTransporteur\": \"Slim Bouazizi\",\n  \"matriculeTransporteur\": \"789 TUN 0123\",\n  \"observation\": \"Livraison chantier Résidence Les Jasmins\",\n  \"articles\": [\n    { \"articleId\": 3, \"stockSortie\": 10 },\n    { \"articleId\": 5, \"stockSortie\": 50 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Sortie -> Fiche d'Expedition PDF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Sortie confirmed', () => pm.response.to.have.status(200));",
+                  "pm.test('PDF generated', () => pm.expect(res.documents).to.be.an('array').with.length.greaterThan(0));",
+                  "pm.test('Document type is fiche_expedition', () => pm.expect(res.documents[0].type).to.eql('fiche_expedition'));",
+                  "if (res.documents && res.documents[0]) {",
+                  "    pm.collectionVariables.set('documentId', res.documents[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/confirm-deny",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "confirm-deny"]
+            }
+          }
+        },
+        {
+          "name": "Download Fiche d'Expedition PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents/{{documentId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "{{documentId}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Create Sortie - Externe (avec transporteur)",
+      "item": [
+        {
+          "name": "Create Sortie Externe Avec Transporteur",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.sortie && res.sortie.id) {",
+                  "    pm.collectionVariables.set('sortieId', res.sortie.id);",
+                  "}",
+                  "pm.test('Sortie created', () => pm.response.to.have.status(201));",
+                  "pm.test('Type is externe', () => pm.expect(res.sortie.typeSortie).to.eql('externe'));",
+                  "pm.test('Sub-type is avec_transporteur', () => pm.expect(res.sortie.sousTypeSortieExterne).to.eql('avec_transporteur'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeSortie\": \"externe\",\n  \"sousTypeSortieExterne\": \"avec_transporteur\",\n  \"compteId\": 1,\n  \"nomEntreprise\": \"Société ABC Construction\",\n  \"adresseEntreprise\": \"Zone Industrielle Charguia, Tunis\",\n  \"matriculeFiscalEntreprise\": \"1234567/A/B/C/000\",\n  \"nomClient\": \"Karim Mrad\",\n  \"nomTransporteur\": \"Transporteur Express TN\",\n  \"matriculeTransporteur\": \"456 TUN 7890\",\n  \"observation\": \"Livraison client ABC Construction\",\n  \"articles\": [\n    { \"articleId\": 1, \"stockSortie\": 20 },\n    { \"articleId\": 4, \"stockSortie\": 100 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Sortie -> Bon de Livraison PDF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Sortie confirmed', () => pm.response.to.have.status(200));",
+                  "pm.test('PDF generated', () => pm.expect(res.documents).to.be.an('array').with.length.greaterThan(0));",
+                  "pm.test('Document type is bande_livraison', () => pm.expect(res.documents[0].type).to.eql('bande_livraison'));",
+                  "if (res.documents && res.documents[0]) {",
+                  "    pm.collectionVariables.set('documentId', res.documents[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/confirm-deny",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "confirm-deny"]
+            }
+          }
+        },
+        {
+          "name": "Download Bon de Livraison PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents/{{documentId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "{{documentId}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Create Sortie - Externe (sans transporteur)",
+      "item": [
+        {
+          "name": "Create Sortie Externe Sans Transporteur",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.sortie && res.sortie.id) {",
+                  "    pm.collectionVariables.set('sortieId', res.sortie.id);",
+                  "}",
+                  "pm.test('Sortie created', () => pm.response.to.have.status(201));",
+                  "pm.test('Type is externe', () => pm.expect(res.sortie.typeSortie).to.eql('externe'));",
+                  "pm.test('Sub-type is sans_transporteur', () => pm.expect(res.sortie.sousTypeSortieExterne).to.eql('sans_transporteur'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeSortie\": \"externe\",\n  \"sousTypeSortieExterne\": \"sans_transporteur\",\n  \"compteId\": 1,\n  \"nomEntreprise\": \"STEG Direction Régionale\",\n  \"adresseEntreprise\": \"Avenue Habib Bourguiba, Sousse\",\n  \"matriculeFiscalEntreprise\": \"9876543/X/Y/Z/000\",\n  \"nomClient\": \"Mehdi Chaabane\",\n  \"observation\": \"Retrait par le client STEG\",\n  \"articles\": [\n    { \"articleId\": 6, \"stockSortie\": 15 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Sortie -> Bon de Livraison PDF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Sortie confirmed', () => pm.response.to.have.status(200));",
+                  "pm.test('PDF generated', () => pm.expect(res.documents).to.be.an('array').with.length.greaterThan(0));",
+                  "pm.test('Document type is bande_livraison', () => pm.expect(res.documents[0].type).to.eql('bande_livraison'));",
+                  "if (res.documents && res.documents[0]) {",
+                  "    pm.collectionVariables.set('documentId', res.documents[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/confirm-deny",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "confirm-deny"]
+            }
+          }
+        },
+        {
+          "name": "Download Bon de Livraison PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents/{{documentId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "{{documentId}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. List & Filter Sorties",
+      "item": [
+        {
+          "name": "List Pending Sorties",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sorties/list-pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "list-pending"]
+            }
+          }
+        },
+        {
+          "name": "List Confirmed Sorties (with documents)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sorties/list-confirme",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "list-confirme"]
+            }
+          }
+        },
+        {
+          "name": "Filter by Type: interne_depot",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sorties/list-confirme?typeSortie=interne_depot",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "list-confirme"],
+              "query": [
+                { "key": "typeSortie", "value": "interne_depot" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Type: interne_chantier",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sorties/list-confirme?typeSortie=interne_chantier",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "list-confirme"],
+              "query": [
+                { "key": "typeSortie", "value": "interne_chantier" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Type: externe",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sorties/list-confirme?typeSortie=externe",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "list-confirme"],
+              "query": [
+                { "key": "typeSortie", "value": "externe" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Validation Tests (should fail)",
+      "item": [
+        {
+          "name": "FAIL - Missing typeSortie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compteId\": 1,\n  \"articles\": [{ \"articleId\": 1, \"stockSortie\": 5 }]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "FAIL - interne_depot missing depotId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeSortie\": \"interne_depot\",\n  \"compteId\": 1,\n  \"nomTransporteur\": \"Ali\",\n  \"matriculeTransporteur\": \"123\",\n  \"articles\": [{ \"articleId\": 1, \"stockSortie\": 5 }]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "FAIL - externe missing nomEntreprise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeSortie\": \"externe\",\n  \"sousTypeSortieExterne\": \"avec_transporteur\",\n  \"compteId\": 1,\n  \"nomClient\": \"Test\",\n  \"nomTransporteur\": \"Ali\",\n  \"matriculeTransporteur\": \"123\",\n  \"articles\": [{ \"articleId\": 1, \"stockSortie\": 5 }]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "FAIL - Deny a sortie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Sortie denied', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Cookie", "value": "token={{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId}},\n  \"action\": \"deny\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sorties/confirm-deny",
+              "host": ["{{baseUrl}}"],
+              "path": ["sorties", "confirm-deny"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

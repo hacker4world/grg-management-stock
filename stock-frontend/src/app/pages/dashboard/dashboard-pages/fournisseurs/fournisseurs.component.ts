@@ -156,7 +156,7 @@ export class FournisseursComponent {
           this.loading = false;
           this.error = {
             show: true,
-            message: 'Une erreur est survenu',
+            message: 'Une erreur est survenue',
           };
         },
       });

@@ -19,6 +19,14 @@ export interface DemandeArticleModel {
       prixMoyenne: number;
     };
   }[];
+  documents?: Document[];
+}
+
+export interface Document {
+  id: number;
+  name: string;
+  url?: string;
+  // Add other properties as needed
 }
 
 export interface DemandeArticleListResponse {

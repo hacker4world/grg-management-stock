@@ -121,6 +121,12 @@ export class ExportService {
     return this.exportData('export-comptes', body);
   }
 
+  exportChantierDetails(chantierId: number) {
+    let body = {};
+
+    return this.exportData(`export-historique-chantier/${chantierId}`, body);
+  }
+
   /**
    * Helper method to download the blob file
    * @param blob The blob response from the export

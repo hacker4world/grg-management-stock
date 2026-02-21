@@ -1,0 +1,1101 @@
+{
+	"info": {
+		"_postman_id": "stock-backend-collection",
+		"name": "Stock Backend API",
+		"description": "API collection for Stock Management System Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Doe\",\n  \"prenom\": \"John\",\n  \"nom_utilisateur\": \"johndoe\",\n  \"motdepasse\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/authentification/signup",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "signup"]
+						},
+						"description": "Register a new user account"
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom_utilisateur\": \"johndoe\",\n  \"motdepasse\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/authentification/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "login"]
+						},
+						"description": "Login and receive JWT cookie"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/authentification/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "logout"]
+						},
+						"description": "Clear JWT cookie and logout"
+					}
+				},
+				{
+					"name": "Verify Session",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/authentification/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "verify"]
+						},
+						"description": "Verify current authentication session"
+					}
+				},
+				{
+					"name": "List Accounts (Confirmed)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/authentification/liste?page=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "liste"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "nom", "value": "", "disabled": true },
+								{ "key": "prenom", "value": "", "disabled": true },
+								{ "key": "nom_utilisateur", "value": "", "disabled": true }
+							]
+						},
+						"description": "List all confirmed user accounts"
+					}
+				},
+				{
+					"name": "List Pending Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/authentification/requettes?page=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "requettes"],
+							"query": [
+								{ "key": "page", "value": "1" }
+							]
+						},
+						"description": "List accounts pending approval"
+					}
+				},
+				{
+					"name": "Accept Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"compte_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/authentification/accepter-compte",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "accepter-compte"]
+						},
+						"description": "Approve a pending user account"
+					}
+				},
+				{
+					"name": "Update Account",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_compte\": 1,\n  \"nom\": \"Doe Updated\",\n  \"prenom\": \"John Updated\",\n  \"nomUtilisateur\": \"johndoe_updated\",\n  \"role\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/authentification/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "modifier"]
+						},
+						"description": "Update user account details"
+					}
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/authentification/supprimer?compte_id=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["authentification", "supprimer"],
+							"query": [
+								{ "key": "compte_id", "value": "1" }
+							]
+						},
+						"description": "Delete a user account"
+					}
+				}
+			]
+		},
+		{
+			"name": "Chantiers",
+			"item": [
+				{
+					"name": "List Chantiers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/chantier/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["chantier", "liste"]
+						},
+						"description": "List all construction sites"
+					}
+				},
+				{
+					"name": "Create Chantier",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Chantier Paris Nord\",\n  \"adresse\": \"123 Rue Example, 75001 Paris\",\n  \"compteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chantier/ajouter",
+							"host": ["{{baseUrl}}"],
+							"path": ["chantier", "ajouter"]
+						},
+						"description": "Create a new construction site"
+					}
+				},
+				{
+					"name": "Update Chantier",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_chantier\": 1,\n  \"nom\": \"Chantier Paris Sud\",\n  \"adresse\": \"456 Avenue Test, 75002 Paris\",\n  \"compteId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chantier/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["chantier", "modifier"]
+						},
+						"description": "Update an existing construction site"
+					}
+				},
+				{
+					"name": "Delete Chantier",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_chantier\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chantier/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["chantier", "supprimer"]
+						},
+						"description": "Delete a construction site"
+					}
+				}
+			]
+		},
+		{
+			"name": "Articles",
+			"item": [
+				{
+					"name": "List Articles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/articles/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["articles", "liste"]
+						},
+						"description": "List all inventory articles"
+					}
+				},
+				{
+					"name": "Create Article",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Ciment Portland\",\n  \"stockMin\": 100,\n  \"depotId\": 1,\n  \"categorieId\": 1,\n  \"uniteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/articles/creer",
+							"host": ["{{baseUrl}}"],
+							"path": ["articles", "creer"]
+						},
+						"description": "Create a new inventory article"
+					}
+				},
+				{
+					"name": "Update Article",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"nom\": \"Ciment Portland Premium\",\n  \"stockMin\": 150,\n  \"depotId\": 1,\n  \"categorieId\": 1,\n  \"uniteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/articles/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["articles", "modifier"]
+						},
+						"description": "Update an existing article"
+					}
+				},
+				{
+					"name": "Delete Article",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/articles/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["articles", "supprimer"]
+						},
+						"description": "Delete an article"
+					}
+				}
+			]
+		},
+		{
+			"name": "Demandes Articles",
+			"item": [
+				{
+					"name": "List Demandes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/demandes-articles/liste?page=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["demandes-articles", "liste"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "chantierId", "value": "1", "disabled": true },
+								{ "key": "articleId", "value": "1", "disabled": true },
+								{ "key": "date", "value": "2024-01-15", "disabled": true }
+							]
+						},
+						"description": "List article requests with optional filters"
+					}
+				},
+				{
+					"name": "Create Demande",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chantierId\": 1,\n  \"items\": [\n    { \"articleId\": 1, \"quantity\": 50 },\n    { \"articleId\": 2, \"quantity\": 25 }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/demandes-articles/ajouter",
+							"host": ["{{baseUrl}}"],
+							"path": ["demandes-articles", "ajouter"]
+						},
+						"description": "Create a new article request from a construction site"
+					}
+				},
+				{
+					"name": "Process Demande (Confirm/Deny)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"demandeId\": 1,\n  \"action\": \"confirm\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/demandes-articles/traiter",
+							"host": ["{{baseUrl}}"],
+							"path": ["demandes-articles", "traiter"]
+						},
+						"description": "Confirm or deny an article request. Action: 'confirm' or 'deny'"
+					}
+				}
+			]
+		},
+		{
+			"name": "Retours",
+			"item": [
+				{
+					"name": "List Retours",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/retours/liste?page=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["retours", "liste"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "chantierId", "value": "1", "disabled": true },
+								{ "key": "articleId", "value": "1", "disabled": true }
+							]
+						},
+						"description": "List article returns with optional filters"
+					}
+				},
+				{
+					"name": "Create Retour",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chantierId\": 1,\n  \"items\": [\n    { \"articleId\": 1, \"quantite\": 10, \"reason\": \"Surplus de matériel\" },\n    { \"articleId\": 2, \"quantite\": 5, \"reason\": \"Produit défectueux\" }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/retours/ajouter",
+							"host": ["{{baseUrl}}"],
+							"path": ["retours", "ajouter"]
+						},
+						"description": "Create a new article return from a construction site"
+					}
+				},
+				{
+					"name": "Process Retour (Approve/Deny)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"retourId\": 1,\n  \"action\": \"approve\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/retours/traiter",
+							"host": ["{{baseUrl}}"],
+							"path": ["retours", "traiter"]
+						},
+						"description": "Approve or deny an article return. Action: 'approve' or 'deny'"
+					}
+				}
+			]
+		},
+		{
+			"name": "Depots",
+			"item": [
+				{
+					"name": "List Depots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/depots/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["depots", "liste"]
+						},
+						"description": "List all storage depots"
+					}
+				},
+				{
+					"name": "Create Depot",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Dépôt Principal\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/depots/ajouter",
+							"host": ["{{baseUrl}}"],
+							"path": ["depots", "ajouter"]
+						},
+						"description": "Create a new storage depot"
+					}
+				},
+				{
+					"name": "Update Depot",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"nom\": \"Dépôt Central\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/depots/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["depots", "modifier"]
+						},
+						"description": "Update an existing depot"
+					}
+				},
+				{
+					"name": "Delete Depot",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/depots/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["depots", "supprimer"]
+						},
+						"description": "Delete a storage depot"
+					}
+				}
+			]
+		},
+		{
+			"name": "Unites",
+			"item": [
+				{
+					"name": "List Unites",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/unites/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["unites", "liste"]
+						},
+						"description": "List all measurement units"
+					}
+				},
+				{
+					"name": "Create Unite",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Kilogramme\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/unites/creer",
+							"host": ["{{baseUrl}}"],
+							"path": ["unites", "creer"]
+						},
+						"description": "Create a new measurement unit"
+					}
+				},
+				{
+					"name": "Update Unite",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"nom\": \"Kg\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/unites/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["unites", "modifier"]
+						},
+						"description": "Update an existing unit"
+					}
+				},
+				{
+					"name": "Delete Unite",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/unites/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["unites", "supprimer"]
+						},
+						"description": "Delete a measurement unit"
+					}
+				}
+			]
+		},
+		{
+			"name": "Classement - Familles",
+			"item": [
+				{
+					"name": "List Familles (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/classement/familles/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "familles", "liste"]
+						},
+						"description": "List families with pagination"
+					}
+				},
+				{
+					"name": "List All Familles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/classement/familles/tous",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "familles", "tous"]
+						},
+						"description": "List all families without pagination"
+					}
+				},
+				{
+					"name": "Search Familles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/classement/familles/recherche?nom=construction",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "familles", "recherche"],
+							"query": [
+								{ "key": "nom", "value": "construction" }
+							]
+						},
+						"description": "Search families by name"
+					}
+				},
+				{
+					"name": "Create Famille",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Matériaux de Construction\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/familles/creer",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "familles", "creer"]
+						},
+						"description": "Create a new family category"
+					}
+				},
+				{
+					"name": "Update Famille",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"famille_id\": 1,\n  \"nom\": \"Matériaux BTP\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/familles/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "familles", "modifier"]
+						},
+						"description": "Update an existing family"
+					}
+				},
+				{
+					"name": "Delete Famille",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"famille_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/familles/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "familles", "supprimer"]
+						},
+						"description": "Delete a family category"
+					}
+				}
+			]
+		},
+		{
+			"name": "Classement - Sous-Familles",
+			"item": [
+				{
+					"name": "List Sous-Familles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/classement/sous-famille/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "sous-famille", "liste"]
+						},
+						"description": "List all sub-families"
+					}
+				},
+				{
+					"name": "Filter Sous-Familles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/classement/sous-famille/filtrer?famille_id=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "sous-famille", "filtrer"],
+							"query": [
+								{ "key": "famille_id", "value": "1" }
+							]
+						},
+						"description": "Filter sub-families by parent family"
+					}
+				},
+				{
+					"name": "Create Sous-Famille",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Ciments\",\n  \"famille_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/sous-famille/creer",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "sous-famille", "creer"]
+						},
+						"description": "Create a new sub-family"
+					}
+				},
+				{
+					"name": "Update Sous-Famille",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sous_famille_id\": 1,\n  \"nom\": \"Ciments et Mortiers\",\n  \"famille_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/sous-famille/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "sous-famille", "modifier"]
+						},
+						"description": "Update an existing sub-family"
+					}
+				},
+				{
+					"name": "Delete Sous-Famille",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sous_famille_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/sous-famille/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "sous-famille", "supprimer"]
+						},
+						"description": "Delete a sub-family"
+					}
+				}
+			]
+		},
+		{
+			"name": "Classement - Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/classement/categorie/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "categorie", "liste"]
+						},
+						"description": "List all categories"
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"category_id\": 1,\n  \"nom\": \"Ciment Portland\",\n  \"sous_famille\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/categorie/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "categorie", "modifier"]
+						},
+						"description": "Update an existing category"
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"category_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/classement/categorie/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["classement", "categorie", "supprimer"]
+						},
+						"description": "Delete a category"
+					}
+				}
+			]
+		},
+		{
+			"name": "Fournisseurs",
+			"item": [
+				{
+					"name": "List Fournisseurs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/fournisseurs/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["fournisseurs", "liste"]
+						},
+						"description": "List all suppliers"
+					}
+				},
+				{
+					"name": "Create Fournisseur",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Fournisseur ABC\",\n  \"contact\": \"+33 1 23 45 67 89\",\n  \"adresse\": \"123 Rue Commerce, 69001 Lyon\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fournisseurs/ajouter",
+							"host": ["{{baseUrl}}"],
+							"path": ["fournisseurs", "ajouter"]
+						},
+						"description": "Create a new supplier"
+					}
+				},
+				{
+					"name": "Update Fournisseur",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_fournisseur\": 1,\n  \"nom\": \"Fournisseur XYZ\",\n  \"contact\": \"+33 1 98 76 54 32\",\n  \"adresse\": \"456 Avenue Business, 69002 Lyon\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fournisseurs/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["fournisseurs", "modifier"]
+						},
+						"description": "Update an existing supplier"
+					}
+				},
+				{
+					"name": "Delete Fournisseur",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fournisseur_code\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fournisseurs/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["fournisseurs", "supprimer"]
+						},
+						"description": "Delete a supplier"
+					}
+				}
+			]
+		},
+		{
+			"name": "Fabriquants",
+			"item": [
+				{
+					"name": "List Fabriquants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/fabriquants/liste",
+							"host": ["{{baseUrl}}"],
+							"path": ["fabriquants", "liste"]
+						},
+						"description": "List all manufacturers"
+					}
+				},
+				{
+					"name": "Create Fabriquant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Fabriquant Industries\",\n  \"adresse\": \"Zone Industrielle, 13001 Marseille\",\n  \"contact\": \"+33 4 91 00 00 00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fabriquants/ajouter",
+							"host": ["{{baseUrl}}"],
+							"path": ["fabriquants", "ajouter"]
+						},
+						"description": "Create a new manufacturer"
+					}
+				},
+				{
+					"name": "Update Fabriquant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_fabriquant\": \"1\",\n  \"nom\": \"Fabriquant Pro Industries\",\n  \"adresse\": \"Parc Industriel, 13002 Marseille\",\n  \"contact\": \"+33 4 91 11 11 11\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fabriquants/modifier",
+							"host": ["{{baseUrl}}"],
+							"path": ["fabriquants", "modifier"]
+						},
+						"description": "Update an existing manufacturer"
+					}
+				},
+				{
+					"name": "Delete Fabriquant",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_fabriquant\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fabriquants/supprimer",
+							"host": ["{{baseUrl}}"],
+							"path": ["fabriquants", "supprimer"]
+						},
+						"description": "Delete a manufacturer"
+					}
+				}
+			]
+		}
+	]
+}

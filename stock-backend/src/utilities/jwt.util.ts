@@ -19,7 +19,28 @@ export const verifyToken = (token: string): VerifyTokenResult => {
       return { success: false, error: "expired" };
     }
     if (err instanceof JsonWebTokenError) {
-      // Covers: malformed token, invalid signature, etc.
+      return { success: false, error: "malformed" };
+    }
+    return { success: false, error: "invalid" };
+  }
+};
+
+const MAX_REFRESH_WINDOW = 7 * 24 * 3600; // 7 days
+
+export const verifyExpiredToken = (token: string): VerifyTokenResult => {
+  try {
+    const payload = verify(token, SECRET_KEY, { ignoreExpiration: true }) as {
+      user_id: number;
+      iat: number;
+      exp: number;
+    };
+    const now = Math.floor(Date.now() / 1000);
+    if (now - payload.exp > MAX_REFRESH_WINDOW) {
+      return { success: false, error: "expired" };
+    }
+    return { success: true, payload: { user_id: payload.user_id } };
+  } catch (err) {
+    if (err instanceof JsonWebTokenError) {
       return { success: false, error: "malformed" };
     }
     return { success: false, error: "invalid" };

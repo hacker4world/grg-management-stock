@@ -9,8 +9,8 @@ import { SortSortiesModalComponent } from '../../../../components/sort-modals/so
 import { SortieDetailsModalComponent } from '../../../../components/details-modals/sortie-details-modal/sortie-details-modal.component';
 
 import {
-  SortieConfirmeeModel,
-  SortieConfirmeeListResponse,
+  SortieConfirmeModel,
+  SortieConfirmeListResponse,
 } from '../../../../models/sorties-confirmes.model';
 import { SortiesConfirmesService } from '../../../../services/sorties-confirmes.service';
 import { ExportModalComponent } from '../../../../components/export-modal/export-modal.component';
@@ -43,7 +43,7 @@ import { FilterSortieEnAttenteModalComponent } from '../../../../components/filt
 })
 export class SortiesConfirmesComponent implements OnInit {
   /* --------------  DATA & STATE  -------------- */
-  public sorties: SortieConfirmeeModel[] = [];
+  public sorties: SortieConfirmeModel[] = [];
   public loading = false;
   public pagination = {
     page: 1,
@@ -72,6 +72,9 @@ export class SortiesConfirmesComponent implements OnInit {
     chantierId: undefined as number | undefined,
     compteId: undefined as number | undefined,
     articleId: undefined as number | undefined,
+    typeSortie: undefined as string | undefined, // ADD THIS LINE
+    depotId: undefined as number | undefined,
+    id: undefined as number | undefined,
   };
 
   searchForm = new FormGroup({
@@ -80,7 +83,7 @@ export class SortiesConfirmesComponent implements OnInit {
 
   alert = { show: false, message: '' };
 
-  public onViewArticles(event: Event, sortie: SortieConfirmeeModel) {
+  public onViewArticles(event: Event, sortie: SortieConfirmeModel) {
     event.stopPropagation(); // Prevent opening the details modal
     this.selectedSortie = sortie;
     this.setModals({ showArticlesModal: true });
@@ -116,7 +119,9 @@ export class SortiesConfirmesComponent implements OnInit {
     this.sortiesService
       .fetchSorties(this.pagination.page, this.listOptions)
       .subscribe({
-        next: (response: SortieConfirmeeListResponse) => {
+        next: (response: SortieConfirmeListResponse) => {
+          console.log(response.sorties);
+
           this.sorties = [...this.sorties, ...response.sorties];
           this.pagination.lastPage = response.lastPage;
           this.loading = false;
@@ -144,9 +149,9 @@ export class SortiesConfirmesComponent implements OnInit {
     });
   }
 
-  public selectedSortie: SortieConfirmeeModel | null = null;
+  public selectedSortie: SortieConfirmeModel | null = null;
 
-  public onSelectSortie(sortie: SortieConfirmeeModel) {
+  public onSelectSortie(sortie: SortieConfirmeModel) {
     this.selectedSortie = sortie;
     this.setModals({ showDetailsModal: true });
   }
@@ -170,15 +175,39 @@ export class SortiesConfirmesComponent implements OnInit {
       next: (response) =>
         this.exportService.downloadFile(response, 'sorties_confirmees.xlsx'),
       error: (err) => {
-        this.error = { show: true, message: "Erreur lors de l'exportation" };
+        this.error = {
+          show: true,
+          message: "Une erreur est survenue lors de l'exportation",
+        };
       },
     });
   }
 
   public onSearch() {
     const code = this.searchForm.value.code?.trim() || '';
-    this.listOptions.searching = code !== '';
-    this.listOptions.query = code;
+
+    // Check if the input is a number (ID search)
+    const isNumeric = /^\d+$/.test(code);
+
+    console.log(isNumeric);
+
+    if (isNumeric) {
+      // Search by ID (including 0)
+      this.listOptions.searching = true;
+      this.listOptions.query = '';
+      this.listOptions.filtering = true;
+      this.listOptions.id = Number(code); // This will correctly convert "0" to 0
+    } else if (code !== '') {
+      // Search by code/query (only if not empty)
+      this.listOptions.searching = true;
+      this.listOptions.filtering = false;
+      this.listOptions.id = undefined;
+    } else {
+      // Empty search - reset
+      this.listOptions.searching = false;
+      this.listOptions.filtering = false;
+      this.listOptions.id = undefined;
+    }
 
     this.alert.show = this.listOptions.searching || this.listOptions.filtering;
     this.alert.message = 'Cette liste est filtrée';
@@ -202,6 +231,10 @@ export class SortiesConfirmesComponent implements OnInit {
     this.listOptions.articleId = data.articleId
       ? Number(data.articleId)
       : undefined;
+    this.listOptions.typeSortie = data.typeSortie || undefined; // ADD THIS LINE
+    this.listOptions.depotId = data.depotId // ✅ FIX: Complete the assignment
+      ? Number(data.depotId)
+      : undefined;
 
     this.alert.show = true;
     this.alert.message = 'Cette liste est filtrée';
@@ -214,7 +247,10 @@ export class SortiesConfirmesComponent implements OnInit {
     this.listOptions.searching = false;
     this.listOptions.filtering = false;
     this.listOptions.query = '';
-    this.searchForm.reset(); // Clear the search input
+    this.listOptions.typeSortie = undefined;
+    this.listOptions.depotId = undefined;
+    this.listOptions.id = undefined; // ✅ ADD THIS LINE
+    this.searchForm.reset();
     this.alert.show = false;
     this.restoreList();
     this.loadSorties();
@@ -223,6 +259,15 @@ export class SortiesConfirmesComponent implements OnInit {
   restoreList() {
     this.pagination = { page: 1, lastPage: false };
     this.sorties = [];
+  }
+
+  public getTypeSortieLabel(type: string): string {
+    const labels: { [key: string]: string } = {
+      interne_depot: 'Interne Dépôt',
+      interne_chantier: 'Interne Chantier',
+      externe: 'Externe',
+    };
+    return labels[type] || type;
   }
 }
 

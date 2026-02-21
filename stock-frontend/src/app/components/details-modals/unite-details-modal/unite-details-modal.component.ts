@@ -68,7 +68,7 @@ export class UniteDetailsModalComponent {
           error: () => {
             this.error = {
               show: true,
-              message: 'Un erreur est survenu',
+              message: 'Une erreur est survenue',
             };
           },
         });
@@ -83,7 +83,7 @@ export class UniteDetailsModalComponent {
       error: () => {
         this.error = {
           show: true,
-          message: 'Un erreur est survenu',
+          message: 'Une erreur est survenue',
         };
       },
     });

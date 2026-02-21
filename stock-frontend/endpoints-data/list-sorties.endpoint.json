@@ -1,0 +1,401 @@
+{
+  "endpoint": {
+    "method": "GET",
+    "paths": ["/api/sorties/list-pending", "/api/sorties/list-confirme"],
+    "description": "Retrieve a paginated list of sorties (stock exits) with advanced filtering capabilities"
+  },
+  "methods": [
+    {
+      "name": "listSorties",
+      "path": "/api/sorties/list-pending",
+      "description": "List all pending sorties with multi-criteria filtering",
+      "httpMethod": "GET",
+      "input": {
+        "type": "Query Parameters",
+        "schema": {
+          "page": {
+            "type": "string",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "example": "1"
+          },
+          "articleId": {
+            "type": "string",
+            "description": "Filter by specific article ID",
+            "required": false,
+            "example": "5"
+          },
+          "chantierId": {
+            "type": "string",
+            "description": "Filter by chantier (construction site) code",
+            "required": false,
+            "example": "100"
+          },
+          "depotId": {
+            "type": "string",
+            "description": "Filter by depot (warehouse) ID",
+            "required": false,
+            "example": "2"
+          },
+          "date": {
+            "type": "string",
+            "description": "Filter by specific date (YYYY-MM-DD format)",
+            "required": false,
+            "example": "2024-01-15"
+          },
+          "stockSortie": {
+            "type": "string",
+            "description": "Filter by stock quantity of the exit",
+            "required": false,
+            "example": "50"
+          },
+          "compteId": {
+            "type": "string",
+            "description": "Filter by account/user ID who created the sortie",
+            "required": false,
+            "example": "3"
+          },
+          "typeSortie": {
+            "type": "string",
+            "description": "Filter by sortie type",
+            "required": false,
+            "enum": ["interne_depot", "interne_chantier", "externe"],
+            "example": "interne_depot"
+          }
+        }
+      },
+      "output": {
+        "type": "JSON",
+        "schema": {
+          "sorties": {
+            "type": "array",
+            "description": "Array of sortie objects",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "description": "Unique sortie identifier"
+                },
+                "date": {
+                  "type": "string",
+                  "description": "Date of sortie creation (YYYY-MM-DD)"
+                },
+                "typeSortie": {
+                  "type": "string",
+                  "enum": ["interne_depot", "interne_chantier", "externe"],
+                  "description": "Type of sortie"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["pending", "confirmed"],
+                  "description": "Current status of the sortie"
+                },
+                "observation": {
+                  "type": "string|null",
+                  "description": "Optional observation notes"
+                },
+                "chantier": {
+                  "type": "object|null",
+                  "description": "Associated chantier (for interne_chantier type)",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "nom": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "depot": {
+                  "type": "object|null",
+                  "description": "Associated depot (for interne_depot type)",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "nom": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "compte": {
+                  "type": "object",
+                  "description": "User account who created the sortie",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "articleSorties": {
+                  "type": "array",
+                  "description": "Array of articles included in this sortie",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "stockSortie": {
+                        "type": "number",
+                        "description": "Quantity of article in this sortie"
+                      },
+                      "article": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "nom": {
+                            "type": "string"
+                          },
+                          "stockActuel": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "nomTransporteurDepot": {
+                  "type": "string|null",
+                  "description": "Transporter name (for interne_depot)"
+                },
+                "matriculeTransporteurDepot": {
+                  "type": "string|null",
+                  "description": "Transporter registration number (for interne_depot)"
+                },
+                "nomTransporteurChantier": {
+                  "type": "string|null",
+                  "description": "Transporter name (for interne_chantier)"
+                },
+                "matriculeTransporteurChantier": {
+                  "type": "string|null",
+                  "description": "Transporter registration number (for interne_chantier)"
+                },
+                "nomEntreprise": {
+                  "type": "string|null",
+                  "description": "Company name (for externe type)"
+                },
+                "adresseEntreprise": {
+                  "type": "string|null",
+                  "description": "Company address (for externe type)"
+                },
+                "matriculeFiscalEntreprise": {
+                  "type": "string|null",
+                  "description": "Company tax ID (for externe type)"
+                },
+                "nomClient": {
+                  "type": "string|null",
+                  "description": "Client name (for externe type)"
+                },
+                "nomTransporteurExterne": {
+                  "type": "string|null",
+                  "description": "External transporter name (for externe avec_transporteur)"
+                },
+                "matriculeTransporteurExterne": {
+                  "type": "string|null",
+                  "description": "External transporter registration (for externe avec_transporteur)"
+                },
+                "sousTypeSortieExterne": {
+                  "type": "string|null",
+                  "enum": ["avec_transporteur", "sans_transporteur"],
+                  "description": "Sub-type for external sorties"
+                }
+              }
+            }
+          },
+          "count": {
+            "type": "number",
+            "description": "Number of sorties in current page"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages available"
+          },
+          "currentPage": {
+            "type": "number",
+            "description": "Current page number"
+          },
+          "lastPage": {
+            "type": "boolean",
+            "description": "Whether this is the last page"
+          }
+        }
+      }
+    },
+    {
+      "name": "listConfirmedSorties",
+      "path": "/api/sorties/list-confirme",
+      "description": "List all confirmed sorties with multi-criteria filtering",
+      "httpMethod": "GET",
+      "input": {
+        "type": "Query Parameters",
+        "schema": {
+          "page": {
+            "type": "string",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "example": "1"
+          },
+          "articleId": {
+            "type": "string",
+            "description": "Filter by specific article ID",
+            "required": false,
+            "example": "5"
+          },
+          "chantierId": {
+            "type": "string",
+            "description": "Filter by chantier code",
+            "required": false,
+            "example": "100"
+          },
+          "depotId": {
+            "type": "string",
+            "description": "Filter by depot ID",
+            "required": false,
+            "example": "2"
+          },
+          "date": {
+            "type": "string",
+            "description": "Filter by specific date (YYYY-MM-DD format)",
+            "required": false,
+            "example": "2024-01-15"
+          },
+          "compteId": {
+            "type": "string",
+            "description": "Filter by account/user ID",
+            "required": false,
+            "example": "3"
+          },
+          "typeSortie": {
+            "type": "string",
+            "description": "Filter by sortie type",
+            "required": false,
+            "enum": ["interne_depot", "interne_chantier", "externe"],
+            "example": "interne_depot"
+          }
+        }
+      },
+      "output": {
+        "type": "JSON",
+        "schema": {
+          "sorties": {
+            "type": "array",
+            "description": "Array of confirmed sortie objects (includes documents array)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "typeSortie": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "value": "confirmed"
+                },
+                "observation": {
+                  "type": "string|null"
+                },
+                "chantier": {
+                  "type": "object|null"
+                },
+                "depot": {
+                  "type": "object|null"
+                },
+                "compte": {
+                  "type": "object"
+                },
+                "articleSorties": {
+                  "type": "array"
+                },
+                "documents": {
+                  "type": "array",
+                  "description": "Associated PDF documents (Fiche d'Expédition or Bon de Livraison)",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "filename": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "count": {
+            "type": "number",
+            "description": "Total count of confirmed sorties matching filters"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages available"
+          },
+          "currentPage": {
+            "type": "number",
+            "description": "Current page number"
+          },
+          "lastPage": {
+            "type": "boolean",
+            "description": "Whether this is the last page"
+          }
+        }
+      }
+    }
+  ],
+  "pagination": {
+    "description": "Results are paginated using page query parameter",
+    "defaultPageSize": "MAX_PER_PAGE environment variable (default: 20)",
+    "ordering": "Results ordered by date DESC, then id DESC"
+  },
+  "filteringCapabilities": {
+    "description": "Multiple filters can be combined",
+    "filters": [
+      "date - exact date match",
+      "typeSortie - sortie type",
+      "chantierId - chantier code",
+      "depotId - depot ID",
+      "compteId - user account ID",
+      "articleId - specific article (searches through article lines)",
+      "stockSortie - article quantity (pending sorties only)"
+    ]
+  },
+  "errorResponses": {
+    "emptyResult": {
+      "status": 200,
+      "body": {
+        "sorties": [],
+        "count": 0,
+        "totalPages": 0,
+        "lastPage": true
+      }
+    }
+  },
+  "notes": {
+    "differences": "listConfirmedSorties includes documents relation, while listSorties does not",
+    "articleFiltering": "When filtering by articleId or stockSortie, the query searches through ArticleSortie junction table",
+    "statusField": "listSorties returns only pending sorties, listConfirmedSorties returns only confirmed sorties"
+  }
+}

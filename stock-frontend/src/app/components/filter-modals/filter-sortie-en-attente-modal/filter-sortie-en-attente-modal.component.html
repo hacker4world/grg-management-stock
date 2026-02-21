@@ -24,10 +24,12 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>Chantier</label>
-            <select class="form-control" formControlName="chantierId">
-              <option value="">Tous les chantiers</option>
-              <option *ngFor="let c of chantiers" [value]="c.code">{{ c.nom }}</option>
+            <label>Type de sortie</label>
+            <select class="form-control" formControlName="typeSortie">
+              <option value="">Tous les types</option>
+              <option value="interne_depot">Interne Dépôt</option>
+              <option value="interne_chantier">Interne Chantier</option>
+              <option value="externe">Externe</option>
             </select>
           </div>
           <div class="form-group">
@@ -35,6 +37,24 @@
             <select class="form-control" formControlName="compteId">
               <option value="">Tous les magaziniers</option>
               <option *ngFor="let m of magaziniers" [value]="m.id">{{ m.nom }} {{ m.prenom }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Conditional Chantier/Depot Row -->
+        <div class="form-row" *ngIf="showChantierField || showDepotField">
+          <div class="form-group" *ngIf="showChantierField">
+            <label>Chantier</label>
+            <select class="form-control" formControlName="chantierId">
+              <option value="">Tous les chantiers</option>
+              <option *ngFor="let c of chantiers" [value]="c.code">{{ c.nom }}</option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="showDepotField">
+            <label>Dépôt</label>
+            <select class="form-control" formControlName="depotId">
+              <option value="">Tous les dépôts</option>
+              <option *ngFor="let d of depots" [value]="d.id">{{ d.nom }}</option>
             </select>
           </div>
         </div>

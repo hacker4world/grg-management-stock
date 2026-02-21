@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConfirmDeleteComponent } from '../../deletion-modals/confirm-delete/confirm-delete';
+import { LoadingComponent } from '../../../components/loading/loading.component'; // Add this import
 import { AuthenticationService } from '../../../services/authentication.service';
 
 @Component({
   selector: 'app-demande-details-modal',
-  imports: [CommonModule, ConfirmDeleteComponent],
+  imports: [CommonModule, ConfirmDeleteComponent, LoadingComponent], // Add LoadingComponent
   templateUrl: './demande-details-modal.component.html',
   styleUrl: './demande-details-modal.component.css',
 })
@@ -18,6 +19,7 @@ export class DemandeDetailsModalComponent implements OnInit {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   public confirmationModal = false;
+  public isConfirming = false; // Add this property
 
   public role = '';
 
@@ -34,6 +36,7 @@ export class DemandeDetailsModalComponent implements OnInit {
   }
 
   public onConfirm() {
+    this.isConfirming = true; // Set loading state
     this.confirm.emit();
   }
 
@@ -48,4 +51,8 @@ export class DemandeDetailsModalComponent implements OnInit {
     );
   }
 
+  // Add this method to reset loading state when confirmation is done
+  public resetConfirmingState() {
+    this.isConfirming = false;
+  }
 }

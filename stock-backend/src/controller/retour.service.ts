@@ -215,6 +215,8 @@ export class RetourService {
       }
 
       retour.status = "confirmed";
+      retour.nomTransporteur = dto.nomTransporteur || null;
+      retour.matriculeTransporteur = dto.matriculeTransporteur || null;
       await retourRepository.save(retour);
 
       // Génération du Bon de Retour (BR) pour le retour approuvé

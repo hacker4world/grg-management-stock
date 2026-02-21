@@ -83,7 +83,7 @@ export class FabriquantDetailsModalComponent implements OnInit {
             this.loading.update = false;
             this.error = {
               show: true,
-              message: 'Une erreur est survenu',
+              message: 'Une erreur est survenue',
             };
           },
         });
@@ -102,7 +102,7 @@ export class FabriquantDetailsModalComponent implements OnInit {
         this.loading.delete = false;
         this.error = {
           show: true,
-          message: 'Une erreur est survenu',
+          message: 'Une erreur est survenue',
         };
       },
     });

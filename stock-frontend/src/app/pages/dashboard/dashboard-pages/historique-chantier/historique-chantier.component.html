@@ -2,6 +2,14 @@
   <h1 class="page-title">
     Historique du chantier: {{ chantierData?.chantier?.nom }}
   </h1>
+  <button
+    class="button black-button"
+    [disabled]="exportLoading"
+    (click)="onExport()"
+  >
+    <span *ngIf="!exportLoading">Exporter historique du chantier</span>
+    <app-loading *ngIf="exportLoading"></app-loading>
+  </button>
 </div>
 
 <div *ngIf="loading" class="loading-state">Chargement...</div>

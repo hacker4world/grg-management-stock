@@ -1,0 +1,605 @@
+{
+  "info": {
+    "name": "Stock Backend - Fiche Expedition & Bon de Livraison",
+    "description": "Test collection for all document generation workflows:\n- Fiche d'Expedition (DemandeArticle)\n- Fiche d'Expedition (Sortie Interne - chantier)\n- Fiche d'Expedition (Sortie Interne - depot)\n- Bon de Livraison (Sortie Externe - client sans transport)\n- Bon de Livraison (Sortie Externe - client avec transport)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api" },
+    { "key": "token", "value": "" },
+    { "key": "compteId", "value": "" },
+    { "key": "responsableId", "value": "" },
+    { "key": "chantierId", "value": "" },
+    { "key": "depotId", "value": "" },
+    { "key": "depotDestinataireId", "value": "" },
+    { "key": "articleId", "value": "" },
+    { "key": "demandeId", "value": "" },
+    { "key": "sortieInterneChantier Id", "value": "" },
+    { "key": "sortieInterneDepotId", "value": "" },
+    { "key": "sortieExterneSansTransportId", "value": "" },
+    { "key": "sortieExterneAvecTransportId", "value": "" },
+    { "key": "documentId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0. Setup",
+      "item": [
+        {
+          "name": "Login (get JWT token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.token) pm.collectionVariables.set('token', jsonData.token);",
+                  "  if (jsonData.compte && jsonData.compte.id) pm.collectionVariables.set('compteId', jsonData.compte.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom_utilisateur\": \"admin\",\n  \"motdepasse\": \"admin\"\n}"
+            },
+            "url": "{{baseUrl}}/authentification/login"
+          }
+        },
+        {
+          "name": "Create Depot (with address)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.depot) pm.collectionVariables.set('depotId', jsonData.depot.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dépôt Central Hammam Lif\",\n  \"adresse\": \"36, Avenue de la république, 2050 Hammam Lif\"\n}"
+            },
+            "url": "{{baseUrl}}/depots/ajouter"
+          }
+        },
+        {
+          "name": "Create Depot Destinataire",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.depot) pm.collectionVariables.set('depotDestinataire Id', jsonData.depot.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dépôt Secondaire Ennasr\",\n  \"adresse\": \"Avenue Hédi Nouira, Ennasr 2, 2037 Ariana\"\n}"
+            },
+            "url": "{{baseUrl}}/depots/ajouter"
+          }
+        },
+        {
+          "name": "List Comptes (find responsable-chantier)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  var comptes = jsonData.comptes || jsonData;",
+                  "  if (Array.isArray(comptes)) {",
+                  "    var rc = comptes.find(function(c) { return c.role === 'responsable-chantier' && c.confirme; });",
+                  "    if (rc) pm.collectionVariables.set('responsableId', rc.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/authentification/liste"
+          }
+        },
+        {
+          "name": "Create Chantier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.chantier) pm.collectionVariables.set('chantierId', jsonData.chantier.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Résidence Les Jasmins\",\n  \"adresse\": \"Avenue Hédi Nouira, Ennasr 2\",\n  \"compteId\": {{responsableId}}\n}"
+            },
+            "url": "{{baseUrl}}/chantier/ajouter"
+          }
+        },
+        {
+          "name": "List Articles (get an article ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.articles && jsonData.articles.length > 0) {",
+                  "    pm.collectionVariables.set('articleId', jsonData.articles[0].id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/articles/liste?page=1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. DemandeArticle -> Fiche d'Expedition",
+      "item": [
+        {
+          "name": "Create DemandeArticle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.demande) pm.collectionVariables.set('demandeId', jsonData.demande.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chantierId\": {{chantierId}},\n  \"items\": [\n    { \"articleId\": {{articleId}}, \"quantity\": 5 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/demandes-articles/ajouter"
+          }
+        },
+        {
+          "name": "Confirm DemandeArticle -> generates Fiche d'Expedition",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.documents && jsonData.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId', jsonData.documents[0].id);",
+                  "    console.log('Fiche Expedition doc ID:', jsonData.documents[0].id);",
+                  "    console.log('Type:', jsonData.documents[0].type);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"demandeId\": {{demandeId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": "{{baseUrl}}/demandes-articles/traiter"
+          }
+        },
+        {
+          "name": "Download Fiche d'Expedition (DemandeArticle)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/documents/{{documentId}}/download"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Sortie Interne (to Chantier) -> Fiche d'Expedition",
+      "item": [
+        {
+          "name": "Create Sortie Interne (chantier)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.sortie) pm.collectionVariables.set('sortieInterneChantier Id', jsonData.sortie.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"articles\": [{ \"articleId\": {{articleId}}, \"stockSortie\": 3 }],\n  \"compteId\": {{compteId}},\n  \"typeSortie\": \"interne\",\n  \"chantierId\": {{chantierId}},\n  \"typeLivraison\": \"chauffeur\",\n  \"nomChauffeur\": \"Faouzi JMOUR\",\n  \"matriculeVoiture\": \"199 TUN 8861\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/create"
+          }
+        },
+        {
+          "name": "Confirm Sortie Interne (chantier) -> Fiche d'Expedition",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.documents && jsonData.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId', jsonData.documents[0].id);",
+                  "    console.log('FE Sortie Interne Chantier doc ID:', jsonData.documents[0].id);",
+                  "    console.log('Type:', jsonData.documents[0].type);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieInterneChantier Id}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/confirm-deny"
+          }
+        },
+        {
+          "name": "Download Fiche d'Expedition (Sortie Interne Chantier)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/documents/{{documentId}}/download"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Sortie Interne (to Depot) -> Fiche d'Expedition",
+      "item": [
+        {
+          "name": "Create Sortie Interne (depot to depot)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.sortie) pm.collectionVariables.set('sortieInterneDepotId', jsonData.sortie.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"articles\": [{ \"articleId\": {{articleId}}, \"stockSortie\": 2 }],\n  \"compteId\": {{compteId}},\n  \"typeSortie\": \"interne\",\n  \"depotDestinataireId\": {{depotDestinataire Id}},\n  \"typeLivraison\": \"chauffeur\",\n  \"nomChauffeur\": \"Ahmed BEN ALI\",\n  \"matriculeVoiture\": \"205 TUN 1234\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/create"
+          }
+        },
+        {
+          "name": "Confirm Sortie Interne (depot) -> Fiche d'Expedition",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.documents && jsonData.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId', jsonData.documents[0].id);",
+                  "    console.log('FE Sortie Interne Depot doc ID:', jsonData.documents[0].id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieInterneDepotId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/confirm-deny"
+          }
+        },
+        {
+          "name": "Download Fiche d'Expedition (Sortie Interne Depot)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/documents/{{documentId}}/download"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Sortie Externe (client sans transport) -> Bon de Livraison",
+      "item": [
+        {
+          "name": "Create Sortie Externe (client sans transport)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.sortie) pm.collectionVariables.set('sortieExterneSansTransportId', jsonData.sortie.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"articles\": [{ \"articleId\": {{articleId}}, \"stockSortie\": 5 }],\n  \"compteId\": {{compteId}},\n  \"typeSortie\": \"externe\",\n  \"typeLivraison\": \"client\",\n  \"nomClient\": \"Mohamed Zarrad\",\n  \"destinataireNom\": \"STE ENTREPRISE GENERALE ZARRAD Sarl\",\n  \"destinataireAdresse\": \"Av Habib Bourguiba - TUNISIE\\n5070 KSAR HELLAL\",\n  \"destinataireMatriculeFiscal\": \"1341181.A.A.M.000\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/create"
+          }
+        },
+        {
+          "name": "Confirm Sortie Externe (sans transport) -> Bon de Livraison",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.documents && jsonData.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId', jsonData.documents[0].id);",
+                  "    console.log('BL Externe Sans Transport doc ID:', jsonData.documents[0].id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieExterneSansTransportId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/confirm-deny"
+          }
+        },
+        {
+          "name": "Download Bon de Livraison (sans transport)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/documents/{{documentId}}/download"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Sortie Externe (client avec transport) -> Bon de Livraison",
+      "item": [
+        {
+          "name": "Create Sortie Externe (client avec transport)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.sortie) pm.collectionVariables.set('sortieExterneAvecTransportId', jsonData.sortie.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"articles\": [{ \"articleId\": {{articleId}}, \"stockSortie\": 5 }],\n  \"compteId\": {{compteId}},\n  \"typeSortie\": \"externe\",\n  \"typeLivraison\": \"client\",\n  \"nomChauffeur\": \"Faouzi JMOUR\",\n  \"matriculeVoiture\": \"199 TUN 8861\",\n  \"destinataireNom\": \"STE ENTREPRISE GENERALE ZARRAD Sarl\",\n  \"destinataireAdresse\": \"Av Habib Bourguiba - TUNISIE\\n5070 KSAR HELLAL\",\n  \"destinataireMatriculeFiscal\": \"1341181.A.A.M.000\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/create"
+          }
+        },
+        {
+          "name": "Confirm Sortie Externe (avec transport) -> Bon de Livraison",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.documents && jsonData.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId', jsonData.documents[0].id);",
+                  "    console.log('BL Externe Avec Transport doc ID:', jsonData.documents[0].id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieExterneAvecTransportId}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": "{{baseUrl}}/sorties/confirm-deny"
+          }
+        },
+        {
+          "name": "Download Bon de Livraison (avec transport)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/documents/{{documentId}}/download"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Utility",
+      "item": [
+        {
+          "name": "List Pending Sorties",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/sorties/list-pending"
+          }
+        },
+        {
+          "name": "List Confirmed Sorties",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/sorties/list-confirme"
+          }
+        },
+        {
+          "name": "List Depots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/depots/liste"
+          }
+        },
+        {
+          "name": "List Chantiers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/chantier/liste"
+          }
+        },
+        {
+          "name": "List DemandeArticles",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/demandes-articles/liste"
+          }
+        }
+      ]
+    }
+  ]
+}

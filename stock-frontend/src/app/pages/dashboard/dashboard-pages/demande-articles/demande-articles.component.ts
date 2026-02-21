@@ -56,6 +56,7 @@ export class DemandeArticlesComponent implements OnInit {
     date: undefined as string | undefined,
     status: undefined as string | undefined, // Added
     articleId: undefined as number | undefined, // Added
+    id: undefined as number | undefined, // ✅ ADD THIS LINE
   };
   pagination = { page: 1, lastPage: false };
 
@@ -138,17 +139,30 @@ export class DemandeArticlesComponent implements OnInit {
     const demandeId = this.selectedDemande.id;
 
     this.demandesService.confirmDemande(demandeId).subscribe({
-      next: () => {
-        // 1. Update the status in the local list to reflect changes in the UI
+      next: (response: any) => {
+        // 1. Update the status and documents in the local list
         const index = this.demandes.findIndex((d) => d.id === demandeId);
         if (index !== -1) {
-          this.demandes[index].status = 'confirmed';
+          this.demandes[index] = {
+            ...this.demandes[index],
+            status: 'confirmed',
+            documents: response.documents || [], // ATTACH DOCUMENTS
+          };
         }
 
-        // 2. Close the modal
+        // 2. Update selectedDemande to reflect the new documents
+        if (this.selectedDemande) {
+          this.selectedDemande = {
+            ...this.selectedDemande,
+            status: 'confirmed',
+            documents: response.documents || [],
+          };
+        }
+
+        // 3. Close the modal
         this.setModals({ showDetailsModal: false });
 
-        // 3. Reset selectedDemande
+        // 4. Reset selectedDemande
         this.selectedDemande = null;
       },
       error: () => {
@@ -208,14 +222,28 @@ export class DemandeArticlesComponent implements OnInit {
       return;
     }
 
-    // Set search state
-    this.listOptions.searching = true;
-    this.listOptions.searchQuery = query;
-    this.listOptions.filtering = false; // Disable filtering when searching
+    // Check if the input is a number (ID search)
+    const isNumeric = /^\d+$/.test(query);
 
-    // Show alert with search term
-    this.alert.show = true;
-    this.alert.message = `Résultats de recherche pour: "${query}"`;
+    if (isNumeric) {
+      // Search by ID (including 0)
+      this.listOptions.searching = false;
+      this.listOptions.searchQuery = undefined;
+      this.listOptions.filtering = true;
+      this.listOptions.id = Number(query); // This will correctly convert "0" to 0
+
+      this.alert.show = true;
+      this.alert.message = `Recherche par ID: ${query}`;
+    } else {
+      // Search by code/query (text search)
+      this.listOptions.searching = true;
+      this.listOptions.searchQuery = query;
+      this.listOptions.filtering = false;
+      this.listOptions.id = undefined;
+
+      this.alert.show = true;
+      this.alert.message = `Résultats de recherche pour: "${query}"`;
+    }
 
     // Reset list and fetch search results
     this.restoreList();
@@ -224,9 +252,10 @@ export class DemandeArticlesComponent implements OnInit {
 
   onRestore() {
     this.listOptions.filtering = false;
-    this.listOptions.searching = false; // Add this
-    this.listOptions.searchQuery = undefined; // Add this
-    this.searchForm.reset({ query: '' }); // Clear search input
+    this.listOptions.searching = false;
+    this.listOptions.searchQuery = undefined;
+    this.listOptions.id = undefined; // ✅ ADD THIS LINE
+    this.searchForm.reset({ query: '' });
     this.alert.show = false;
     this.restoreList();
     this.fetchDemandes();

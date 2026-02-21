@@ -184,7 +184,10 @@ export class EntreesConfirmesComponent implements OnInit {
         },
         error: () => {
           this.loading = false;
-          this.error = { show: true, message: 'Une erreur est survenue' };
+          this.error = {
+            show: true,
+            message: 'Une erreur est survenue lors du chargement',
+          };
         },
       });
   }

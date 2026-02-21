@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { ErrorComponent } from '../../error/error.component';
-import { SortieConfirmeeModel } from '../../../models/sorties-confirmes.model';
+import { SortieConfirmeModel } from '../../../models/sorties-confirmes.model';
 import { SortiesConfirmesService } from '../../../services/sorties-confirmes.service';
 import { ChantiersService } from '../../../services/chantiers.service';
 import { ConfirmDeleteComponent } from "../../deletion-modals/confirm-delete/confirm-delete";
@@ -14,7 +14,7 @@ import { ConfirmDeleteComponent } from "../../deletion-modals/confirm-delete/con
   styleUrl: './sortie-details-modal.component.css',
 })
 export class SortieDetailsModalComponent {
-  @Input() sortie!: SortieConfirmeeModel | null;
+  @Input() sortie!: SortieConfirmeModel | null;
   @Output() close = new EventEmitter();
   @Output() delete = new EventEmitter();
 

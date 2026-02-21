@@ -18,7 +18,7 @@
       <form [formGroup]="searchForm" (submit)="onSearch()" style="width: 100%">
         <input
           type="text"
-          placeholder="Cherchez par code retour"
+          placeholder="Rechercher par code retour"
           class="search-bar"
           formControlName="query"
         />
@@ -119,7 +119,7 @@
 <app-retour-details-modal
   *ngIf="modalSettings.showDetailsModal"
   (close)="setModals({ showDetailsModal: false })"
-  (confirm)="onConfirmRetour()"
+  (confirm)="onConfirmRetour($event)"
   (deny)="onDenyRetour()"
   [retour]="selectedRetour"
 ></app-retour-details-modal>

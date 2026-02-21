@@ -118,7 +118,7 @@ export class FabriquantsComponent implements OnInit {
           this.loading = false;
           this.error = {
             show: true,
-            message: 'Une erreur est survenu',
+            message: 'Une erreur est survenue',
           };
         },
       });
@@ -183,7 +183,7 @@ export class FabriquantsComponent implements OnInit {
       this.listOptions.query = nom;
       this.alert = {
         show: true,
-        message: 'Ce liste est filtré',
+        message: 'Cette liste est filtrée',
       };
     }
     this.restoreList();
@@ -208,7 +208,7 @@ export class FabriquantsComponent implements OnInit {
     this.listOptions.contact = data.contact;
     this.alert = {
       show: true,
-      message: 'Ce liste est filtré',
+      message: 'Cette liste est filtrée',
     };
     this.restoreList();
     this.fetchFabriquants();

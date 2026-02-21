@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { comparePassword, hashPassword } from "../utilities/bcrypt.util";
-import { generateToken } from "../utilities/jwt.util";
+import { generateToken, verifyExpiredToken } from "../utilities/jwt.util";
 import { compteRepository } from "../repository/repositories";
+import { extractToken } from "../middleware";
 import {
   AccepterRefuserCompteValidator,
   LoginDto,
@@ -111,6 +112,42 @@ export class AuthentificationService {
 
     response.json({
       message: "Logout successful",
+    });
+  }
+
+  public async refreshToken(request: Request, response: Response) {
+    const token = extractToken(request);
+    if (!token) {
+      return response.status(401).json({ message: "Token requis" });
+    }
+
+    const result = verifyExpiredToken(token);
+    if (!result.success) {
+      return response.status(401).json({
+        message: "Token invalide ou expiré depuis trop longtemps",
+      });
+    }
+
+    const compte = await fetchCompte(result.payload.user_id);
+    if (!compte || !compte.confirme) {
+      return response.status(401).json({ message: "Compte introuvable ou désactivé" });
+    }
+
+    const newToken = generateToken({ user_id: compte.id });
+
+    response.cookie("token", newToken, {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
+    });
+
+    return response.json({
+      token: newToken,
+      account: {
+        id: compte.id,
+        nom_utilisateur: compte.nom_utilisateur,
+        role: compte.role,
+      },
     });
   }
 

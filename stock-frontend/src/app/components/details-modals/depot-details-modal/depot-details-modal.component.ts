@@ -78,7 +78,7 @@ export class DepotDetailsModalComponent {
           error: () => {
             this.error = {
               show: true,
-              message: 'Un erreur est survenu',
+              message: 'UUne erreur est survenue',
             };
           },
         });
@@ -93,7 +93,7 @@ export class DepotDetailsModalComponent {
       error: () => {
         this.error = {
           show: true,
-          message: 'Un erreur est survenu',
+          message: 'Une erreur est survenue',
         };
       },
     });

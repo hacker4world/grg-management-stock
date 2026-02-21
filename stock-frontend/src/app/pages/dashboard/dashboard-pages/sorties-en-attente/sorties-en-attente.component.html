@@ -20,9 +20,9 @@
       <form [formGroup]="searchForm" (submit)="onSearch()" style="width: 100%">
         <input
           type="text"
-          placeholder="Cherchez sortie par code"
+          placeholder="Cherchez une sortie par code"
           class="search-bar"
-          formControlName="nom"
+          formControlName="code"
         />
       </form>
       <button
@@ -43,36 +43,37 @@
 
   <div class="table-container">
     <table class="data-table">
-      <thead>
-        <tr>
-          <th id="first-col">Code</th>
-          <th>Articles</th>
-          <th>Date</th>
-          <th>Magazinier</th>
-          <th id="last-col">Chantier</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          *ngFor="let s of sorties"
-          (click)="onSelectSortie(s.id)"
-          style="cursor: pointer"
+  <thead>
+    <tr>
+      <th id="first-col">Code</th>
+      <th>Articles</th>
+      <th>Date</th>
+      <th>Type</th>
+      <th id="last-col">Magazinier</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      *ngFor="let s of sorties"
+      (click)="onSelectSortie(s.id)"
+      style="cursor: pointer"
+    >
+      <td>{{ s.id }}</td>
+      <td>
+        <button
+          class="button black-button"
+          (click)="openArticlesModal($event, s)"
         >
-          <td>{{ s.id }}</td>
-          <td>
-            <button
-              class="button black-button"
-              (click)="openArticlesModal($event, s)"
-            >
-              Voir articles
-            </button>
-          </td>
-          <td>{{ s.date }}</td>
-          <td>{{ s.compte.nom + " " + s.compte.prenom }}</td>
-          <td>{{ s.chantier ? s.chantier.nom : "Non associé" }}</td>
-        </tr>
-      </tbody>
-    </table>
+          Voir articles
+        </button>
+      </td>
+      <td>{{ s.date }}</td>
+      <td>{{ getTypeSortieLabel(s.typeSortie) }}</td>
+      <td>{{ s.compte.nom + " " + s.compte.prenom }}</td>
+    </tr>
+  </tbody>
+</table>
+
   </div>
 </div>
 

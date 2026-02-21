@@ -1,71 +1,28 @@
-// sorties-en-attente.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SortieEnAttenteListResponse } from '../models/sorties-en-attente.model';
 
-// Base interface for all sorties
-export interface BaseSortieDto {
+export interface CreateSortieDto {
   articles: Array<{ articleId: number; stockSortie: number }>;
   observation?: string;
+  chantierId?: number;
   compteId: number;
 }
-
-// Internal Depot Sortie
-export interface CreateSortieInterneDepotDto extends BaseSortieDto {
-  typeSortie: 'interne_depot';
-  depotId: number;
-  nomTransporteur: string;
-  matriculeTransporteur: string;
-}
-
-// Internal Chantier Sortie
-export interface CreateSortieInterneChantierDto extends BaseSortieDto {
-  typeSortie: 'interne_chantier';
-  chantierId: number;
-  nomTransporteur: string;
-  matriculeTransporteur: string;
-}
-
-// External Sortie with Transporter
-export interface CreateSortieExterneAvecTransporteurDto extends BaseSortieDto {
-  typeSortie: 'externe';
-  sousTypeSortieExterne: 'avec_transporteur';
-  nomEntreprise: string;
-  adresseEntreprise: string;
-  matriculeFiscalEntreprise: string;
-  nomClient: string;
-  nomTransporteur: string;
-  matriculeTransporteur: string;
-}
-
-// External Sortie without Transporter
-export interface CreateSortieExterneSansTransporteurDto extends BaseSortieDto {
-  typeSortie: 'externe';
-  sousTypeSortieExterne: 'sans_transporteur';
-  nomEntreprise: string;
-  adresseEntreprise: string;
-  matriculeFiscalEntreprise: string;
-  nomClient: string;
-}
-
-// Union type for all possible sorties
-export type CreateSortieDto =
-  | CreateSortieInterneDepotDto
-  | CreateSortieInterneChantierDto
-  | CreateSortieExterneAvecTransporteurDto
-  | CreateSortieExterneSansTransporteurDto;
 
 export interface SortieListOptions {
   searching: boolean;
   query: string;
   filtering: boolean;
   date?: string;
+  typeSortie?: string;
   chantierId?: number;
+  depotId?: number;
   compteId?: number;
   articleId?: number;
+  id?: number; // ✅ ADD THIS LINE
 }
+
 
 @Injectable({ providedIn: 'root' })
 export class SortiesEnAttenteService {
@@ -75,8 +32,8 @@ export class SortiesEnAttenteService {
 
   public ajouterSortie(
     dto: CreateSortieDto,
-  ): Observable<{ message: string; sortie: any }> {
-    return this.http.post<{ message: string; sortie: any }>(
+  ): Observable<{ message: string; sortieId: number }> {
+    return this.http.post<{ message: string; sortieId: number }>(
       `${this.base}/create`,
       dto,
       { withCredentials: true },
@@ -91,12 +48,14 @@ export class SortiesEnAttenteService {
     console.log(options);
 
     if (options) {
-      if (options.searching) url += `&query=${options.query}`;
       if (options.filtering) {
         if (options.date) url += `&date=${options.date}`;
+        if (options.typeSortie) url += `&typeSortie=${options.typeSortie}`;
         if (options.chantierId) url += `&chantierId=${options.chantierId}`;
+        if (options.depotId) url += `&depotId=${options.depotId}`;
         if (options.compteId) url += `&compteId=${options.compteId}`;
         if (options.articleId) url += `&articleId=${options.articleId}`;
+        if (options.id != undefined) url += `&id=${options.id}`; // ✅ ADD THIS LINE
       }
     }
 

@@ -1,25 +1,26 @@
-// sortie-confirme-details-modal.component.ts
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ErrorComponent } from '../../error/error.component';
-import { ConfirmDeleteComponent } from '../../deletion-modals/confirm-delete/confirm-delete';
 import { CommonModule } from '@angular/common';
+import { ErrorComponent } from '../../error/error.component';
+import { SortieEnAttenteModel } from '../../../models/sorties-en-attente.model';
+import { SortiesEnAttenteService } from '../../../services/sorties-en-attente.service';
 import { SortiesConfirmesService } from '../../../services/sorties-confirmes.service';
-import { SortieConfirmeeModel } from '../../../models/sorties-confirmes.model';
+import { SortieConfirmeModel } from '../../../models/sorties-confirmes.model';
 
 @Component({
   selector: 'app-sortie-confirme-details-modal',
-  standalone: true, // Ensure standalone is true
-  imports: [ErrorComponent, ConfirmDeleteComponent, CommonModule],
+  standalone: true,
+  imports: [ErrorComponent, CommonModule],
   templateUrl: './sortie-confirme-details-modal.component.html',
   styleUrl: './sortie-confirme-details-modal.component.css',
 })
 export class SortieConfirmeDetailsModalComponent {
-  @Input() sortie!: SortieConfirmeeModel;
+  @Input() sortie!: SortieConfirmeModel;
   @Output() close = new EventEmitter<void>();
-  @Output() delete = new EventEmitter<void>();
+  @Output() approved = new EventEmitter<void>();
+  @Output() denied = new EventEmitter<void>();
 
-  public confirmationModal = false;
   public error = { show: false, message: '' };
+  public loading = false;
 
   constructor(private sortiesService: SortiesConfirmesService) {}
 
@@ -27,23 +28,77 @@ export class SortieConfirmeDetailsModalComponent {
     this.close.emit();
   }
 
-  public supprimer() {
-    this.sortiesService.supprimerSortie(this.sortie.id).subscribe({
+  public isInterne(): boolean {
+    return (
+      this.sortie.typeSortie === 'interne_depot' ||
+      this.sortie.typeSortie === 'interne_chantier'
+    );
+  }
+
+  public isExterne(): boolean {
+    return this.sortie.typeSortie === 'externe';
+  }
+
+  public hasTransporteur(): boolean {
+    if (this.sortie.typeSortie === 'interne_depot') {
+      return !!(
+        this.sortie.nomTransporteurDepot ||
+        this.sortie.matriculeTransporteurDepot
+      );
+    }
+    if (this.sortie.typeSortie === 'interne_chantier') {
+      return !!(
+        this.sortie.nomTransporteurChantier ||
+        this.sortie.matriculeTransporteurChantier
+      );
+    }
+    if (this.sortie.typeSortie === 'externe') {
+      return this.sortie.sousTypeSortieExterne === 'avec_transporteur';
+    }
+    return false;
+  }
+
+  public approveSortie() {
+    this.loading = true;
+    this.error.show = false;
+
+    // Call your approve endpoint
+    this.sortiesService.approveSortie(this.sortie.id).subscribe({
       next: () => {
-        this.confirmationModal = false;
-        this.delete.emit(); // Notify parent to remove from list
+        this.loading = false;
+        this.approved.emit();
       },
-      error: () => {
+      error: (err) => {
+        this.loading = false;
         this.error = {
           show: true,
-          message: 'Une erreur est survenue lors de la suppression.',
+          message: "Une erreur est survenue lors de l'approbation.",
         };
-        this.confirmationModal = false;
       },
     });
   }
 
-  public downloadFile() {
+  public denySortie() {
+    this.loading = true;
+    this.error.show = false;
+
+    // Call your deny endpoint
+    this.sortiesService.denySortie(this.sortie.id).subscribe({
+      next: () => {
+        this.loading = false;
+        this.denied.emit();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = {
+          show: true,
+          message: 'Une erreur est survenue lors du refus.',
+        };
+      },
+    });
+  }
+
+  public downloadBandeCommande() {
     window.open(
       `http://localhost:4000/api/documents/${this.sortie.documents[0].id}/download`,
       '_blank',

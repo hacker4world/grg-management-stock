@@ -36,4 +36,10 @@ export class RetourArticle {
   documents: Document[];
   @Column({ type: "text", nullable: true })
   observation?: string;
+
+  @Column({ type: "varchar", length: 100, nullable: true })
+  nomTransporteur?: string;
+
+  @Column({ type: "varchar", length: 50, nullable: true })
+  matriculeTransporteur?: string;
 }

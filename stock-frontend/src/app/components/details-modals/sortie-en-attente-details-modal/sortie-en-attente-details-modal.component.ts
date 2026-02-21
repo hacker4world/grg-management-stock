@@ -3,11 +3,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ErrorComponent } from '../../error/error.component';
 import { SortieEnAttenteModel } from '../../../models/sorties-en-attente.model';
-import { ChantiersService } from '../../../services/chantiers.service';
-import { ChantierModel } from '../../../models/chantier.model';
 import { SortiesEnAttenteService } from '../../../services/sorties-en-attente.service';
 import { ConfirmDeleteComponent } from '../../deletion-modals/confirm-delete/confirm-delete';
-import { SortiesConfirmesService } from '../../../services/sorties-confirmes.service';
 
 @Component({
   selector: 'app-sortie-en-attente-details-modal',
@@ -37,6 +34,15 @@ export class SortieEnAttenteDetailsModalComponent {
     private readonly sortiesEnAttenteService: SortiesEnAttenteService,
   ) {}
 
+  getTypeSortieLabel(type: string): string {
+    const labels: { [key: string]: string } = {
+      interne_depot: 'Interne Dépôt',
+      interne_chantier: 'Interne Chantier',
+      externe: 'Externe',
+    };
+    return labels[type] || type;
+  }
+
   confirmer() {
     this.sortiesEnAttenteService
       .confirmDeny(this.sortie.id, 'confirm')
@@ -46,10 +52,12 @@ export class SortieEnAttenteDetailsModalComponent {
         },
         error: (err) => {
           console.log(err);
-          
+
           this.error = {
             show: true,
-            message: err.error?.message || 'Erreur lors de la confirmation de la sortie',
+            message:
+              err.error?.message ||
+              'Erreur lors de la confirmation de la sortie',
           };
         },
       });

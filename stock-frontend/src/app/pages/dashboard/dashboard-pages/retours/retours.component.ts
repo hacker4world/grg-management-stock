@@ -65,6 +65,7 @@ export class RetoursComponent implements OnInit {
     chantierId: undefined as number | undefined,
     articleId: undefined as number | undefined, // Added
     status: undefined as string | undefined, // Added
+    id: undefined as number | undefined, // ✅ ADD THIS LINE
   };
   pagination = { page: 1, lastPage: false };
 
@@ -140,20 +141,35 @@ export class RetoursComponent implements OnInit {
   }
 
   /* ---------- confirm/deny actions ---------- */
-  onConfirmRetour() {
+  onConfirmRetour(transporteur) {
     if (!this.selectedRetour) return;
 
     this.retourService
-      .traiterRetour({ retourId: this.selectedRetour.id, action: 'approve' })
+      .traiterRetour({ retourId: this.selectedRetour.id, action: 'approve', ...transporteur })
       .subscribe({
-        next: () => {
+        next: (response: any) => {
           this.setModals({ showDetailsModal: false });
-          // Update the retour status in the local list
+
+          // Update the retour in the local list with the response data
           this.retours = this.retours.map((r) =>
             r.id === this.selectedRetour!.id
-              ? { ...r, status: 'confirmed' }
+              ? {
+                  ...r,
+                  status: 'confirmed',
+                  documents: response.documents || [], // ATTACH DOCUMENTS
+                }
               : r,
           );
+
+          // Update selectedRetour to reflect the new documents
+          if (this.selectedRetour) {
+            this.selectedRetour = {
+              ...this.selectedRetour,
+              status: 'confirmed',
+              documents: response.documents || [],
+            };
+          }
+
           this.selectedRetour = null;
         },
         error: () => {
@@ -191,10 +207,36 @@ export class RetoursComponent implements OnInit {
   /* ---------- search ---------- */
   onSearch() {
     const q = this.searchForm.value.query?.trim() ?? '';
-    this.listOptions.searching = q !== '';
-    this.listOptions.query = q;
-    this.alert.show = this.listOptions.searching || this.listOptions.filtering;
-    this.alert.message = 'Cette liste est filtrée';
+
+    // If search is empty, restore normal list
+    if (!q) {
+      this.onRestore();
+      return;
+    }
+
+    // Check if the input is a number (ID search)
+    const isNumeric = /^\d+$/.test(q);
+
+    if (isNumeric) {
+      // Search by ID (including 0)
+      this.listOptions.searching = false;
+      this.listOptions.query = '';
+      this.listOptions.filtering = true;
+      this.listOptions.id = Number(q); // This will correctly convert "0" to 0
+
+      this.alert.show = true;
+      this.alert.message = `Recherche par ID: ${q}`;
+    } else {
+      // Search by code/query (text search)
+      this.listOptions.searching = true;
+      this.listOptions.query = q;
+      this.listOptions.filtering = false;
+      this.listOptions.id = undefined;
+
+      this.alert.show = true;
+      this.alert.message = 'Cette liste est filtrée';
+    }
+
     this.restoreList();
     this.fetchRetours();
   }
@@ -221,8 +263,9 @@ export class RetoursComponent implements OnInit {
       query: '',
       date: '',
       chantierId: undefined,
-      articleId: undefined, // Added
-      status: undefined, // Added
+      articleId: undefined,
+      status: undefined,
+      id: undefined, // ✅ ADD THIS LINE
     });
     this.alert.show = false;
     this.restoreList();
@@ -238,7 +281,7 @@ export class RetoursComponent implements OnInit {
         this.exportService.downloadFile(blob, 'retours_articles.xlsx');
       },
       error: () => {
-        this.error = { show: true, message: "Échec de l'exportation" };
+        this.error = { show: true, message: "Erreur lors de l'exportation" };
       },
     });
   }

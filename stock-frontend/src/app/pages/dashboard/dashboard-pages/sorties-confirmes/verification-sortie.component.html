@@ -20,9 +20,9 @@
       <form [formGroup]="searchForm" (submit)="onSearch()" style="width: 100%">
         <input
           type="text"
-          placeholder="Cherchez sortie par code"
+          placeholder="Cherchez une sortie par code"
           class="search-bar"
-          formControlName="code" 
+          formControlName="code"
         />
       </form>
       <button
@@ -44,7 +44,6 @@
     (restore)="onRestore()"
   ></app-alert>
 
-
   <div class="table-container" style="margin-top: 20px">
     <table class="data-table">
       <thead>
@@ -52,8 +51,8 @@
           <th id="first-col">Code</th>
           <th>Articles</th>
           <th>Date</th>
-          <th>Magazinier</th>
-          <th id="last-col">Chantier</th>
+          <th>Type</th>
+          <th id="last-col">Magazinier</th>
         </tr>
       </thead>
       <tbody>
@@ -72,8 +71,8 @@
             </button>
           </td>
           <td>{{ s.date | date: "dd/MM/yyyy" }}</td>
+          <td>{{ getTypeSortieLabel(s.typeSortie) }}</td>
           <td>{{ s.compte.nom + " " + s.compte.prenom }}</td>
-          <td>{{ s.chantier ? s.chantier.nom : "Non associé" }}</td>
         </tr>
       </tbody>
     </table>

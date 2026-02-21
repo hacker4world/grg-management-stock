@@ -1,0 +1,479 @@
+{
+  "info": {
+    "name": "Stock - Documents Workflow (BL + BR)",
+    "description": "Test les 3 scénarios de livraison + Bon de Retour :\n\n1. Chauffeur (nos propres moyens)\n2. Client seul (vient en personne)\n3. Client + son transporteur\n4. Bon de Retour",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "email", "value": "admin@grg-bt.tn", "type": "string" },
+    { "key": "password", "value": "admin123", "type": "string" },
+    { "key": "compteId", "value": "1", "type": "string" },
+    { "key": "chantierId", "value": "1", "type": "string" },
+    { "key": "articleId", "value": "1", "type": "string" },
+    { "key": "sortieId_chauffeur", "value": "", "type": "string" },
+    { "key": "sortieId_client_seul", "value": "", "type": "string" },
+    { "key": "sortieId_client_transport", "value": "", "type": "string" },
+    { "key": "retourId", "value": "", "type": "string" },
+    { "key": "documentId_bl", "value": "", "type": "string" },
+    { "key": "documentId_br", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "0. Login",
+      "item": [
+        {
+          "name": "0.1 Login (get token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    console.log('Token saved');",
+                  "}",
+                  "pm.test('Login successful', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/authentification/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "authentification", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Chauffeur (Nos propres moyens)",
+      "item": [
+        {
+          "name": "1.1 Créer Sortie (chauffeur)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.sortie && res.sortie.id) {",
+                  "    pm.collectionVariables.set('sortieId_chauffeur', res.sortie.id);",
+                  "    console.log('Sortie chauffeur ID:', res.sortie.id);",
+                  "}",
+                  "pm.test('Sortie créée', () => pm.response.to.have.status(201));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compteId\": {{compteId}},\n  \"chantierId\": {{chantierId}},\n  \"observation\": \"Test livraison par chauffeur\",\n  \"typeLivraison\": \"chauffeur\",\n  \"nomChauffeur\": \"Faouzi JMOUR\",\n  \"matriculeVoiture\": \"199 TUN 8861\",\n  \"articles\": [\n    {\n      \"articleId\": {{articleId}},\n      \"stockSortie\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sorties/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Confirmer Sortie (chauffeur)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Sortie confirmée', () => pm.response.to.have.status(200));",
+                  "if (res.documents && res.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId_bl', res.documents[0].id);",
+                  "    console.log('BL chauffeur doc ID:', res.documents[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId_chauffeur}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sorties/confirm-deny",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sorties", "confirm-deny"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Télécharger BL (chauffeur)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('PDF reçu', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/pdf');",
+                  "});",
+                  "console.log('BL chauffeur PDF size:', pm.response.responseSize);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/documents/{{documentId_bl}}/download",
+              "host": ["{{base_url}}"],
+              "path": ["api", "documents", "{{documentId_bl}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Client seul (vient en personne)",
+      "item": [
+        {
+          "name": "2.1 Créer Sortie (client seul)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.sortie && res.sortie.id) {",
+                  "    pm.collectionVariables.set('sortieId_client_seul', res.sortie.id);",
+                  "    console.log('Sortie client seul ID:', res.sortie.id);",
+                  "}",
+                  "pm.test('Sortie créée', () => pm.response.to.have.status(201));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compteId\": {{compteId}},\n  \"chantierId\": {{chantierId}},\n  \"observation\": \"Client vient chercher seul\",\n  \"typeLivraison\": \"client\",\n  \"nomClient\": \"Mohamed Trabelsi\",\n  \"articles\": [\n    {\n      \"articleId\": {{articleId}},\n      \"stockSortie\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sorties/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "2.2 Confirmer Sortie (client seul)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Sortie confirmée', () => pm.response.to.have.status(200));",
+                  "if (res.documents && res.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId_bl', res.documents[0].id);",
+                  "    console.log('BL client seul doc ID:', res.documents[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId_client_seul}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sorties/confirm-deny",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sorties", "confirm-deny"]
+            }
+          }
+        },
+        {
+          "name": "2.3 Télécharger BL (client seul)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/documents/{{documentId_bl}}/download",
+              "host": ["{{base_url}}"],
+              "path": ["api", "documents", "{{documentId_bl}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Client + son transporteur",
+      "item": [
+        {
+          "name": "3.1 Créer Sortie (client + transporteur)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.sortie && res.sortie.id) {",
+                  "    pm.collectionVariables.set('sortieId_client_transport', res.sortie.id);",
+                  "    console.log('Sortie client+transport ID:', res.sortie.id);",
+                  "}",
+                  "pm.test('Sortie créée', () => pm.response.to.have.status(201));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compteId\": {{compteId}},\n  \"chantierId\": {{chantierId}},\n  \"observation\": \"Client envoie son propre transporteur\",\n  \"typeLivraison\": \"client\",\n  \"nomChauffeur\": \"Ahmed Ben Salem\",\n  \"matriculeVoiture\": \"220 TUN 5543\",\n  \"articles\": [\n    {\n      \"articleId\": {{articleId}},\n      \"stockSortie\": 3\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sorties/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sorties", "create"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Confirmer Sortie (client + transporteur)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Sortie confirmée', () => pm.response.to.have.status(200));",
+                  "if (res.documents && res.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId_bl', res.documents[0].id);",
+                  "    console.log('BL client+transport doc ID:', res.documents[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortieId\": {{sortieId_client_transport}},\n  \"action\": \"confirm\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sorties/confirm-deny",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sorties", "confirm-deny"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Télécharger BL (client + transporteur)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/documents/{{documentId_bl}}/download",
+              "host": ["{{base_url}}"],
+              "path": ["api", "documents", "{{documentId_bl}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Bon de Retour",
+      "item": [
+        {
+          "name": "4.1 Créer Retour",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Retour créé', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chantierId\": {{chantierId}},\n  \"items\": [\n    {\n      \"articleId\": {{articleId}},\n      \"quantite\": 1,\n      \"reason\": \"Article défectueux\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/retours/ajouter",
+              "host": ["{{base_url}}"],
+              "path": ["api", "retours", "ajouter"]
+            }
+          }
+        },
+        {
+          "name": "4.2 Lister Retours (trouver ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Liste reçue', () => pm.response.to.have.status(200));",
+                  "if (res.retours && res.retours.length > 0) {",
+                  "    const pending = res.retours.find(r => r.status === 'pending');",
+                  "    if (pending) {",
+                  "        pm.collectionVariables.set('retourId', pending.id);",
+                  "        console.log('Retour pending ID:', pending.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/retours/liste",
+              "host": ["{{base_url}}"],
+              "path": ["api", "retours", "liste"]
+            }
+          }
+        },
+        {
+          "name": "4.3 Approuver Retour (génère BR)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Retour approuvé', () => pm.response.to.have.status(200));",
+                  "if (res.documents && res.documents.length > 0) {",
+                  "    pm.collectionVariables.set('documentId_br', res.documents[0].id);",
+                  "    console.log('BR doc ID:', res.documents[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"retourId\": {{retourId}},\n  \"action\": \"approve\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/retours/traiter",
+              "host": ["{{base_url}}"],
+              "path": ["api", "retours", "traiter"]
+            }
+          }
+        },
+        {
+          "name": "4.4 Télécharger Bon de Retour PDF",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/documents/{{documentId_br}}/download",
+              "host": ["{{base_url}}"],
+              "path": ["api", "documents", "{{documentId_br}}", "download"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Vérification",
+      "item": [
+        {
+          "name": "5.1 Lister Sorties Confirmées",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/sorties/list-confirme",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sorties", "list-confirme"]
+            }
+          }
+        },
+        {
+          "name": "5.2 Lister Retours",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/retours/liste",
+              "host": ["{{base_url}}"],
+              "path": ["api", "retours", "liste"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

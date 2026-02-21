@@ -8,6 +8,10 @@
     </div>
 
     <div class="modal-body" *ngIf="retour">
+      <div *ngIf="error.show">
+        <app-error [message]="error.message"></app-error>
+      </div>
+
       <form>
         <div class="form-row">
           <div class="form-group">
@@ -71,6 +75,26 @@
             ></textarea>
           </div>
         </div>
+        <div class="form-row" *ngIf="retour?.status === 'pending'">
+          <div class="form-group" style="flex: 1">
+            <label>Nom du transporteur</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nomTransporteur"
+              name="nomTransporteur"
+            />
+          </div>
+          <div class="form-group" style="flex: 1">
+            <label>Matricule du Voiture</label>
+            <input
+              [(ngModel)]="matriculeTransporteur"
+              type="text"
+              class="form-control"
+              name="matriculeTransporteur"
+            />
+          </div>
+        </div>
       </form>
     </div>
 
@@ -86,8 +110,17 @@
         class="button green-button"
         (click)="onConfirm()"
         *ngIf="retour?.status === 'pending'"
+        [disabled]="isConfirming"
       >
-        Confirmer
+        <span *ngIf="!isConfirming">Confirmer</span>
+        <app-loading *ngIf="isConfirming" [size]="15"></app-loading>
+      </button>
+      <button
+        class="button black-button"
+        (click)="downloadBonRetour()"
+        *ngIf="retour?.status === 'confirmed'"
+      >
+        Exporter bon de retour
       </button>
     </div>
   </div>

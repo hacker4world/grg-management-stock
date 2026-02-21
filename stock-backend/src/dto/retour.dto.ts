@@ -21,4 +21,6 @@ export interface ListRetoursDto {
 export interface ApproveDenyRetourDto {
   retourId: number;
   action: "approve" | "deny";
+  nomTransporteur?: string;
+  matriculeTransporteur?: string;
 }

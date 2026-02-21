@@ -27,6 +27,8 @@ compteRouter.post(
 
 compteRouter.post("/logout", authentificationService.logout);
 
+compteRouter.post("/refresh", authentificationService.refreshToken);
+
 // Authenticated route
 compteRouter.get("/verify", authenticate, authentificationService.verifierCompte);
 

@@ -668,6 +668,13 @@ export function generateBonDeRetourHtml(retour: RetourArticle): string {
     </div>
   </div>
 
+  <!-- ===== SHIPPING INFO ===== -->
+  <div class="shipping-info">
+    <strong>Méthode d'expédition:</strong> Nos propres moyens<br>
+    <strong>Transporteur:</strong> ${retour.nomTransporteur || "-"}<br>
+    <strong>Matricule voiture:</strong> ${retour.matriculeTransporteur || "-"}
+  </div>
+
   <!-- ===== TABLE (flex-grow to fill page) ===== -->
   <div class="table-wrapper">
     <table class="items-table">

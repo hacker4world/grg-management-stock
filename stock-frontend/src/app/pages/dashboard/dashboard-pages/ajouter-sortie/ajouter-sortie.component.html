@@ -1,7 +1,5 @@
-<!-- ajouter-sortie.component.html -->
-
 <div class="header">
-  <h2 class="page-title">Ajouter nouveau Sortie</h2>
+  <h2 class="page-title">Ajouter une nouvelle sortie</h2>
 </div>
 
 <div *ngIf="error.show">
@@ -14,34 +12,30 @@
 
 <div class="card">
   <form [formGroup]="form">
-    <!-- Type de sortie -->
     <div class="form-row">
       <div class="form-group">
         <label>Type de sortie :</label>
         <select class="form-control" formControlName="typeSortie">
-          <option value="interne_chantier">Sortie interne au chantier</option>
-          <option value="interne_depot">Sortie interne au dépôt</option>
+          <option value="interne-chantier">Sortie interne au chantier</option>
+          <option value="interne-depot">Sortie interne au dépot</option>
           <option value="externe">Sortie externe</option>
         </select>
       </div>
     </div>
-
-    <!-- Article and Stock -->
     <div class="form-row">
       <div class="form-group">
         <label>Article :</label>
         <select class="form-control" formControlName="articleId">
-          <option value="">Selectionnez article</option>
+          <option value="">Sélectionnez un article</option>
           <option [value]="article.id" *ngFor="let article of articles">
             {{ article.nom }}
           </option>
         </select>
       </div>
     </div>
-
     <div class="form-row">
       <div class="form-group">
-        <label>Stock Sortie :</label>
+        <label>Stock de sortie :</label>
         <input
           class="form-control"
           type="number"
@@ -50,177 +44,127 @@
       </div>
       <div class="form-group">
         <label>Date :</label>
-        <input class="form-control" type="date" formControlName="date" />
+        <input class="form-control" type="date" />
       </div>
     </div>
-
-    <!-- Observation -->
     <div class="form-row">
+      <div
+        class="form-group"
+        *ngIf="form.get('typeSortie').value == 'interne-chantier'"
+      >
+        <label>Chantier :</label>
+        <select class="form-control" formControlName="chantierId">
+          <option value="">Non associé</option>
+          <option *ngFor="let chantier of chantiers" [value]="chantier.code">
+            {{ chantier.nom }}
+          </option>
+        </select>
+      </div>
+      <div
+        class="form-group"
+        *ngIf="form.get('typeSortie').value == 'interne-depot'"
+      >
+        <label>Dépot :</label>
+        <select class="form-control" formControlName="depotId">
+          <option value="">Non associé</option>
+          <option *ngFor="let depot of depots" [value]="depot.id">
+            {{ depot.nom }}
+          </option>
+        </select>
+      </div>
       <div class="form-group">
         <label>Observation :</label>
         <input class="form-control" type="text" formControlName="observation" />
       </div>
     </div>
-
-    <!-- INTERNE CHANTIER FIELDS -->
-    <div *ngIf="form.get('typeSortie')?.value === 'interne_chantier'">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Chantier :</label>
-          <select class="form-control" formControlName="chantierId">
-            <option value="">Selectionnez un chantier</option>
-            <option *ngFor="let chantier of chantiers" [value]="chantier.code">
-              {{ chantier.nom }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nom du transporteur :</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="nomTransporteurChantier"
-          />
-        </div>
-        <div class="form-group">
-          <label>Matricule du transporteur :</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="matriculeTransporteurChantier"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- INTERNE DEPOT FIELDS -->
-    <div *ngIf="form.get('typeSortie')?.value === 'interne_depot'">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Dépôt :</label>
-          <select class="form-control" formControlName="depotId">
-            <option value="">Selectionnez un dépôt</option>
-            <option *ngFor="let depot of depots" [value]="depot.id">
-              {{ depot.nom }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nom du transporteur :</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="nomTransporteurDepot"
-          />
-        </div>
-        <div class="form-group">
-          <label>Matricule du transporteur :</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="matriculeTransporteurDepot"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- EXTERNE FIELDS -->
-    <div *ngIf="form.get('typeSortie')?.value === 'externe'">
-      <!-- Company Info -->
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nom de l'entreprise :</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="nomEntreprise"
-          />
-        </div>
-        <div class="form-group">
-          <label>Adresse de l'entreprise :</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="adresseEntreprise"
-          />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Matricule fiscal de l'entreprise :</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="matriculeFiscalEntreprise"
-          />
-        </div>
-        <div class="form-group">
-          <label>Nom du client :</label>
-          <input type="text" class="form-control" formControlName="nomClient" />
-        </div>
-      </div>
-
-      <!-- Transporter Checkbox -->
-      <div style="display: flex; margin: 15px 0">
+    <div
+      class="form-row"
+      *ngIf="
+        form.get('typeSortie').value == 'interne-depot' ||
+        form.get('typeSortie').value == 'interne-chantier'
+      "
+    >
+      <div class="form-group">
+        <label>Nom complet du transporteur :</label>
         <input
-          #transporterCheckbox
-          type="checkbox"
-          [checked]="
-            form.get('sousTypeSortieExterne')?.value === 'avec_transporteur'
-          "
-          (change)="
-            form.patchValue(
-              {
-                sousTypeSortieExterne: transporterCheckbox.checked
-                  ? 'avec_transporteur'
-                  : 'sans_transporteur',
-              },
-              { emitEvent: true }
-            )
-          "
-          id="transporterCheckbox"
+          type="text"
+          class="form-control"
+          formControlName="nomTransporteur"
         />
-        <label style="margin-left: 7px">Ajouter transporteur</label>
       </div>
+      <div class="form-group">
+        <label>Matricule voiture :</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="matriculeTransporteur"
+        />
+      </div>
+    </div>
+    <div class="form-row" *ngIf="form.get('typeSortie').value == 'externe'">
+      <div class="form-group">
+        <label>Nom de l'entreprise :</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="nomEntreprise"
+        />
+      </div>
+      <div class="form-group">
+        <label>Adresse de l'entreprise :</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="adresseEntreprise"
+        />
+      </div>
+    </div>
+    <div class="form-row" *ngIf="form.get('typeSortie').value == 'externe'">
+      <div class="form-group">
+        <label>Matricule fiscale de l'entreprise :</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="matriculeFiscale"
+        />
+      </div>
+      <div class="form-group">
+        <label>Nom du client :</label>
+        <input type="text" class="form-control" formControlName="nomClient" />
+      </div>
+    </div>
+    <div
+      style="display: flex"
+      *ngIf="form.get('typeSortie').value == 'externe'"
+    >
+      <input formControlName="transporteur" type="checkbox" />
+      <label style="margin-left: 7px">Ajouter transporteur</label>
+    </div>
+    <br />
 
-      <!-- Transporter Fields (conditional) -->
-      <div
-        *ngIf="form.get('sousTypeSortieExterne')?.value === 'avec_transporteur'"
-      >
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nom du transporteur :</label>
-            <input
-              class="form-control"
-              type="text"
-              formControlName="nomTransporteurExterne"
-            />
-          </div>
-          <div class="form-group">
-            <label>Matricule du transporteur :</label>
-            <input
-              class="form-control"
-              type="text"
-              formControlName="matriculeTransporteurExterne"
-            />
-          </div>
-        </div>
+    <div class="form-row" *ngIf="form.get('transporteur').value == true">
+      <div class="form-group">
+        <label>Nom du transporteur :</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="nomTransporteur"
+        />
+      </div>
+      <div class="form-group">
+        <label>Matricule du transporteur :</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="matriculeTransporteur"
+        />
       </div>
     </div>
   </form>
 
-  <!-- Articles List and Buttons -->
-  <div style="display: flex; justify-content: space-between; margin-top: 20px">
+  <div style="display: flex; justify-content: space-between">
     <div style="width: 20%; height: 30px">
       <select class="form-control" style="height: 40px">
-        <option value="">Articles ajoutés</option>
         <option
           *ngFor="let article of articlesAjoute"
           [value]="article.articleId"
@@ -234,11 +178,10 @@
         (click)="onAddSortie()"
         class="button black-button"
         style="margin-right: 7px"
-        type="button"
       >
         Ajouter autre produit
       </button>
-      <button class="button green-button" (click)="onSubmit()" type="button">
+      <button class="button green-button" (click)="onSubmit()">
         Enregistrer Tous
       </button>
     </div>

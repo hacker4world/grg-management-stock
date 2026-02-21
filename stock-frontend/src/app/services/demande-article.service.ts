@@ -23,6 +23,7 @@ export class DemandesArticlesService {
       if (options.date) base += `&date=${options.date}`;
       if (options.status) base += `&status=${options.status}`;
       if (options.articleId) base += `&articleId=${options.articleId}`;
+      if (options.id !== undefined) base += `&id=${options.id}`; // ✅ ADD THIS LINE
     }
 
     console.log(base);
@@ -57,4 +58,5 @@ export interface ListOptions {
   articleId?: number; // Added
   searching?: boolean;
   searchQuery?: string;
+  id?: any;
 }
