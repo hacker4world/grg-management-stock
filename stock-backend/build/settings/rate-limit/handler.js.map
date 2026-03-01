@@ -1,0 +1,1 @@
+{"version":3,"file":"handler.js","sourceRoot":"","sources":["../../../src/settings/rate-limit/handler.ts"],"names":[],"mappings":";;AAEA,4CAIC;AAJD,SAAgB,gBAAgB,CAAC,OAAgB,EAAE,QAAkB;IACnE,OAAO,QAAQ,CAAC,MAAM,CAAC,GAAG,CAAC,CAAC,IAAI,CAAC;QAC/B,OAAO,EAAE,0CAA0C;KACpD,CAAC,CAAC;AACL,CAAC"}
