@@ -4,7 +4,7 @@ import { CompteEnAttenteListResponse } from '../models/comptes-en-attente.model'
 
 @Injectable({ providedIn: 'root' })
 export class ComptesEnAttenteService {
-  private readonly url = 'http://localhost:4000/api/authentification';
+  private readonly url = 'https://stock.grg-group.com.tn/api/authentification';
 
   constructor(private readonly http: HttpClient) {}
 

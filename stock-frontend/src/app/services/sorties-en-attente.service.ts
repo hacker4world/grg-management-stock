@@ -26,7 +26,7 @@ export interface SortieListOptions {
 
 @Injectable({ providedIn: 'root' })
 export class SortiesEnAttenteService {
-  private readonly base = 'http://localhost:4000/api/sorties';
+  private readonly base = 'https://stock.grg-group.com.tn/api/sorties';
 
   constructor(private http: HttpClient) {}
 

@@ -8,7 +8,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class DemandesArticlesService {
-  private readonly url = 'http://localhost:4000/api/demandes-articles';
+  private readonly url = 'https://stock.grg-group.com.tn/api/demandes-articles';
 
   constructor(private readonly http: HttpClient) {}
 

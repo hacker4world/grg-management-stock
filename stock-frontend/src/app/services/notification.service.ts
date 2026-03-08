@@ -11,7 +11,7 @@ export interface NotificationFilterOptions {
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly url = 'http://localhost:4000/api/notifications';
+  private readonly url = 'https://stock.grg-group.com.tn/api/notifications';
 
   constructor(private readonly httpClient: HttpClient) {}
 

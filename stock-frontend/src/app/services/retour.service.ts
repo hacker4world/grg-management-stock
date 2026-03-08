@@ -10,7 +10,7 @@ import {
   providedIn: 'root',
 })
 export class RetourService {
-  private readonly url: string = 'http://localhost:4000/api/retours';
+  private readonly url: string = 'https://stock.grg-group.com.tn/api/retours';
 
   constructor(private readonly httpClient: HttpClient) {}
 

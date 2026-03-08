@@ -9,7 +9,8 @@ import {
   providedIn: 'root',
 })
 export class FamillesService {
-  private readonly url = 'http://localhost:4000/api/classement/familles';
+  private readonly url =
+    'https://stock.grg-group.com.tn/api/classement/familles';
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -30,7 +31,7 @@ export class FamillesService {
       `${this.url}/recherche?page=${page}&search=${search}`,
       {
         withCredentials: true,
-      }
+      },
     );
   }
 
@@ -51,7 +52,7 @@ export class FamillesService {
       `${this.url}/supprimer?id=${id}&cascade=${cascade ? 'yes' : 'no'}`,
       {
         withCredentials: true,
-      }
+      },
     );
   }
 }

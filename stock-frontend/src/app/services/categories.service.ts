@@ -10,7 +10,8 @@ import {
   providedIn: 'root',
 })
 export class CategoriesService {
-  private readonly url = 'http://localhost:4000/api/classement/categorie';
+  private readonly url =
+    'https://stock.grg-group.com.tn/api/classement/categorie';
 
   constructor(private readonly httpClient: HttpClient) {}
 

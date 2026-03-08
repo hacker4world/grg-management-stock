@@ -61,9 +61,9 @@ class AuthentificationService {
         });
         // Set cookie for web browsers
         response.cookie("token", token, {
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             httpOnly: true,
-            sameSite: "lax",
+            sameSite: "none",
         });
         // Also return token in body for mobile apps
         return response.json({

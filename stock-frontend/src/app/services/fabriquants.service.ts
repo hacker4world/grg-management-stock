@@ -9,7 +9,7 @@ import {
   providedIn: 'root',
 })
 export class FabriquantsService {
-  private readonly url = 'http://localhost:4000/api/fabriquants';
+  private readonly url = 'https://stock.grg-group.com.tn/api/fabriquants';
 
   constructor(private readonly httpClient: HttpClient) {}
 

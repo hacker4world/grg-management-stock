@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ExportService {
-  private baseUrl = 'http://localhost:4000/api/export';
+  private baseUrl = 'https://stock.grg-group.com.tn/api/export';
 
   constructor(private http: HttpClient) {}
 

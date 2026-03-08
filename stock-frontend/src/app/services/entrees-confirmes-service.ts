@@ -5,7 +5,7 @@ import { EntreeConfirmeeListResponse } from '../models/entrees-confirmes.model';
 
 @Injectable({ providedIn: 'root' })
 export class EntreesConfirmesService {
-  private readonly base = 'http://localhost:4000/api/entree';
+  private readonly base = 'https://stock.grg-group.com.tn/api/entree';
 
   constructor(private http: HttpClient) {}
 

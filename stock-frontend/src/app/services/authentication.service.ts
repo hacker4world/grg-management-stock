@@ -7,16 +7,15 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private readonly url: string = 'http://localhost:4000/api/authentification';
+  private readonly url: string =
+    'https://stock.grg-group.com.tn/api/authentification';
 
   private currentUser = new BehaviorSubject<any>(null);
 
   constructor(private readonly httpClient: HttpClient) {}
 
   public login(loginData: LoginModel) {
-    return this.httpClient.post(`${this.url}/login`, loginData, {
-      withCredentials: true,
-    });
+    return this.httpClient.post(`${this.url}/login`, loginData);
   }
 
   public signup(signupData: SignupModel) {

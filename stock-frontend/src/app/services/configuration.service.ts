@@ -17,7 +17,7 @@ export interface Unite {
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService {
-  private readonly base = 'http://localhost:4000/api';
+  private readonly base = 'https://stock.grg-group.com.tn/api';
 
   constructor(private http: HttpClient) {}
 

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Article, ArticleListResponseModel } from '../models/articles.model';
@@ -7,7 +7,7 @@ import { Article, ArticleListResponseModel } from '../models/articles.model';
   providedIn: 'root',
 })
 export class ArticlesService {
-  private readonly url: string = 'http://localhost:4000/api/articles';
+  private readonly url: string = 'https://stock.grg-group.com.tn/api/articles';
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -35,7 +35,7 @@ export class ArticlesService {
       }
     }
 
-    console.log(queryParams);
+    console.log(`${this.url}/liste${queryParams}`);
 
     return this.httpClient.get<ArticleListResponseModel>(
       `${this.url}/liste${queryParams}`,

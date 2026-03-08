@@ -86,9 +86,9 @@ export class AuthentificationService {
 
     // Set cookie for web browsers
     response.cookie("token", token, {
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
     });
 
     // Also return token in body for mobile apps
@@ -107,7 +107,7 @@ export class AuthentificationService {
     response.clearCookie("token", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
     });
 
     response.json({
@@ -136,9 +136,9 @@ export class AuthentificationService {
     const newToken = generateToken({ user_id: compte.id });
 
     response.cookie("token", newToken, {
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
     });
 
     return response.json({

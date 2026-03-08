@@ -6,7 +6,7 @@ import { ModifierCompteConfirme } from '../models/comptes-confirmes.model';
   providedIn: 'root',
 })
 export class ComptesConfirmesService {
-  private readonly url = 'http://localhost:4000/api/authentification';
+  private readonly url = 'https://stock.grg-group.com.tn/api/authentification';
 
   constructor(private readonly httpClient: HttpClient) {}
 

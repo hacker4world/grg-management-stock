@@ -17,7 +17,7 @@ export function extractToken(req: Request): string | null {
     }
   }
   // Fallback to cookie for web browsers
-  const cookieToken = req.cookies?.token as string;
+  const cookieToken = req.cookies?.token as string; 
   return cookieToken || null;
 }
 

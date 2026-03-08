@@ -6,7 +6,8 @@ import { CreerSousFamilleModel } from '../models/sous-familles.model';
   providedIn: 'root',
 })
 export class SousFamillesService {
-  private readonly url = 'http://localhost:4000/api/classement/sous-famille';
+  private readonly url =
+    'https://stock.grg-group.com.tn/api/classement/sous-famille';
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -47,7 +48,7 @@ export class SousFamillesService {
       `${this.url}/supprimer?id=${id}&cascade=${cascade ? 'yest' : 'no'}`,
       {
         withCredentials: true,
-      }
+      },
     );
   }
 }
