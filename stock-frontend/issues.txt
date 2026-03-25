@@ -1,0 +1,20 @@
+organize the api url before
+
+-- page articles :
+- restore does not remove search
+
+--page chantiers :
+- chantier summary still uses old backend endpoint (localhost:4000)
+
+-- page demandes articles :
+- export fiche expedition does not work
+
+-- page entrée confirme :
+- entrée details does not load on the modal
+- list articles does not load articles
+
+-- issues that will not appear during tests :
+consider checking if every page and modal now uses the new backend endpoint
+
+--known issues :
+- relationship bugs in the backend
