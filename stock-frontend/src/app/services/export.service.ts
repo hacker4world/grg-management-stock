@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExportService {
-  private baseUrl = 'https://stock.grg-group.com.tn/api/export';
+  private baseUrl = `${environement.api_url}/export`;
 
   constructor(private http: HttpClient) {}
 

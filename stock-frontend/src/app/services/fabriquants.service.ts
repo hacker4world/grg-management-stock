@@ -4,12 +4,13 @@ import {
   CreateFabriquantModel,
   ModifierFabriquant,
 } from '../models/fabriquants.model';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FabriquantsService {
-  private readonly url = 'https://stock.grg-group.com.tn/api/fabriquants';
+  private readonly url = `${environement.api_url}/fabriquants`;
 
   constructor(private readonly httpClient: HttpClient) {}
 

@@ -5,13 +5,14 @@ import {
   CreerCategorieModel,
   ModifierCategorieModel,
 } from '../models/categories.model';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoriesService {
   private readonly url =
-    'https://stock.grg-group.com.tn/api/classement/categorie';
+    `${environement.api_url}/classement/categorie`;
 
   constructor(private readonly httpClient: HttpClient) {}
 

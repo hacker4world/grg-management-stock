@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { EntreeConfirmeeListResponse } from '../models/entrees-confirmes.model';
+import { environement } from '../../../environement';
 
 @Injectable({ providedIn: 'root' })
 export class EntreesConfirmesService {
-  private readonly base = 'https://stock.grg-group.com.tn/api/entree';
+  private readonly base = `${environement.api_url}/entree`;
 
   constructor(private http: HttpClient) {}
 

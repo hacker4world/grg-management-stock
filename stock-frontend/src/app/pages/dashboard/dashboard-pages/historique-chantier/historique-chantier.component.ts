@@ -9,6 +9,7 @@ import { ArticlesListModalComponent } from '../../../../components/details-modal
 import { ExportModalComponent } from '../../../../components/export-modal/export-modal.component';
 import { ExportService } from '../../../../services/export.service';
 import { LoadingComponent } from "../../../../components/loading/loading.component";
+import { environement } from '../../../../../../environement';
 
 @Component({
   selector: 'app-historique-chantier',
@@ -56,7 +57,7 @@ export class HistoriqueChantierComponent implements OnInit {
   }
 
   fetchChantierSummary(id: string): void {
-    const url = `http://localhost:4000/api/chantier/summary/${id}`;
+    const url = `${environement.api_url}/chantier/summary/${id}`;
     this.http.get(url, { withCredentials: true }).subscribe({
       next: (data: any) => {
         this.chantierData = data;

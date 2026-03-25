@@ -4,10 +4,11 @@ import {
   CreateFournisseurModel,
   ModifierFournisseurModel,
 } from '../models/fournisseurs.model';
+import { environement } from '../../../environement';
 
 @Injectable({ providedIn: 'root' })
 export class FournisseursService {
-  private readonly url = 'https://stock.grg-group.com.tn/api/fournisseurs';
+  private readonly url = `${environement.api_url}/fournisseurs`;
 
   constructor(private readonly http: HttpClient) {}
 

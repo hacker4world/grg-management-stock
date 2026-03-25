@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SortieConfirmeListResponse } from '../models/sorties-confirmes.model';
 import { SortieListOptions } from './sorties-en-attente.service';
+import { environement } from '../../../environement';
 
 @Injectable({ providedIn: 'root' })
 export class SortiesConfirmesService {
-  private readonly base = 'https://stock.grg-group.com.tn/api/sorties';
+  private readonly base = `${environement.api_url}/sorties`;
 
   constructor(private http: HttpClient) {}
 

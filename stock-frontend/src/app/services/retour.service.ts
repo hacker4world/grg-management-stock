@@ -5,12 +5,13 @@ import {
   RetourListResponseModel,
   TraiterRetourRequest,
 } from '../models/retour.model';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RetourService {
-  private readonly url: string = 'https://stock.grg-group.com.tn/api/retours';
+  private readonly url: string = `${environement.api_url}/retours`;
 
   constructor(private readonly httpClient: HttpClient) {}
 

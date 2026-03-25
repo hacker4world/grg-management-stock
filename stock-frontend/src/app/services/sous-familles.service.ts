@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreerSousFamilleModel } from '../models/sous-familles.model';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SousFamillesService {
   private readonly url =
-    'https://stock.grg-group.com.tn/api/classement/sous-famille';
+    `${environement.api_url}/classement/sous-famille`;
 
   constructor(private readonly httpClient: HttpClient) {}
 

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environement } from '../../../environement';
 
 
 export interface NotificationFilterOptions {
@@ -11,7 +12,7 @@ export interface NotificationFilterOptions {
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly url = 'https://stock.grg-group.com.tn/api/notifications';
+  private readonly url = `${environement.api_url}/notifications`;
 
   constructor(private readonly httpClient: HttpClient) {}
 

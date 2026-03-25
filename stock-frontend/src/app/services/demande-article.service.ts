@@ -5,10 +5,11 @@ import {
   DemandeArticleListResponse,
   DemandeArticleModel,
 } from '../models/demandes-articles.model';
+import { environement } from '../../../environement';
 
 @Injectable({ providedIn: 'root' })
 export class DemandesArticlesService {
-  private readonly url = 'https://stock.grg-group.com.tn/api/demandes-articles';
+  private readonly url = `${environement.api_url}/demandes-articles`;
 
   constructor(private readonly http: HttpClient) {}
 

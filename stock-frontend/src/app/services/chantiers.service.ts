@@ -7,10 +7,11 @@ import {
   CreateChantierModel,
   ModifierChantier,
 } from '../models/chantier.model';
+import { environement } from '../../../environement';
 
 @Injectable({ providedIn: 'root' })
 export class ChantiersService {
-  private readonly url = 'https://stock.grg-group.com.tn/api/chantier';
+  private readonly url = `${environement.api_url}/chantier`;
 
   constructor(private readonly http: HttpClient) {}
 

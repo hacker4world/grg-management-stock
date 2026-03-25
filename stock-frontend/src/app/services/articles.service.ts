@@ -2,12 +2,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Article, ArticleListResponseModel } from '../models/articles.model';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArticlesService {
-  private readonly url: string = 'https://stock.grg-group.com.tn/api/articles';
+  private readonly url: string = `${environement.api_url}/articles`;
 
   constructor(private readonly httpClient: HttpClient) {}
 

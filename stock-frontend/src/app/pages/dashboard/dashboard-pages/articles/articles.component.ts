@@ -273,6 +273,8 @@ export class ArticlesComponent implements OnInit {
   /* reset the list to its original state */
   onRestore() {
     this.listOptions.filtering = false;
+    this.listOptions.searching = false;
+    this.listOptions.query = "";
     this.restoreList();
     this.fetchArticles();
     this.alert = {

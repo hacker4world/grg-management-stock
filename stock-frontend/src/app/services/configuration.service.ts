@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environement } from '../../../environement';
 
 export interface Depot {
   id: number;
@@ -17,7 +18,7 @@ export interface Unite {
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService {
-  private readonly base = 'https://stock.grg-group.com.tn/api';
+  private readonly base = environement.api_url;
 
   constructor(private http: HttpClient) {}
 

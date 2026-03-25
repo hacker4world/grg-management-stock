@@ -4,13 +4,14 @@ import {
   CreateFamilleModel,
   ModifierFamilleModel,
 } from '../models/familles.model';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FamillesService {
   private readonly url =
-    'https://stock.grg-group.com.tn/api/classement/familles';
+    `${environement.api_url}/classement/familles`;
 
   constructor(private readonly httpClient: HttpClient) {}
 

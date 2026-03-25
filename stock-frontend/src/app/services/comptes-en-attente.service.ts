@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CompteEnAttenteListResponse } from '../models/comptes-en-attente.model';
+import { environement } from '../../../environement';
 
 @Injectable({ providedIn: 'root' })
 export class ComptesEnAttenteService {
-  private readonly url = 'https://stock.grg-group.com.tn/api/authentification';
+  private readonly url = `${environement.api_url}/authentification`;
 
   constructor(private readonly http: HttpClient) {}
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environement } from '../../../environement';
 
 export interface EntreeEnAttenteModel {
   id: string;
@@ -17,7 +18,7 @@ export interface EntreeEnAttenteListResponse {
 
 @Injectable({ providedIn: 'root' })
 export class EntreesEnAttenteService {
-  private readonly base = 'https://stock.grg-group.com.tn/api/entree';
+  private readonly base = `${environement.api_url}/entree`;
 
   constructor(private http: HttpClient) {}
 

@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginModel, SignupModel } from '../models/authentication.model';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environement } from '../../../environement';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
   private readonly url: string =
-    'https://stock.grg-group.com.tn/api/authentification';
+    `${environement.api_url}/authentification`;
 
   private currentUser = new BehaviorSubject<any>(null);
 
