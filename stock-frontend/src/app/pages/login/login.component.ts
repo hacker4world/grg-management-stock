@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { LoginModel } from '../../models/authentication.model';
 import { ErrorComponent } from '../../components/error/error.component';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +23,7 @@ import { LoadingComponent } from '../../components/loading/loading.component';
     ErrorComponent,
     LoadingComponent,
   ],
-  templateUrl: './login.component.html',  
+  templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
@@ -41,6 +42,7 @@ export class LoginComponent {
   constructor(
     private readonly authenticationService: AuthenticationService,
     private readonly router: Router,
+    private readonly httpClient: HttpClient,
   ) {}
 
   public login() {
@@ -63,14 +65,12 @@ export class LoginComponent {
           const role = response.account.role;
 
           console.log(role);
-          
+
           if (role == 'admin' || role == 'admin1' || role == 'admin2')
             this.router.navigate(['../dashboard/articles']);
           else if (role == 'magazinier') {
             this.router.navigate(['../dashboard/articles']);
-          }
-            
-          else if (role == 'responsable-chantier')
+          } else if (role == 'responsable-chantier')
             this.router.navigate(['../dashboard/demandes-articles']);
 
           this.loading = false;

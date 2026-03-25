@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SortieEnAttenteListResponse } from '../models/sorties-en-attente.model';
+import { environement } from '../../../environement';
 
 export interface CreateSortieDto {
   articles: Array<{ articleId: number; stockSortie: number }>;
@@ -26,7 +27,7 @@ export interface SortieListOptions {
 
 @Injectable({ providedIn: 'root' })
 export class SortiesEnAttenteService {
-  private readonly base = 'https://stock.grg-group.com.tn/api/sorties';
+  private readonly base = `${environement.api_url}/sorties`;
 
   constructor(private http: HttpClient) {}
 

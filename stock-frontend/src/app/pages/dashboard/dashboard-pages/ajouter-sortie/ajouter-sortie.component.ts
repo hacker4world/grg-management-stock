@@ -152,7 +152,7 @@ export class AjouterSortieComponent implements OnInit {
       next: (response) => {
         this.alert = {
           show: true,
-          message: `Sortie créée avec succès`,
+          message: `Sortie ajouté avec succès`,
         };
         // Reset form after successful submission
         this.resetForm();

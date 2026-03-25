@@ -1,10 +1,10 @@
 organize the api url before
 
 -- page articles :
-- restore does not remove search
+- restore does not remove search | fixed
 
 --page chantiers :
-- chantier summary still uses old backend endpoint (localhost:4000)
+- chantier summary still uses old backend endpoint (localhost:4000) | fixed
 
 -- page demandes articles :
 - export fiche expedition does not work
@@ -14,7 +14,8 @@ organize the api url before
 - list articles does not load articles
 
 -- issues that will not appear during tests :
-consider checking if every page and modal now uses the new backend endpoint
+consider checking if every page and modal now uses the new backend endpoint and calls the service instead of calling inside the component file
 
 --known issues :
-- relationship bugs in the backend
+- relationship bugs
+- some document based operations use a static localhost backend url, will cause an issue in production

@@ -55,6 +55,12 @@ export class ChantiersService {
       { withCredentials: true, responseType: 'blob' },
     );
   }
+
+  fetchChantierSummary(chantierId: string) {
+    const url = `${environement.api_url}/chantier/summary/${chantierId}`;
+
+    return this.http.get(url, { withCredentials: true });
+  }
 }
 
 export interface ListOptions {

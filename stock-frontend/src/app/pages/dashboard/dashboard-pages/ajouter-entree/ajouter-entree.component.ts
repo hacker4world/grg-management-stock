@@ -211,6 +211,9 @@ export class AjouterEntreeComponent implements OnInit {
     this.loading = true;
     const v = this.addForm.value;
 
+    console.log(this.bandeCommandeFile!, this.bandeLivraisonFile!);
+    
+
     this.authenticationService.getCurrentUser().subscribe({
       next: (user: any) => {
         this.service

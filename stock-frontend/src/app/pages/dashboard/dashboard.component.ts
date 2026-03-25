@@ -13,17 +13,17 @@ import { AuthenticationService } from '../../services/authentication.service';
 export class DashboardComponent implements OnInit {
   constructor(
     private authenticationService: AuthenticationService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.authenticationService.verifyCompte().subscribe({
+    /* this.authenticationService.verifyCompte().subscribe({
       next: (response: any) => {
         this.authenticationService.setCurrentUser(response.account);
       },
       error: () => {
         this.router.navigate(['../../login']);
       },
-    });
+    }); */
   }
 }

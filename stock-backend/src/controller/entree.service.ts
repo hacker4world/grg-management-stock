@@ -43,15 +43,18 @@ export class EntreeService {
       bande_livraison?: Express.Multer.File[];
     };
 
-    /* const bandeCommande = files?.bande_commande?.[0];
-    const bandeLivraison = files?.bande_livraison?.[0]; */
+    console.log(files);
+    
 
-    /* if (!bandeCommande || !bandeLivraison)
+    const bandeCommande = files?.bande_commande?.[0];
+    const bandeLivraison = files?.bande_livraison?.[0];
+
+    if (!bandeCommande || !bandeLivraison)
       return res.status(400).json({
         message:
           "Les deux documents sont obligatoires : bande_commande et bande_livraison",
       });
- */
+
     // 4. Vérifier l'article
 
     // 5. Vérifier le fournisseur
@@ -119,7 +122,7 @@ export class EntreeService {
       return doc;
     };
 
-    /* const docBandeCommande = saveFileAndCreateDoc(
+    const docBandeCommande = saveFileAndCreateDoc(
       bandeCommande,
       "bande_commande",
     );
@@ -131,12 +134,12 @@ export class EntreeService {
 
     const documents = await documentRepository.find({
       where: { entree: { id: nouvelle.id } },
-    }); */
+    });
 
     return res.status(201).json({
       message: "Entrée créée",
       entree: nouvelle,
-      /* documents, */
+      documents,
     });
   }
 

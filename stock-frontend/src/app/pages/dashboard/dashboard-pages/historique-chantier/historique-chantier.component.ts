@@ -8,8 +8,9 @@ import { RetourArticlesListComponent } from '../../../../components/details-moda
 import { ArticlesListModalComponent } from '../../../../components/details-modals/articles-list-modal/articles-list-modal.component';
 import { ExportModalComponent } from '../../../../components/export-modal/export-modal.component';
 import { ExportService } from '../../../../services/export.service';
-import { LoadingComponent } from "../../../../components/loading/loading.component";
+import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { environement } from '../../../../../../environement';
+import { ChantiersService } from '../../../../services/chantiers.service';
 
 @Component({
   selector: 'app-historique-chantier',
@@ -21,8 +22,8 @@ import { environement } from '../../../../../../environement';
     RetourArticlesListComponent,
     ArticlesListModalComponent,
     ExportModalComponent,
-    LoadingComponent
-],
+    LoadingComponent,
+  ],
   templateUrl: './historique-chantier.component.html',
   styleUrl: './historique-chantier.component.css',
 })
@@ -46,6 +47,7 @@ export class HistoriqueChantierComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private exportService: ExportService,
+    private chantierService: ChantiersService,
   ) {}
 
   ngOnInit(): void {
@@ -58,7 +60,10 @@ export class HistoriqueChantierComponent implements OnInit {
 
   fetchChantierSummary(id: string): void {
     const url = `${environement.api_url}/chantier/summary/${id}`;
-    this.http.get(url, { withCredentials: true }).subscribe({
+
+    console.log(url);
+
+    this.chantierService.fetchChantierSummary(id).subscribe({
       next: (data: any) => {
         this.chantierData = data;
         this.loading = false;

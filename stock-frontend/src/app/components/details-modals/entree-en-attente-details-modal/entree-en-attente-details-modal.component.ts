@@ -60,6 +60,8 @@ export class EntreeEnAttenteDetailsModalComponent implements OnInit {
 
   /* -------- open document in new tab -------- */
   openDoc(type: 'bande_commande' | 'bande_livraison') {
+    console.log('works');
+
     const doc = (this.entree as any).documents?.find(
       (d: any) => d.type === type,
     );

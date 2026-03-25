@@ -13,6 +13,7 @@ import { fetchCompte } from "../utilities/fetch.util";
 import "dotenv/config";
 import { Raw } from "typeorm";
 import { AuthRequest } from "../middleware";
+import { cookieSettings } from "../../environement";
 
 export class AuthentificationService {
   public async signup(request: Request, response: Response) {
@@ -52,8 +53,6 @@ export class AuthentificationService {
   }
 
   async login(request: Request, response: Response) {
-    console.log("request received");
-
     const data = request.body as LoginDto;
 
     const account = await compteRepository.findOne({
@@ -84,11 +83,11 @@ export class AuthentificationService {
       user_id: account.id,
     });
 
-    // Set cookie for web browsers
     response.cookie("token", token, {
-      secure: true,
-      httpOnly: true,
-      sameSite: "none",
+      secure: false,
+      httpOnly: false,
+      sameSite: "lax",
+      path: "/",
     });
 
     // Also return token in body for mobile apps
@@ -130,15 +129,18 @@ export class AuthentificationService {
 
     const compte = await fetchCompte(result.payload.user_id);
     if (!compte || !compte.confirme) {
-      return response.status(401).json({ message: "Compte introuvable ou désactivé" });
+      return response
+        .status(401)
+        .json({ message: "Compte introuvable ou désactivé" });
     }
 
     const newToken = generateToken({ user_id: compte.id });
 
-    response.cookie("token", newToken, {
-      secure: true,
+    response.cookie("token", token, {
+      secure: false,
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "lax",
+      path: "/",
     });
 
     return response.json({
