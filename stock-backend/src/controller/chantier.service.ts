@@ -26,50 +26,95 @@ export class ChantierService {
     const data = req.body as AjouterChantierDto;
 
     const compte = await compteRepository.findOneBy({ id: data.compteId });
-    if (!compte) return res.status(404).json({ message: "Compte introuvable" });
+    if (!compte) {
+      return res.status(404).json({ message: "Compte introuvable" });
+    }
 
-    if (!compte.confirme)
+    if (!compte.confirme) {
       return res.status(403).json({ message: "Compte non vérifié" });
+    }
 
-    if (compte.role !== "responsable-chantier")
+    if (compte.role !== "responsable-chantier") {
       return res.status(403).json({ message: "Rôle invalide" });
+    }
 
     const nouveau = chantierRepository.create({
-      nom: data.nom,
-      adresse: data.adresse,
+      nom: data.nom.trim(),
+      adresse: data.adresse.trim(),
       compte,
     });
 
     await chantierRepository.save(nouveau);
-    res.json({ message: "Chantier est ajouté", chantier: nouveau });
+    return res.json({ message: "Chantier est ajouté", chantier: nouveau });
   }
 
   public async listeChantiers(req: Request, res: Response) {
     const q = req.query;
-    const page = q.page !== undefined ? Number(q.page) : 0; // Default to 0 (all)
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
+    // Build where clause
     const where: any = {};
-    if (q.query)
-      where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
-        nom: `%${q.query}%`,
-      });
-    if (q.adresse)
-      where.adresse = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:adr)`, {
-        adr: `%${q.adresse}%`,
-      });
-    if (q.code)
-      where.code = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:code)`, {
-        code: `%${q.code}%`,
-      });
-    if (q.compteId) where.compte = { id: Number(q.compteId) };
+
+    if (q.query && typeof q.query === "string") {
+      const searchTerm = q.query.trim();
+      if (searchTerm) {
+        where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
+          nom: `%${searchTerm}%`,
+        });
+      }
+    }
+    if (q.adresse && typeof q.adresse === "string") {
+      const searchTerm = q.adresse.trim();
+      if (searchTerm) {
+        where.adresse = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:adr)`, {
+          adr: `%${searchTerm}%`,
+        });
+      }
+    }
+    // Code filter: exact match on numeric primary key (no LOWER)
+    if (q.code) {
+      const codeNum = Number(q.code);
+      if (!isNaN(codeNum)) {
+        where.code = codeNum;
+      }
+    }
+    if (q.compteId) {
+      const compteIdNum = Number(q.compteId);
+      if (!isNaN(compteIdNum) && compteIdNum > 0) {
+        where.compte = { id: compteIdNum };
+      }
+    }
+
+    // Pagination validation
+    let page = 0;
+    let isPaginationDisabled = false;
+
+    if (q.page !== undefined) {
+      const pageNum = Number(q.page);
+      if (isNaN(pageNum)) {
+        return res.status(400).json({
+          message: "Le paramètre 'page' doit être un nombre",
+        });
+      }
+      page = pageNum;
+      if (page === 0) {
+        isPaginationDisabled = true;
+      } else if (page < 1) {
+        return res.status(400).json({
+          message: "Le paramètre 'page' doit être supérieur ou égal à 0",
+        });
+      }
+    } else {
+      isPaginationDisabled = true;
+    }
 
     const findOptions: any = {
       where,
       relations: { compte: true },
+      order: { code: "DESC" },
     };
 
-    if (page !== 0) {
+    if (!isPaginationDisabled) {
       findOptions.skip = (page - 1) * max;
       findOptions.take = max;
     }
@@ -77,53 +122,92 @@ export class ChantierService {
     const [chantiers, total] =
       await chantierRepository.findAndCount(findOptions);
 
-    res.json({
+    const totalPages = isPaginationDisabled ? 1 : Math.ceil(total / max);
+    const currentPage = isPaginationDisabled ? 1 : page;
+    const lastPage = isPaginationDisabled ? true : currentPage >= totalPages;
+
+    return res.json({
       chantiers,
       count: chantiers.length,
-      totalPages: page === 0 ? 1 : Math.ceil(total / max),
-      lastPage: page === 0 ? true : page >= Math.ceil(total / max),
+      total,
+      currentPage,
+      totalPages,
+      lastPage,
     });
   }
 
   public async modifierChantier(req: Request, res: Response) {
     const data = req.body as ModifierChantierDto;
+
+    // Validate ID
+    if (!data.code_chantier || isNaN(Number(data.code_chantier))) {
+      return res.status(400).json({ message: "Code chantier invalide" });
+    }
+
     const chantier = await fetchChantier(data.code_chantier);
-    if (!chantier)
-      return res.status(404).json({ message: "Chantier n'est pas trouvé" });
+    if (!chantier) {
+      return res.status(404).json({ message: "Chantier non trouvé" });
+    }
 
     if (data.compteId !== undefined) {
-      const compte = await compteRepository.findOneBy({ id: data.compteId });
-      if (!compte)
+      const compteIdNum = Number(data.compteId);
+      if (isNaN(compteIdNum)) {
+        return res.status(400).json({ message: "ID de compte invalide" });
+      }
+      const compte = await compteRepository.findOneBy({ id: compteIdNum });
+      if (!compte) {
         return res.status(404).json({ message: "Compte introuvable" });
+      }
       chantier.compte = compte;
     }
 
-    chantier.nom = data.nom;
-    chantier.adresse = data.adresse;
+    if (data.nom !== undefined) chantier.nom = data.nom.trim();
+    if (data.adresse !== undefined) chantier.adresse = data.adresse.trim();
 
     await chantierRepository.save(chantier);
-    res.json({ message: "Chantier est modifié" });
+    return res.json({ message: "Chantier modifié", chantier });
   }
 
   public async supprimerChantier(req: Request, res: Response) {
-    let { code_chantier } = req.query as any;
+    let { code_chantier } = req.query;
 
-    code_chantier = Number(code_chantier);
+    // Validate ID
+    if (!code_chantier) {
+      return res
+        .status(400)
+        .json({ message: "Le code chantier est obligatoire" });
+    }
+    if (Array.isArray(code_chantier)) {
+      return res
+        .status(400)
+        .json({ message: "Un seul code chantier est autorisé" });
+    }
 
-    const exists = await chantierRepository.exist({
-      where: { code: code_chantier },
-    });
+    const codeNum = Number(code_chantier);
+    if (isNaN(codeNum) || codeNum <= 0) {
+      return res.status(400).json({ message: "Code chantier invalide" });
+    }
 
+    const exists = await chantierRepository.exist({ where: { code: codeNum } });
     if (!exists) {
       return res.status(404).json({ message: "Chantier introuvable" });
     }
 
-    await chantierRepository.delete(code_chantier);
-    res.json({ message: "Chantier est supprimé" });
+    // Deletion allowed even if related entities exist (ON DELETE SET NULL / CASCADE)
+    await chantierRepository.delete(codeNum);
+    return res.json({ message: "Chantier supprimé" });
   }
 
   public async affecterChantier(req: Request, res: Response) {
     const data = req.body as AffecterChantierDto;
+
+    // Validate IDs
+    if (!data.code_chantier || isNaN(Number(data.code_chantier))) {
+      return res.status(400).json({ message: "Code chantier invalide" });
+    }
+    if (!data.compte_id || isNaN(Number(data.compte_id))) {
+      return res.status(400).json({ message: "ID de compte invalide" });
+    }
 
     const chantier = await fetchChantier(data.code_chantier);
     if (!chantier) {
@@ -148,7 +232,7 @@ export class ChantierService {
     chantier.compte = compte;
     await chantierRepository.save(chantier);
 
-    res.json({
+    return res.json({
       message: "Chantier affecté avec succès",
       chantier: {
         code: chantier.code,
@@ -165,25 +249,57 @@ export class ChantierService {
   }
 
   public async getMesChantiers(req: Request, res: Response) {
-    const compte = (req as AuthRequest).user!;
+    const compte = (req as AuthRequest).user;
+    if (!compte) {
+      return res.status(401).json({ message: "Non authentifié" });
+    }
+
     const q = req.query;
-    const page = q.page !== undefined ? Number(q.page) : 0;
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
     const where: any = {};
-    if (compte.role !== "admin") where.compte = { id: compte.id };
-    if (q.query) {
-      where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
-        nom: `%${q.query}%`,
-      });
+    if (compte.role !== "admin") {
+      where.compte = { id: compte.id };
+    }
+    if (q.query && typeof q.query === "string") {
+      const searchTerm = q.query.trim();
+      if (searchTerm) {
+        where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
+          nom: `%${searchTerm}%`,
+        });
+      }
+    }
+
+    // Pagination validation
+    let page = 0;
+    let isPaginationDisabled = false;
+
+    if (q.page !== undefined) {
+      const pageNum = Number(q.page);
+      if (isNaN(pageNum)) {
+        return res.status(400).json({
+          message: "Le paramètre 'page' doit être un nombre",
+        });
+      }
+      page = pageNum;
+      if (page === 0) {
+        isPaginationDisabled = true;
+      } else if (page < 1) {
+        return res.status(400).json({
+          message: "Le paramètre 'page' doit être supérieur ou égal à 0",
+        });
+      }
+    } else {
+      isPaginationDisabled = true;
     }
 
     const findOptions: any = {
       where,
       relations: { compte: true },
+      order: { code: "DESC" },
     };
 
-    if (page !== 0) {
+    if (!isPaginationDisabled) {
       findOptions.skip = (page - 1) * max;
       findOptions.take = max;
     }
@@ -191,17 +307,27 @@ export class ChantierService {
     const [chantiers, total] =
       await chantierRepository.findAndCount(findOptions);
 
-    res.json({
+    const totalPages = isPaginationDisabled ? 1 : Math.ceil(total / max);
+    const currentPage = isPaginationDisabled ? 1 : page;
+    const lastPage = isPaginationDisabled ? true : currentPage >= totalPages;
+
+    return res.json({
       chantiers,
       count: chantiers.length,
-      totalPages: page === 0 ? 1 : Math.ceil(total / max),
-      lastPage: page === 0 ? true : page >= Math.ceil(total / max),
+      total,
+      currentPage,
+      totalPages,
+      lastPage,
     });
   }
 
   public async getChantierSummary(req: Request, res: Response) {
     const { chantierId } = req.params;
     const code = Number(chantierId);
+
+    if (isNaN(code) || code <= 0) {
+      return res.status(400).json({ message: "ID de chantier invalide" });
+    }
 
     const chantier = await chantierRepository.findOne({
       where: { code },
@@ -228,7 +354,7 @@ export class ChantierService {
       relations: ["items", "items.article"],
     });
 
-    res.json({
+    return res.json({
       chantier,
       summary: {
         sorties,
@@ -238,15 +364,13 @@ export class ChantierService {
     });
   }
 
-  /* ---------------------------------------------------- */
-  /* STOCK PAR CHANTIER                                    */
-  /* Returns articles available in a chantier:             */
-  /*   delivered (confirmed sorties) - returned (confirmed */
-  /*   + pending retours)                                  */
-  /* ---------------------------------------------------- */
   public async getChantierStock(req: Request, res: Response) {
     const { chantierId } = req.params;
     const code = Number(chantierId);
+
+    if (isNaN(code) || code <= 0) {
+      return res.status(400).json({ message: "ID de chantier invalide" });
+    }
 
     // 1. Verify chantier exists
     const chantier = await chantierRepository.findOneBy({ code });
@@ -279,6 +403,7 @@ export class ChantierService {
     >();
     for (const sortie of sorties) {
       for (const as of sortie.articleSorties) {
+        if (!as.article) continue; // safety
         const existing = deliveredMap.get(as.article.id);
         if (existing) {
           existing.delivered += Number(as.stockSortie);
@@ -298,6 +423,7 @@ export class ChantierService {
       const targetMap =
         retour.status === "confirmed" ? confirmedReturnMap : pendingReturnMap;
       for (const item of retour.items) {
+        if (!item.article) continue;
         const prev = targetMap.get(item.article.id) || 0;
         targetMap.set(item.article.id, prev + Number(item.quantite));
       }
@@ -321,13 +447,13 @@ export class ChantierService {
           article,
           quantiteDisponible: available,
           totalLivre: delivered,
-          totalRetourne: confirmed, // only confirmed retours
-          enAttenteRetour: pending, // pending retours shown separately
+          totalRetourne: confirmed,
+          enAttenteRetour: pending,
         });
       }
     }
 
-    res.json({
+    return res.json({
       chantier: {
         code: chantier.code,
         nom: chantier.nom,

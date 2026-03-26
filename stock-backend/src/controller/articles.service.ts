@@ -20,72 +20,133 @@ import { Fournisseur } from "../entity/Fournisseur";
 
 export class ArticleService {
   public async createArticle(req: Request, res: Response) {
-    const data = req.body as CreateArticleDto;
+    try {
+      const data = req.body as CreateArticleDto;
 
-    const depot = await depotRepository.findOneBy({ id: data.depotId });
-    if (!depot) return res.status(404).json({ message: "Dépôt introuvable" });
+      // Validate required fields (adjust according to your DTO)
+      if (!data.nom || !data.depotId || !data.uniteId || !data.categorieId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
 
-    const unite = await uniteRepository.findOneBy({ id: data.uniteId });
-    if (!unite) return res.status(404).json({ message: "Unité introuvable" });
+      const depot = await depotRepository.findOneBy({ id: data.depotId });
+      if (!depot) return res.status(404).json({ message: "Dépôt introuvable" });
 
-    const categorie = await categoryRepository.findOne({
-      where: { id: data.categorieId },
-      relations: { sous_famille: { famille: true } },
-    });
-    if (!categorie)
-      return res.status(404).json({ message: "Catégorie introuvable" });
+      const unite = await uniteRepository.findOneBy({ id: data.uniteId });
+      if (!unite) return res.status(404).json({ message: "Unité introuvable" });
 
-    const newArticle = articlesRepositoy.create({
-      nom: data.nom,
-      stockMinimum: data.stockMin,
-      stockActuel: 0,
-      prixMoyenne: 0,
-      depot,
-      unite,
-      categorie,
-    });
+      const categorie = await categoryRepository.findOne({
+        where: { id: data.categorieId },
+        relations: { sous_famille: { famille: true } },
+      });
+      if (!categorie)
+        return res.status(404).json({ message: "Catégorie introuvable" });
 
-    await articlesRepositoy.save(newArticle);
-    res.json({ message: "Article créé", article: newArticle });
+      const newArticle = articlesRepositoy.create({
+        nom: data.nom,
+        stockMinimum: data.stockMin ?? 0,
+        stockActuel: 0,
+        prixMoyenne: 0,
+        depot,
+        unite,
+        categorie,
+      });
+
+      await articlesRepositoy.save(newArticle);
+      return res.json({ message: "Article créé", article: newArticle });
+    } catch (error) {
+      console.error("Error in createArticle:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 
   public async listArticles(req: Request, res: Response) {
-    const q = req.query;
+    try {
+      const q = req.query;
+      const max = Number(process.env.MAX_PER_PAGE) || 20;
 
-    const max = Number(process.env.MAX_PER_PAGE) || 20;
+      const where: any = {};
 
-    const where: any = {};
-    if (q.query)
-      where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
-        nom: `%${q.query}%`,
-      });
-    if (q.depotId) where.depot = { id: Number(q.depotId) };
-    if (q.categorieId) where.categorie = { id: Number(q.categorieId) };
+      // Nom search (case-insensitive)
+      if (q.query) {
+        const searchTerm = String(q.query).trim();
+        if (searchTerm) {
+          where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
+            nom: `%${searchTerm}%`,
+          });
+        }
+      }
 
-    if (q.prixMoyenne) {
-      const prix = Number(q.prixMoyenne);
-      if (!isNaN(prix)) where.prixMoyenne = prix;
-    }
+      // Depot filter
+      if (q.depotId) {
+        const depotId = Number(q.depotId);
+        if (!isNaN(depotId)) {
+          where.depot = { id: depotId };
+        }
+      }
 
-    // stockMinimum (exact or range)
-    if (q.stockMinimum) {
-      const min = Number(q.stockMinimum);
-      if (!isNaN(min)) where.stockMinimum = min;
-    }
+      // Categorie filter
+      if (q.categorieId) {
+        const catId = Number(q.categorieId);
+        if (!isNaN(catId)) {
+          where.categorie = { id: catId };
+        }
+      }
 
-    // stockActuel (exact or range)
-    if (q.stockActuel) {
-      const act = Number(q.stockActuel);
-      if (!isNaN(act)) where.stockActuel = act;
-    }
+      // Unite filter
+      if (q.uniteId) {
+        const uniteId = Number(q.uniteId);
+        if (!isNaN(uniteId)) {
+          where.unite = { id: uniteId };
+        }
+      }
 
-    // uniteId
-    if (q.uniteId) where.unite = { id: Number(q.uniteId) };
+      // Prix moyenne exact
+      if (q.prixMoyenne) {
+        const prix = Number(q.prixMoyenne);
+        if (!isNaN(prix)) {
+          where.prixMoyenne = prix;
+        }
+      }
 
-    let page: any = q.page;
+      // Stock minimum exact
+      if (q.stockMinimum) {
+        const min = Number(q.stockMinimum);
+        if (!isNaN(min)) {
+          where.stockMinimum = min;
+        }
+      }
 
-    if (!page || page == "0") {
-      const articles = await articlesRepositoy.find({
+      // Stock actuel exact
+      if (q.stockActuel) {
+        const act = Number(q.stockActuel);
+        if (!isNaN(act)) {
+          where.stockActuel = act;
+        }
+      }
+
+      // Pagination
+      let page = q.page ? Number(q.page) : 1;
+      if (isNaN(page) || page < 1) page = 1;
+
+      // If page is 0 or missing, return all (unpaginated)
+      if (!q.page || q.page === "0") {
+        const articles = await articlesRepositoy.find({
+          where,
+          relations: {
+            depot: true,
+            unite: true,
+            categorie: {
+              sous_famille: {
+                famille: true,
+              },
+            },
+          },
+          order: { id: "DESC" },
+        });
+        return res.json({ articles });
+      }
+
+      const [articles, total] = await articlesRepositoy.findAndCount({
         where,
         relations: {
           depot: true,
@@ -96,143 +157,203 @@ export class ArticleService {
             },
           },
         },
+        skip: (page - 1) * max,
+        take: max,
+        order: { id: "DESC" },
       });
-      return res.json({ articles });
+
+      return res.json({
+        articles,
+        count: articles.length,
+        totalPages: Math.ceil(total / max),
+        currentPage: page,
+        lastPage: page >= Math.ceil(total / max),
+      });
+    } catch (error) {
+      console.error("Error in listArticles:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
-
-    page = Number(page);
-
-    const [articles, total] = await articlesRepositoy.findAndCount({
-      where,
-      relations: {
-        depot: true,
-        unite: true,
-        categorie: {
-          sous_famille: {
-            famille: true,
-          },
-        },
-      },
-      skip: (page - 1) * max,
-      take: max,
-      order: { id: "DESC" },
-    });
-
-    res.json({
-      articles,
-      count: articles.length,
-      totalPages: Math.ceil(total / max),
-      lastPage: page >= Math.ceil(total / max),
-    });
   }
 
-  public async listArticleFournisseurs(request: Request, resposne: Response) {
-    const { articleId } = request.query;
+  public async listArticleFournisseurs(req: Request, res: Response) {
+    try {
+      const { articleId } = req.query;
 
-    if (!articleId) {
-      return resposne
-        .status(400)
-        .json({ message: "L'ID de l'article est requis" });
-    }
-
-    const article = await articlesRepositoy.findOne({
-      where: { id: Number(articleId) },
-    });
-
-    if (!article) {
-      return resposne.status(404).json({
-        message: "Article est introuvable",
-      });
-    }
-
-    // 1. Find all items in entries that contain this article
-    // We include the 'entree' and the 'entree.fournisseur' relations
-    const items = await entreeArticleItemRepository.find({
-      where: { article: { id: article.id } },
-      relations: ["entree", "entree.fournisseur"],
-    });
-
-    const fournisseurMap = new Map<
-      number,
-      { fournisseur: Fournisseur; stockTotal: number }
-    >();
-
-    // 2. Iterate through the items to aggregate stock by fournisseur
-    items.forEach((item) => {
-      const fournisseur = item.entree?.fournisseur;
-      if (!fournisseur) return; // Skip if no fournisseur is attached to the entry
-
-      const code = fournisseur.code;
-      const existing = fournisseurMap.get(code);
-
-      if (existing) {
-        existing.stockTotal += Number(item.stockEntree);
-      } else {
-        fournisseurMap.set(code, {
-          fournisseur: fournisseur,
-          stockTotal: Number(item.stockEntree),
-        });
+      if (!articleId) {
+        return res
+          .status(400)
+          .json({ message: "L'ID de l'article est requis" });
       }
-    });
 
-    // 3. Format the response
-    const fournisseurs = Array.from(fournisseurMap.values()).map((entry) => ({
-      ...entry.fournisseur,
-      stockTotal: entry.stockTotal,
-    }));
+      const articleIdNum = Number(articleId);
+      if (isNaN(articleIdNum)) {
+        return res.status(400).json({ message: "ID d'article invalide" });
+      }
 
-    return resposne.json({
-      message: "liste des fournisseurs",
-      fournisseurs,
-    });
+      const article = await articlesRepositoy.findOne({
+        where: { id: articleIdNum },
+      });
+
+      if (!article) {
+        return res.status(404).json({ message: "Article introuvable" });
+      }
+
+      const items = await entreeArticleItemRepository.find({
+        where: { article: { id: article.id } },
+        relations: ["entree", "entree.fournisseur"],
+      });
+
+      const fournisseurMap = new Map<
+        number,
+        { fournisseur: Fournisseur; stockTotal: number }
+      >();
+
+      items.forEach((item) => {
+        const fournisseur = item.entree?.fournisseur;
+        if (!fournisseur) return;
+
+        const code = fournisseur.code;
+        const existing = fournisseurMap.get(code);
+
+        if (existing) {
+          existing.stockTotal += Number(item.stockEntree);
+        } else {
+          fournisseurMap.set(code, {
+            fournisseur,
+            stockTotal: Number(item.stockEntree),
+          });
+        }
+      });
+
+      const fournisseurs = Array.from(fournisseurMap.values()).map((entry) => ({
+        ...entry.fournisseur,
+        stockTotal: entry.stockTotal,
+      }));
+
+      return res.json({
+        message: "Liste des fournisseurs",
+        fournisseurs,
+      });
+    } catch (error) {
+      console.error("Error in listArticleFournisseurs:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 
   public async updateArticle(req: Request, res: Response) {
-    const data = req.body as UpdateArticleDto;
-    const article = await fetchArticle(data.id);
-    if (!article)
-      return res.status(404).json({ message: "Article introuvable" });
+    try {
+      const data = req.body as UpdateArticleDto;
+      if (!data.id) {
+        return res.status(400).json({ message: "ID de l'article requis" });
+      }
 
-    if (data.depotId !== article.depot?.id) {
-      const depot = await depotRepository.findOneBy({ id: data.depotId });
-      if (!depot) return res.status(404).json({ message: "Dépôt introuvable" });
-      article.depot = depot;
-    }
-    if (data.uniteId !== article.unite?.id) {
-      const unite = await uniteRepository.findOneBy({ id: data.uniteId });
-      if (!unite) return res.status(404).json({ message: "Unité introuvable" });
-      article.unite = unite;
-    }
-    if (data.categorieId !== article.categorie.id) {
-      const categorie = await categoryRepository.findOne({
-        where: { id: data.categorieId },
-        relations: { sous_famille: { famille: true } },
-      });
-      if (!categorie)
-        return res.status(404).json({ message: "Catégorie introuvable" });
-      article.categorie = categorie;
-    }
+      let article: Article | null;
+      try {
+        article = await fetchArticle(data.id);
+      } catch (err) {
+        console.error("fetchArticle error:", err);
+        return res
+          .status(500)
+          .json({ message: "Erreur lors de la récupération de l'article" });
+      }
 
-    article.nom = data.nom;
-    article.stockMinimum = data.stockMin;
+      if (!article) {
+        return res.status(404).json({ message: "Article introuvable" });
+      }
 
-    await articlesRepositoy.save(article);
-    res.json({ message: "Article modifié" });
+      // Update depot if provided (explicitly allow null)
+      if (data.depotId !== undefined) {
+        if (data.depotId === null) {
+          article.depot = null;
+        } else {
+          const depotIdNum = Number(data.depotId);
+          if (isNaN(depotIdNum)) {
+            return res.status(400).json({ message: "ID de dépôt invalide" });
+          }
+          const depot = await depotRepository.findOneBy({ id: depotIdNum });
+          if (!depot) {
+            return res.status(404).json({ message: "Dépôt introuvable" });
+          }
+          article.depot = depot;
+        }
+      }
+
+      // Update unite (allow null)
+      if (data.uniteId !== undefined) {
+        if (data.uniteId === null) {
+          article.unite = null;
+        } else {
+          const uniteIdNum = Number(data.uniteId);
+          if (isNaN(uniteIdNum)) {
+            return res.status(400).json({ message: "ID d'unité invalide" });
+          }
+          const unite = await uniteRepository.findOneBy({ id: uniteIdNum });
+          if (!unite) {
+            return res.status(404).json({ message: "Unité introuvable" });
+          }
+          article.unite = unite;
+        }
+      }
+
+      // Update categorie (allow null)
+      if (data.categorieId !== undefined) {
+        if (data.categorieId === null) {
+          article.categorie = null;
+        } else {
+          const catIdNum = Number(data.categorieId);
+          if (isNaN(catIdNum)) {
+            return res
+              .status(400)
+              .json({ message: "ID de catégorie invalide" });
+          }
+          const categorie = await categoryRepository.findOne({
+            where: { id: catIdNum },
+            relations: { sous_famille: { famille: true } },
+          });
+          if (!categorie) {
+            return res.status(404).json({ message: "Catégorie introuvable" });
+          }
+          article.categorie = categorie;
+        }
+      }
+
+      // Update scalar fields if provided
+      if (data.nom !== undefined) article.nom = data.nom;
+      if (data.stockMin !== undefined) article.stockMinimum = data.stockMin;
+
+      await articlesRepositoy.save(article);
+      return res.json({ message: "Article modifié", article });
+    } catch (error) {
+      console.error("Error in updateArticle:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 
   public async deleteArticle(req: Request, res: Response) {
-    const { id } = req.query as any as DeleteArticleDto;
+    try {
+      const { id } = req.query as any as DeleteArticleDto;
 
-    if (!id)
-      return res.status(422).json({
-        message: "Article id est obligatoire",
-      });
+      if (!id) {
+        return res
+          .status(422)
+          .json({ message: "ID de l'article est obligatoire" });
+      }
 
-    const exists = await articlesRepositoy.exist({ where: { id } });
-    if (!exists)
-      return res.status(404).json({ message: "Article introuvable" });
+      const idNum = Number(id);
+      if (isNaN(idNum)) {
+        return res.status(400).json({ message: "ID d'article invalide" });
+      }
 
-    await articlesRepositoy.delete(id);
-    res.json({ message: "Article supprimé" });
+      const exists = await articlesRepositoy.exist({ where: { id: idNum } });
+      if (!exists) {
+        return res.status(404).json({ message: "Article introuvable" });
+      }
+
+      await articlesRepositoy.delete(idNum);
+      return res.json({ message: "Article supprimé" });
+    } catch (error) {
+      console.error("Error in deleteArticle:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 }

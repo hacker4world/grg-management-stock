@@ -60,4 +60,12 @@ export class SortiesConfirmesService {
       { withCredentials: true },
     );
   }
+
+  public openDocument(documentId: number) {
+    const url = `${environement.api_url}/documents/${documentId}/download`;
+
+    console.log(`Opening document ${documentId} with url : ${url}`);
+
+    window.open(url, '_blank');
+  }
 }

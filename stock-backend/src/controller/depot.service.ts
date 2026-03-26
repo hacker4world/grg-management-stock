@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import "dotenv/config";
 import { AjouterDepotDto, ModifierDepotDto } from "../dto/depot.dto";
 import { Depot } from "../entity/Depot";
@@ -11,30 +11,51 @@ export class DepotService {
     const data = req.body as AjouterDepotDto;
 
     const nouveau = depotRepository.create({
-      nom: data.nom,
-      adresse: data.adresse || null,
+      nom: data.nom.trim(),
+      adresse: data.adresse?.trim() || null,
     });
     await depotRepository.save(nouveau);
 
-    res.json({ message: "Dépôt est ajouté", depot: nouveau });
+    return res.json({ message: "Dépôt est ajouté", depot: nouveau });
   }
 
   /* LIST --------------------------------------------------------------- */
   public async listeDepots(req: Request, res: Response) {
     const q = req.query;
-    // Check if pagination is requested (page > 0)
-    const isPaginationDisabled = !q.page || Number(q.page) === 0;
-    const page = Number(q.page) || 1;
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
     const where: any = {};
-    if (q.query)
-      where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
-        nom: `%${q.query}%`,
-      });
+    if (q.query && typeof q.query === "string") {
+      const searchTerm = q.query.trim();
+      if (searchTerm) {
+        where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
+          nom: `%${searchTerm}%`,
+        });
+      }
+    }
+
+    // Validate and process pagination
+    let page: number;
+    let isPaginationDisabled = false;
+
+    if (!q.page || q.page === "0") {
+      isPaginationDisabled = true;
+      page = 1; // Default, won't be used for pagination
+    } else {
+      page = Number(q.page);
+      if (isNaN(page) || page < 1) {
+        return res.status(400).json({
+          message: "Le paramètre 'page' doit être un nombre positif",
+        });
+      }
+      page = Math.floor(page); // Ensure integer
+    }
 
     // Define find options
-    const findOptions: any = { where };
+    const findOptions: any = {
+      where,
+      order: { id: "DESC" },
+    };
 
     // Apply pagination only if not disabled
     if (!isPaginationDisabled) {
@@ -66,38 +87,97 @@ export class DepotService {
       }));
     }
 
-    res.json({
+    const resultsPerPage = isPaginationDisabled
+      ? depotsWithCount.length
+      : depots.length;
+    const totalPages = isPaginationDisabled ? 1 : Math.ceil(total / max);
+    const currentPage = isPaginationDisabled ? 1 : page;
+    const lastPage = isPaginationDisabled ? true : currentPage >= totalPages;
+
+    return res.json({
       depots: depotsWithCount,
-      count: total,
-      resultsPerPage: isPaginationDisabled ? total : depots.length,
-      totalPages: isPaginationDisabled ? 1 : Math.ceil(total / max),
-      lastPage: isPaginationDisabled ? true : page >= Math.ceil(total / max),
+      total: total,
+      count: resultsPerPage,
+      currentPage,
+      totalPages,
+      lastPage,
     });
   }
 
   /* UPDATE ------------------------------------------------------------- */
   public async modifierDepot(req: Request, res: Response) {
     const data = req.body as ModifierDepotDto;
-    const depot = await depotRepository.findOneBy({ id: data.id });
 
-    if (!depot)
+    // Validate ID
+    if (!data.id || isNaN(Number(data.id))) {
+      return res.status(400).json({ message: "ID de dépôt invalide" });
+    }
+
+    const depot = await depotRepository.findOneBy({ id: Number(data.id) });
+    if (!depot) {
       return res.status(404).json({ message: "Dépôt n'est pas trouvé" });
+    }
 
-    depot.nom = data.nom;
-    if (data.adresse !== undefined) depot.adresse = data.adresse || null;
+    // Check for duplicate name (excluding current depot)
+    if (data.nom && data.nom.trim() !== depot.nom) {
+      const existingDepot = await depotRepository.findOneBy({
+        nom: data.nom.trim(),
+      });
+      if (existingDepot && existingDepot.id !== depot.id) {
+        return res.status(409).json({
+          message: "Un dépôt avec ce nom existe déjà",
+        });
+      }
+      depot.nom = data.nom.trim();
+    }
+
+    // Update adresse if provided
+    if (data.adresse !== undefined) {
+      depot.adresse = data.adresse?.trim() || null;
+    }
+
     await depotRepository.save(depot);
 
-    res.json({ message: "Dépôt est modifié" });
+    return res.json({ message: "Dépôt est modifié", depot });
   }
 
   /* DELETE ------------------------------------------------------------- */
   public async supprimerDepot(req: Request, res: Response) {
-    const { id } = req.query as any;
+    const { id } = req.query;
 
-    const exists = await depotRepository.exist({ where: { id } });
-    if (!exists) return res.status(404).json({ message: "Dépôt introuvable" });
+    // Validate ID
+    if (!id) {
+      return res.status(400).json({
+        message: "L'ID du dépôt est obligatoire",
+      });
+    }
 
-    await depotRepository.delete(id);
-    res.json({ message: "Dépôt est supprimé" });
+    // Handle array case (e.g., ?id[]=1&id[]=2)
+    if (Array.isArray(id)) {
+      return res.status(400).json({
+        message: "Un seul ID de dépôt est autorisé",
+      });
+    }
+
+    const idNum = Number(id);
+    if (isNaN(idNum) || idNum <= 0) {
+      return res.status(400).json({
+        message: "ID de dépôt invalide",
+      });
+    }
+
+    // Check if depot exists
+    const exists = await depotRepository.exist({ where: { id: idNum } });
+    if (!exists) {
+      return res.status(404).json({ message: "Dépôt introuvable" });
+    }
+
+    // Check if depot has articles (optional - prevent deletion if articles exist)
+    const articlesCount = await articlesRepositoy.count({
+      where: { depot: { id: idNum } },
+    });
+
+    await depotRepository.delete(idNum);
+    return res.json({ message: "Dépôt est supprimé" });
   }
 }

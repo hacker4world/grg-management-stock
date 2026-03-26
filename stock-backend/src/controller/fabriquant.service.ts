@@ -14,124 +14,170 @@ export class FabriquantService {
   public async ajouterFabriquant(request: Request, response: Response) {
     const data = request.body as AjouterFabriquantDto;
 
-    const nouveauFabriquant = new Fabriquant();
+    // Create new manufacturer (duplicate names allowed)
+    const nouveauFabriquant = fabriquantRepository.create({
+      nom: data.nom.trim(),
+      adresse: data.adresse.trim(),
+      contact: data.contact.trim(),
+    });
 
-    nouveauFabriquant.nom = data.nom;
-    nouveauFabriquant.adresse = data.adresse;
-    nouveauFabriquant.contact = data.contact;
+    await fabriquantRepository.save(nouveauFabriquant);
 
-    fabriquantRepository
-      .save(nouveauFabriquant)
-      .then(() => {
-        response.json({
-          message: "Fabriquant est ajouté",
-          fabriquant: nouveauFabriquant,
-        });
-      })
-      .catch(() => {
-        response.status(500).json({
-          message: "Un erreur est survenu",
-        });
-      });
+    return response.json({
+      message: "Fabriquant est ajouté",
+      fabriquant: nouveauFabriquant,
+    });
   }
 
   public async listeFabriquants(request: Request, response: Response) {
-    const data = request.query;
-    const pageNum = Number(data.page);
-    const page = Number.isNaN(pageNum) ? 1 : pageNum;
-
-    let options: any = {};
-
-    if (data.query)
-      options.nom = Raw((alias) => `Lower(${alias}) LIKE LOWER(:nom)`, {
-        nom: `%${data.query}%`,
-      });
-
-    if (data.adresse)
-      options.adresse = Raw((alias) => `Lower(${alias}) LIKE LOWER(:adresse)`, {
-        adresse: `%${data.adresse}%`,
-      });
-
-    if (data.contact) {
-      options.contact = Raw((alias) => `Lower(${alias}) LIKE LOWER(:contact)`, {
-        contact: `%${data.contact}%`,
-      });
-    }
-
-    if (data.code)
-      options.code = Number(data.code);
-
-    /* ---------------  NEW LOGIC --------------- */
-    if (page === 0) {
-      // return everything, no pagination
-      const fabriquants = await fabriquantRepository.find({
-        where: options,
-      });
-      return response.json({ fabriquants, count: fabriquants.length });
-    }
-    /* ------------------------------------------ */
-
+    const q = request.query;
     const maxPerPage = Number(process.env.MAX_PER_PAGE) || 20;
-    const [fabriquants, total] = await fabriquantRepository.findAndCount({
-      skip: (page - 1) * maxPerPage,
-      take: maxPerPage,
-      where: options,
-    });
 
-    const totalPages = Math.ceil(total / maxPerPage);
-    response.json({
+    // Build where clause
+    const where: any = {};
+
+    if (q.query && typeof q.query === "string") {
+      const searchTerm = q.query.trim();
+      if (searchTerm) {
+        where.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
+          nom: `%${searchTerm}%`,
+        });
+      }
+    }
+    if (q.adresse && typeof q.adresse === "string") {
+      const searchTerm = q.adresse.trim();
+      if (searchTerm) {
+        where.adresse = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:adresse)`, {
+          adresse: `%${searchTerm}%`,
+        });
+      }
+    }
+    if (q.contact && typeof q.contact === "string") {
+      const searchTerm = q.contact.trim();
+      if (searchTerm) {
+        where.contact = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:contact)`, {
+          contact: `%${searchTerm}%`,
+        });
+      }
+    }
+    if (q.code) {
+      const codeNum = Number(q.code);
+      if (!isNaN(codeNum)) {
+        where.code = codeNum;
+      }
+    }
+
+    // Pagination validation
+    let page: number;
+    let isPaginationDisabled = false;
+
+    if (!q.page || q.page === "0") {
+      isPaginationDisabled = true;
+      page = 1; // not used
+    } else {
+      page = Number(q.page);
+      if (isNaN(page) || page < 1) {
+        return response.status(400).json({
+          message: "Le paramètre 'page' doit être un nombre positif",
+        });
+      }
+      page = Math.floor(page);
+    }
+
+    let fabriquants: Fabriquant[];
+    let total: number;
+
+    if (isPaginationDisabled) {
+      [fabriquants, total] = await fabriquantRepository.findAndCount({
+        where,
+        order: { code: "DESC" },
+      });
+    } else {
+      [fabriquants, total] = await fabriquantRepository.findAndCount({
+        skip: (page - 1) * maxPerPage,
+        take: maxPerPage,
+        where,
+        order: { code: "DESC" },
+      });
+    }
+
+    const totalPages = isPaginationDisabled ? 1 : Math.ceil(total / maxPerPage);
+    const currentPage = isPaginationDisabled ? 1 : page;
+    const lastPage = isPaginationDisabled ? true : currentPage >= totalPages;
+
+    return response.json({
       fabriquants,
+      total,
       count: fabriquants.length,
+      currentPage,
       totalPages,
-      lastPage: page >= totalPages,
+      lastPage,
     });
   }
 
   public async modifierFabriquant(request: Request, response: Response) {
     const data = request.body as ModifierFabriquantDto;
 
-    fetchFabriquant(data.code_fabriquant)
-      .then((fournisseur) => {
-        fournisseur.nom = data.nom;
-        fournisseur.adresse = data.adresse;
-        fournisseur.contact = data.contact;
+    // Validate ID
+    if (!data.code_fabriquant || isNaN(Number(data.code_fabriquant))) {
+      return response.status(400).json({ message: "Code fabriquant invalide" });
+    }
 
-        fabriquantRepository
-          .save(fournisseur)
-          .then(() => {
-            response.json({
-              message: "Fabriquant est modifié",
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            response.status(500).json({
-              message: "Un erreur est survenu.",
-            });
-          });
-      })
-      .catch(() => {
-        response.status(404).json({
-          message: "Fabriquant n'est pas trouvé",
-        });
-      });
+    const fabriquant = await fabriquantRepository.findOneBy({
+      code: data.code_fabriquant,
+    });
+    if (!fabriquant) {
+      return response.status(404).json({ message: "Fabriquant non trouvé" });
+    }
+
+    // Update fields (duplicate names allowed)
+    if (data.nom !== undefined) {
+      fabriquant.nom = data.nom.trim();
+    }
+    if (data.adresse !== undefined) {
+      fabriquant.adresse = data.adresse.trim();
+    }
+    if (data.contact !== undefined) {
+      fabriquant.contact = data.contact.trim();
+    }
+
+    await fabriquantRepository.save(fabriquant);
+    return response.json({
+      message: "Fabriquant modifié",
+      fabriquant,
+    });
   }
 
   public async supprimerFabriquant(request: Request, response: Response) {
-    const { code } = request.query as any;
+    const { code } = request.query;
 
-    fabriquantRepository
-      .delete(code)
-      .then(() => {
-        response.json({
-          message: "Fabriquant est supprimé",
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        response.status(500).json({
-          message: "Un erreur est survenu.",
-        });
+    // Validate ID
+    if (!code) {
+      return response.status(400).json({
+        message: "Le code du fabriquant est obligatoire",
       });
+    }
+    if (Array.isArray(code)) {
+      return response.status(400).json({
+        message: "Un seul code fabriquant est autorisé",
+      });
+    }
+
+    const idNum = Number(code);
+    if (isNaN(idNum) || idNum <= 0) {
+      return response.status(400).json({
+        message: "Code fabriquant invalide",
+      });
+    }
+
+    // Check existence
+    const exists = await fabriquantRepository.exist({ where: { code: idNum } });
+    if (!exists) {
+      return response.status(404).json({ message: "Fabriquant non trouvé" });
+    }
+
+    // Delete even if entries exist (orphan allowed)
+    await fabriquantRepository.delete(idNum);
+    return response.json({ message: "Fabriquant supprimé" });
   }
 }

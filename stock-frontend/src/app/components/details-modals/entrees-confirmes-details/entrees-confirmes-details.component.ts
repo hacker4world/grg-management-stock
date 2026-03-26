@@ -70,4 +70,15 @@ export class EntreesConfirmesDetailsComponent implements OnInit {
   public onClose(): void {
     this.close.emit();
   }
+
+  public openDoc(type: 'bande_commande' | 'bande_livraison') {
+    console.log('works');
+
+    const doc = (this.entree as any).documents?.find(
+      (d: any) => d.type === type,
+    );
+    if (!doc) return;
+
+    this.entreesService.ouvrirDocument(doc.id);
+  }
 }

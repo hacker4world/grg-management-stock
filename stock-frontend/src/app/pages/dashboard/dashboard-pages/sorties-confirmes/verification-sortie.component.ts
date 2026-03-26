@@ -21,6 +21,7 @@ import { Router } from '@angular/router';
 import { rolePermissions } from '../../../../roles';
 import { ExportService } from '../../../../services/export.service';
 import { FilterSortieEnAttenteModalComponent } from '../../../../components/filter-modals/filter-sortie-en-attente-modal/filter-sortie-en-attente-modal.component';
+import { LoadingComponent } from "../../../../components/loading/loading.component";
 
 @Component({
   selector: 'app-verification-sortie',
@@ -37,7 +38,8 @@ import { FilterSortieEnAttenteModalComponent } from '../../../../components/filt
     SortieConfirmeDetailsModalComponent,
     SortieArticlesComponent,
     FilterSortieEnAttenteModalComponent,
-  ],
+    LoadingComponent
+],
   templateUrl: './verification-sortie.component.html',
   styleUrl: './verification-sortie.component.css',
 })

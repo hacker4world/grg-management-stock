@@ -83,12 +83,7 @@ export class AuthentificationService {
       user_id: account.id,
     });
 
-    response.cookie("token", token, {
-      secure: false,
-      httpOnly: false,
-      sameSite: "lax",
-      path: "/",
-    });
+    response.cookie("token", token, cookieSettings);
 
     // Also return token in body for mobile apps
     return response.json({
@@ -136,12 +131,7 @@ export class AuthentificationService {
 
     const newToken = generateToken({ user_id: compte.id });
 
-    response.cookie("token", token, {
-      secure: false,
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
+    response.cookie("token", token, cookieSettings);
 
     return response.json({
       token: newToken,

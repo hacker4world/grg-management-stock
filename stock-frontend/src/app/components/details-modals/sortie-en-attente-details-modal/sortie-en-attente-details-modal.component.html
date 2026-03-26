@@ -3,7 +3,7 @@
     <!-- HEADER -->
     <div class="modal-header">
       <h3 class="modal-title">Détails de la sortie</h3>
-      <button class="close-button" (click)="onClose()">&times;</button>
+      <button class="close-button" [disabled]="loading" (click)="onClose()">&times;</button>
     </div>
 
     <!-- BODY -->
@@ -197,12 +197,12 @@
     <!-- FOOTER with Approve/Deny buttons -->
     <div class="modal-footer">
       <div style="margin-right: auto">
-        <button class="button red-button" (click)="confirmationModal = true">
+        <button [disabled]="loading" class="button red-button" (click)="confirmationModal = true">
           Refuser
         </button>
       </div>
-      <button class="button green-button" (click)="confirmer()">
-        Approuver
+      <button [disabled]="loading" class="button green-button" (click)="confirmer()">
+        {{ loading ? "En cours..." : "Approuver" }}
       </button>
     </div>
   </div>

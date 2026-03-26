@@ -26,10 +26,9 @@ import { sortieRouter } from "./router/sortie.router";
 import { documentRouter } from "./router/document.router";
 import { notificationsRouter } from "./router/notificationRouter";
 import { exportRouter } from "./router/export.router";
+import "express-async-errors";
 
 const app = express();
-
-app.use(cookieParser());
 
 // CORS configuration - Allow mobile app and web frontend
 const allowedOrigins = [
@@ -60,6 +59,8 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   }),
 );
+
+app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -94,38 +95,6 @@ app.use("/api/notifications", notificationsRouter);
 
 app.use("/api/export", exportRouter);
 
-app.get("/set", (req, res) => {
-  res.cookie("fuckthis", "works", {
-    httpOnly: false,
-    secure: false, // MUST BE FALSE for localhost HTTP
-    sameSite: "lax", // MUST BE LAX (not "none") when secure is false
-    path: "/",
-    maxAge: 999999,
-  });
-  res.send("Cookie set - check Application tab in devtools");
-});
-
-app.post("/login", (req, res) => {
-  const token = "test-token-123";
-
-  res.cookie("auth_token", token, {
-    httpOnly: false,
-    secure: false,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
-
-  console.log("Cookie header sent");
-  res.json({ ok: true });
-});
-
-// 5. VERIFY ENDPOINT
-app.get("/me", (req, res) => {
-  console.log("Cookies received:", req.cookies);
-  res.json({ cookies: req.cookies });
-});
-
 const uploadsPath = path.join(process.cwd(), "uploads");
 app.use("/uploads", express.static(uploadsPath, { index: false }));
 
@@ -134,7 +103,7 @@ app.use(globalErrorHandler);
 AppDataSource.initialize()
   .then(() => {
     const PORT = process.env.SERVER_PORT || 4000;
-    app.listen(Number(PORT), () => {
+    app.listen(Number(PORT), '0.0.0.0', () => {
       console.log(`✅ Server started on http://0.0.0.0:${PORT}`);
       console.log(
         `📱 Mobile app can connect via your local IP on port ${PORT}`,

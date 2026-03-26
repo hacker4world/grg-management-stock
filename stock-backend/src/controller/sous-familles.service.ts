@@ -19,170 +19,290 @@ export class SousFamillesService {
 
     let famille = null;
 
-    if (data.famille_id) {
+    // If famille_id is provided, validate it
+    if (data.famille_id !== undefined && data.famille_id !== null) {
       famille = await fetchFamille(data.famille_id);
-
       if (!famille) {
         return response.status(404).json({
-          message: "Famille n'est pas trouvé",
+          message: "Famille non trouvée",
         });
       }
     }
 
-    const nouveauSousFamille = new SousFamille();
+    const nouveauSousFamille = sousFamillesRepository.create({
+      nom: data.nom.trim(),
+      famille: famille, // can be null
+    });
 
-    nouveauSousFamille.nom = data.nom;
-    nouveauSousFamille.famille = famille;
-
-    sousFamillesRepository
-      .save(nouveauSousFamille)
-      .then((sf) => {
-        response.json({
-          message: "Sous famille est creé",
-          sous_famille: sf,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        response.status(500).json({ message: "Un erreur est survenu" });
-      });
+    await sousFamillesRepository.save(nouveauSousFamille);
+    return response.json({
+      message: "Sous-famille créée",
+      sous_famille: nouveauSousFamille,
+    });
   }
 
   public async listeSousFamilles(request: Request, response: Response) {
-    const page =
-      request.query.page !== undefined ? Number(request.query.page) : 0;
+    const q = request.query;
     const maxPerPage = Number(process.env.MAX_PER_PAGE) || 20;
 
-    const findOptions: any = { relations: ["famille"] };
+    // Pagination validation
+    let page = 0;
+    let isPaginationDisabled = false;
 
-    if (page !== 0) {
+    if (q.page !== undefined) {
+      const pageNum = Number(q.page);
+      if (isNaN(pageNum)) {
+        return response.status(400).json({
+          message: "Le paramètre 'page' doit être un nombre",
+        });
+      }
+      page = pageNum;
+      if (page === 0) {
+        isPaginationDisabled = true;
+      } else if (page < 1) {
+        return response.status(400).json({
+          message: "Le paramètre 'page' doit être supérieur ou égal à 0",
+        });
+      }
+    } else {
+      isPaginationDisabled = true;
+    }
+
+    const findOptions: any = {
+      relations: ["famille"],
+      order: { id: "DESC" },
+    };
+
+    if (!isPaginationDisabled) {
       findOptions.skip = (page - 1) * maxPerPage;
       findOptions.take = maxPerPage;
     }
 
     const [sousFamilles, total] =
       await sousFamillesRepository.findAndCount(findOptions);
-    const totalPages = page === 0 ? 1 : Math.ceil(total / maxPerPage);
+    const totalPages = isPaginationDisabled ? 1 : Math.ceil(total / maxPerPage);
+    const currentPage = isPaginationDisabled ? 1 : page;
+    const lastPage = isPaginationDisabled ? true : currentPage >= totalPages;
 
-    response.json({
+    return response.json({
       sousFamilles,
       count: sousFamilles.length,
+      total,
+      currentPage,
       totalPages,
-      lastPage: page === 0 ? true : page >= totalPages,
+      lastPage,
     });
   }
 
   public async filtrerSousFamilles(request: Request, response: Response) {
-    let { familleId, page, nom } = request.query;
-    const pageNum = page !== undefined ? Number(page) : 0;
+    const q = request.query;
     const maxPerPage = Number(process.env.MAX_PER_PAGE) || 20;
 
-    let filterOptions: any = {};
-    if (familleId && familleId !== "no-family")
-      filterOptions.famille = { id: Number(familleId) };
-    if (familleId === "no-family") filterOptions.famille = IsNull();
-    if (nom)
-      filterOptions.nom = Raw((alias) => `Lower(${alias}) LIKE LOWER(:nom)`, {
-        nom: `%${nom}%`,
-      });
+    // Build filter options
+    const filterOptions: any = {};
+
+    if (q.familleId !== undefined) {
+      if (q.familleId === "no-family") {
+        filterOptions.famille = IsNull();
+      } else {
+        const familleIdNum = Number(q.familleId);
+        if (!isNaN(familleIdNum) && familleIdNum > 0) {
+          filterOptions.famille = { id: familleIdNum };
+        } else {
+          return response.status(400).json({
+            message: "familleId invalide",
+          });
+        }
+      }
+    }
+
+    if (q.nom && typeof q.nom === "string") {
+      const searchTerm = q.nom.trim();
+      if (searchTerm) {
+        filterOptions.nom = Raw((alias) => `LOWER(${alias}) LIKE LOWER(:nom)`, {
+          nom: `%${searchTerm}%`,
+        });
+      }
+    }
+
+    // Pagination validation
+    let pageNum = 0;
+    let isPaginationDisabled = false;
+
+    if (q.page !== undefined) {
+      const parsedPage = Number(q.page);
+      if (isNaN(parsedPage)) {
+        return response.status(400).json({
+          message: "Le paramètre 'page' doit être un nombre",
+        });
+      }
+      pageNum = parsedPage;
+      if (pageNum === 0) {
+        isPaginationDisabled = true;
+      } else if (pageNum < 1) {
+        return response.status(400).json({
+          message: "Le paramètre 'page' doit être supérieur ou égal à 0",
+        });
+      }
+    } else {
+      isPaginationDisabled = true;
+    }
 
     const findOptions: any = {
       where: filterOptions,
       relations: ["famille"],
+      order: { id: "DESC" },
     };
 
-    if (pageNum !== 0) {
+    if (!isPaginationDisabled) {
       findOptions.skip = (pageNum - 1) * maxPerPage;
       findOptions.take = maxPerPage;
     }
 
     const [sousFamilles, total] =
       await sousFamillesRepository.findAndCount(findOptions);
-    const totalPages = pageNum === 0 ? 1 : Math.ceil(total / maxPerPage);
+    const totalPages = isPaginationDisabled ? 1 : Math.ceil(total / maxPerPage);
+    const currentPage = isPaginationDisabled ? 1 : pageNum;
+    const lastPage = isPaginationDisabled ? true : currentPage >= totalPages;
 
-    response.json({
+    return response.json({
       sousFamilles,
       count: sousFamilles.length,
+      total,
+      currentPage,
       totalPages,
-      lastPage: pageNum === 0 ? true : pageNum >= totalPages,
+      lastPage,
     });
   }
 
   public async modifierSousFamille(request: Request, response: Response) {
     const data = request.body as ModifierSousFamille;
 
+    // Validate ID
+    if (!data.sous_famille_id || isNaN(Number(data.sous_famille_id))) {
+      return response
+        .status(400)
+        .json({ message: "ID de sous-famille invalide" });
+    }
+
     const sousFamille = await fetchSousFamilles(data.sous_famille_id);
     if (!sousFamille) {
       return response.status(404).json({
-        message: "Sous famille n'est pas trouvé",
+        message: "Sous-famille non trouvée",
       });
-    } else {
-      let famille = null;
+    }
 
-      if (data.famille_id != null) {
-        famille = await fetchFamille(data.famille_id);
+    // Update famille if provided (allowing explicit null)
+    if (data.famille_id !== undefined) {
+      if (data.famille_id === null) {
+        sousFamille.famille = null;
+      } else {
+        const familleIdNum = Number(data.famille_id);
+        if (isNaN(familleIdNum)) {
+          return response
+            .status(400)
+            .json({ message: "ID de famille invalide" });
+        }
+        const famille = await fetchFamille(familleIdNum);
         if (!famille) {
           return response.status(404).json({
-            message: "Famille n'est pas trouvé",
+            message: "Famille non trouvée",
           });
         }
+        sousFamille.famille = famille;
       }
-
-      sousFamille.nom = data.nom;
-      sousFamille.famille = famille;
-
-      sousFamillesRepository
-        .save(sousFamille)
-        .then(() => {
-          response.json({
-            message: "Sous famille est modifié",
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-          response.status(500).json({ message: "Un erreur est survenu" });
-        });
     }
+
+    // Update name if provided
+    if (data.nom !== undefined) {
+      sousFamille.nom = data.nom.trim();
+    }
+
+    await sousFamillesRepository.save(sousFamille);
+    return response.json({
+      message: "Sous-famille modifiée",
+      sous_famille: sousFamille,
+    });
   }
 
   public async supprimerSousFamille(request: Request, response: Response) {
-    const data = request.query;
+    const { id, cascade } = request.query;
 
-    const sousFamille = await fetchSousFamilles(Number(data.id));
+    // Validate ID
+    if (!id) {
+      return response.status(400).json({
+        message: "L'ID de la sous-famille est obligatoire",
+      });
+    }
+    if (Array.isArray(id)) {
+      return response.status(400).json({
+        message: "Un seul ID de sous-famille est autorisé",
+      });
+    }
+
+    const sousFamilleId = Number(id);
+    if (isNaN(sousFamilleId) || sousFamilleId <= 0) {
+      return response.status(400).json({
+        message: "ID de sous-famille invalide",
+      });
+    }
+
+    const sousFamille = await sousFamillesRepository.findOne({
+      where: { id: sousFamilleId },
+      relations: ["categories"],
+    });
 
     if (!sousFamille) {
       return response.status(404).json({
-        message: "Sous famille n'est pas trouvé",
+        message: "Sous-famille non trouvée",
       });
-    } else {
-      let cascade = data.cascade as string;
-      if (!cascade || cascade.toLowerCase() == "no") {
-        sousFamillesRepository
-          .delete(sousFamille)
-          .then(() => {
-            response.json({
-              message: "Sous famille est supprimé",
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            response.status(500).json({ message: "Un erreur est survenu" });
-          });
-      } else {
-        let categories = await categoryRepository.find({
-          where: { sous_famille: sousFamille },
-        });
+    }
 
-        for (let category of categories) {
-          await categoryRepository.delete(category.id);
-        }
-
-        await sousFamillesRepository.delete(sousFamille.id);
-
-        response.json({
-          message: "Sous famille est supprimé",
+    // Validate cascade parameter if provided
+    let shouldCascade = false;
+    if (cascade !== undefined) {
+      if (typeof cascade !== "string") {
+        return response.status(400).json({
+          message: "Le paramètre 'cascade' doit être une chaîne",
         });
       }
+      const cascadeLower = cascade.toLowerCase();
+      if (cascadeLower !== "yes" && cascadeLower !== "no") {
+        return response.status(422).json({
+          message: "Choix cascade invalide. Utilisez 'yes' ou 'no'",
+        });
+      }
+      shouldCascade = cascadeLower === "yes";
+    }
+
+    if (!shouldCascade) {
+      // Check if sous-famille has categories
+      if (sousFamille.categories && sousFamille.categories.length > 0) {
+        return response.status(409).json({
+          message: `Impossible de supprimer la sous-famille car elle contient ${sousFamille.categories.length} catégorie(s). Utilisez cascade=yes pour supprimer tout.`,
+        });
+      }
+      await sousFamillesRepository.delete(sousFamille.id);
+      return response.json({
+        message: "Sous-famille supprimée",
+      });
+    }
+
+    // Cascade delete: delete all categories first, then the sous-famille
+    try {
+      if (sousFamille.categories && sousFamille.categories.length > 0) {
+        const categoryIds = sousFamille.categories.map((c) => c.id);
+        await categoryRepository.delete(categoryIds);
+      }
+      await sousFamillesRepository.delete(sousFamille.id);
+      return response.json({
+        message: "Sous-famille et toutes ses catégories supprimées",
+      });
+    } catch (error) {
+      console.error("Error during cascade delete:", error);
+      return response.status(500).json({
+        message: "Une erreur est survenue lors de la suppression en cascade",
+      });
     }
   }
 }

@@ -99,9 +99,17 @@ export class SortieConfirmeDetailsModalComponent {
   }
 
   public downloadBandeCommande() {
-    window.open(
-      `http://localhost:4000/api/documents/${this.sortie.documents[0].id}/download`,
-      '_blank',
-    );
+
+    if (this.sortie.documents.length == 0) {
+      this.error = {
+        show: true,
+        message: "Cet sortie n'a pas une bon de livraison"
+      }
+      return;
+    }
+
+    const documentId = this.sortie.documents[0].id;
+
+    this.sortiesService.openDocument(documentId);
   }
 }

@@ -84,6 +84,13 @@
   </div>
 </div>
 
+<br>
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des demandes</span>
+  <app-loading [size]="20"></app-loading>
+</div>
+
 <br />
 
 <div
@@ -115,8 +122,6 @@
     (filter)="onFilter($event)"
   ></app-filter-demandes-modal>
 </div>
-
-<app-loading *ngIf="loading"></app-loading>
 
 <app-export-modal
   *ngIf="modalSettings.showExportModal"

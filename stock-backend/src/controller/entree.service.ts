@@ -17,7 +17,7 @@ import { Document, DocumentType } from "../entity/Document";
 import { Role } from "../enums/role.enum";
 
 export class EntreeService {
-  /* ----------------------------------  AJOUTER (avec upload documents) ---------------------------------- */
+  
   public async ajouterEntree(req: Request, res: Response) {
     // Auth and role are enforced by middleware
     const b = req.body as Record<string, string>;

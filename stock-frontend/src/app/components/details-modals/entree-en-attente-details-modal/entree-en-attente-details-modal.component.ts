@@ -60,17 +60,18 @@ export class EntreeEnAttenteDetailsModalComponent implements OnInit {
 
   /* -------- open document in new tab -------- */
   openDoc(type: 'bande_commande' | 'bande_livraison') {
-    console.log('works');
 
     const doc = (this.entree as any).documents?.find(
       (d: any) => d.type === type,
     );
-    if (!doc) return;
+    if (!doc) {
+      this.error = {
+        show: true,
+        message: `Cet sortie n'a pas du ${type}`
+      }
+    }
 
-    window.open(
-      `http://localhost:4000/api/documents/${doc.id}/download`,
-      '_blank',
-    );
+    this.service.ouvrirDocument(doc.id);
   }
 
   /* -------- validate (confirm) -------- */

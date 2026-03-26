@@ -79,14 +79,13 @@
   </div>
 
   <!-- Loading spinner -->
-  <div
-    *ngIf="loading"
-    class="loading-container"
-    style="display: flex; justify-content: center; padding: 20px"
-  >
-    <div class="spinner"></div>
-    <span style="margin-left: 10px">Chargement des sorties...</span>
-  </div>
+</div>
+
+<br />
+
+<div *ngIf="loading" style="display: flex; justify-content: center">
+  <span style="margin-right: 10px">Chargement des sorties</span>
+  <app-loading [size]="20"></app-loading>
 </div>
 
 <br />

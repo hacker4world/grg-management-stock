@@ -111,13 +111,13 @@ export class EntreesConfirmesComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('entrees-confirme')) {
+        if (!user || !rolePermissions[user.role].includes('entrees-confirme')) {
+          this.router.navigate(['../../login']);
+        } else {
           this.fetchEntrees();
           this.loadArticles();
           this.loadFournisseurs();
           this.loadFabriquants();
-        } else {
-          this.router.navigate(['../../login']);
         }
       },
     });

@@ -24,6 +24,7 @@ export class SortieEnAttenteDetailsModalComponent {
   @Output() delete = new EventEmitter();
 
   confirmationModal = false;
+  loading = false;
 
   error = {
     show: false,
@@ -44,20 +45,23 @@ export class SortieEnAttenteDetailsModalComponent {
   }
 
   confirmer() {
+    this.loading = true;
+
     this.sortiesEnAttenteService
       .confirmDeny(this.sortie.id, 'confirm')
       .subscribe({
         next: () => {
+          this.loading = false;
           this.delete.emit();
         },
         error: (err) => {
           console.log(err);
 
+          this.loading = false;
+
           this.error = {
             show: true,
-            message:
-              err.error?.message ||
-              'Erreur lors de la confirmation de la sortie',
+            message: 'Erreur lors de la confirmation de la sortie',
           };
         },
       });

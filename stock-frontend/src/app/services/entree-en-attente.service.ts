@@ -162,4 +162,16 @@ export class EntreesEnAttenteService {
       { withCredentials: true },
     );
   }
+
+  public ouvrirDocument(documentId: number) {
+    const documentUrl = `${environement.api_url}/documents/${documentId}/download`
+
+    console.log(`Opening document ${documentId} on url : ${documentUrl}`);
+
+    window.open(
+      documentUrl,
+      '_blank',
+    );
+  }
+
 }

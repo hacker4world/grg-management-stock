@@ -49,6 +49,22 @@
     </div>
 
     <div class="modal-footer">
+
+      <button
+        style="margin-right: auto"
+        class="button black-button"
+        (click)="openDoc('bande_commande')"
+      >
+        Bon de commande
+      </button>
+      <button
+        style="margin-right: auto"
+        class="button black-button"
+        (click)="openDoc('bande_livraison')"
+      >
+        Bon de livraison
+      </button>
+
       <div>
         <button class="button red-button" (click)="confirmationModal = true">
           Supprimer
