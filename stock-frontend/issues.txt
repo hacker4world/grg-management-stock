@@ -7,14 +7,14 @@ organize the api url before | fixed
 - chantier summary still uses old backend endpoint (localhost:4000) | fixed
 
 -- page demandes articles :
-- export fiche expedition does not work
+- export fiche expedition does not work | fixed
 
 -- page entrée confirme :
-- entrée details does not load on the modal
-- list articles does not load articles
+- entrée details does not load on the modal (probably linked to relationship errors)
+- list articles does not load articles (probably linked to relationship errors)
 
 -- page sortie confirmes :
-- export bon de livraison does not work
+- export bon de livraison does not work | fixed
 
 -- issues that will not appear during tests :
 consider checking if every page and modal now uses the new backend endpoint and calls the service instead of calling inside the component file

@@ -5,6 +5,7 @@ import { LoadingComponent } from '../../loading/loading.component'; // Add this 
 import { AuthenticationService } from '../../../services/authentication.service';
 import { FormsModule } from '@angular/forms';
 import { ErrorComponent } from '../../error/error.component';
+import { RetourService } from '../../../services/retour.service';
 
 @Component({
   selector: 'app-retour-details-modal',
@@ -35,7 +36,10 @@ export class RetourDetailsModalComponent implements OnInit {
     message: '',
   };
 
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(
+    private readonly authenticationService: AuthenticationService,
+    private readonly retourService: RetourService,
+  ) {}
 
   ngOnInit(): void {
     this.authenticationService.getCurrentUser().subscribe({
@@ -83,10 +87,16 @@ export class RetourDetailsModalComponent implements OnInit {
   }
 
   public downloadBonRetour() {
-    window.open(
-      `http://localhost:4000/api/documents/${this.retour.documents[0].id}/download`,
-      '_blank',
-    );
+    if (this.retour.documents.length == 0) {
+      this.error = {
+        show: true,
+        message: "Cet retour n'a pas des documents",
+      };
+    }
+
+    const documentId = this.retour.documents[0].id;
+
+    this.retourService.openDocument(documentId);
   }
 
   // Add this method to reset loading state when confirmation is done

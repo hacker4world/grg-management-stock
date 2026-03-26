@@ -8,6 +8,9 @@
     </div>
 
     <div class="modal-body" *ngIf="demande">
+      
+      <app-error *ngIf="error.show" [message]="error.message"></app-error>
+
       <form>
         <div class="form-row">
           <div class="form-group">

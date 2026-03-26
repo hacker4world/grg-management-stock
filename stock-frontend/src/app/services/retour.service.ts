@@ -49,4 +49,12 @@ export class RetourService {
       withCredentials: true,
     });
   }
+
+  public openDocument(documentId: number) {
+    window.open(
+      `${environement.api_url}/documents/${documentId}/download`,
+      '_blank',
+    );
+  }
+
 }

@@ -3,10 +3,12 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConfirmDeleteComponent } from '../../deletion-modals/confirm-delete/confirm-delete';
 import { LoadingComponent } from '../../../components/loading/loading.component'; // Add this import
 import { AuthenticationService } from '../../../services/authentication.service';
+import { DemandesArticlesService } from '../../../services/demande-article.service';
+import { ErrorComponent } from "../../error/error.component";
 
 @Component({
   selector: 'app-demande-details-modal',
-  imports: [CommonModule, ConfirmDeleteComponent, LoadingComponent], // Add LoadingComponent
+  imports: [CommonModule, ConfirmDeleteComponent, LoadingComponent, ErrorComponent], // Add LoadingComponent
   templateUrl: './demande-details-modal.component.html',
   styleUrl: './demande-details-modal.component.css',
 })
@@ -16,10 +18,18 @@ export class DemandeDetailsModalComponent implements OnInit {
   @Output() public confirm = new EventEmitter();
   @Output() public delete = new EventEmitter();
 
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(
+    private readonly authenticationService: AuthenticationService,
+    private readonly demandeService: DemandesArticlesService,
+  ) {}
 
   public confirmationModal = false;
-  public isConfirming = false; // Add this property
+  public isConfirming = false;
+
+  public error = {
+    show: false,
+    message: '',
+  };
 
   public role = '';
 
@@ -45,10 +55,16 @@ export class DemandeDetailsModalComponent implements OnInit {
   }
 
   public downloadBandeCommande() {
-    window.open(
-      `http://localhost:4000/api/documents/${this.demande.documents[0].id}/download`,
-      '_blank',
-    );
+    if (this.demande.documents.length == 0) {
+      this.error = {
+        show: true,
+        message: "Cet retour n'a pas des documents",
+      };
+    }
+
+    const documentId = this.demande.documents[0].id;
+
+    this.demandeService.openDocument(documentId);
   }
 
   // Add this method to reset loading state when confirmation is done
