@@ -50,7 +50,7 @@ export class AddArticleModalComponent implements OnInit {
   public articleForm = new FormGroup({
     nom: new FormControl(''),
     prix: new FormControl(0),
-    uniteId: new FormControl(0),
+    uniteId: new FormControl(''),
     stockMin: new FormControl(0),
     famille: new FormControl(''),
     sousFamille: new FormControl(''),
@@ -89,7 +89,6 @@ export class AddArticleModalComponent implements OnInit {
   }
 
   submit() {
-    this.loading = true;
     const raw = this.articleForm.getRawValue();
 
     if (
@@ -101,18 +100,20 @@ export class AddArticleModalComponent implements OnInit {
       !raw.categorieId ||
       !raw.depotId
     ) {
-      this.loading = false; // keep button enabled
       this.error = {
         show: true,
         message: 'Tous les champs sont obligatoires.',
       };
       return; // stop here
     }
+
+    this.loading = true;
+
     this.articlesService
       .creerArticle({
         nom: raw.nom!.trim(),
         stockMin: raw.stockMin!,
-        uniteId: raw.uniteId!,
+        uniteId: Number(raw.uniteId!),
         depotId: Number(raw.depotId!),
         categorieId: Number(raw.categorieId!),
       })

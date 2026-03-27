@@ -11,7 +11,7 @@ import {
 } from "../repository/repositories";
 import { DemandeArticle } from "../entity/DemandeArticle";
 import { DemandeArticleItem } from "../entity/DemandeArticleItem";
-import { Raw } from "typeorm";
+import { In, Raw } from "typeorm";
 import { CreateDemandeArticleValidator } from "../settings/validators/demande-article.validator";
 import { generateFicheExpeditionForDemande } from "../utilities/pdf.util";
 
@@ -28,7 +28,10 @@ export class DemandeArticleService {
 
     // 2. all articles must exist
     const articleIds = dto.items.map((i) => i.articleId);
-    const articles = await articlesRepositoy.findByIds(articleIds);
+    const articles = await articlesRepositoy.findBy({
+      id: In(articleIds),
+    });
+    
     if (articles.length !== articleIds.length)
       return res
         .status(400)

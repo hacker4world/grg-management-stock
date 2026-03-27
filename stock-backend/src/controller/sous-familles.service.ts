@@ -226,7 +226,7 @@ export class SousFamillesService {
   }
 
   public async supprimerSousFamille(request: Request, response: Response) {
-    const { id, cascade } = request.query;
+    const { id } = request.query;
 
     // Validate ID
     if (!id) {
@@ -255,36 +255,6 @@ export class SousFamillesService {
     if (!sousFamille) {
       return response.status(404).json({
         message: "Sous-famille non trouvée",
-      });
-    }
-
-    // Validate cascade parameter if provided
-    let shouldCascade = false;
-    if (cascade !== undefined) {
-      if (typeof cascade !== "string") {
-        return response.status(400).json({
-          message: "Le paramètre 'cascade' doit être une chaîne",
-        });
-      }
-      const cascadeLower = cascade.toLowerCase();
-      if (cascadeLower !== "yes" && cascadeLower !== "no") {
-        return response.status(422).json({
-          message: "Choix cascade invalide. Utilisez 'yes' ou 'no'",
-        });
-      }
-      shouldCascade = cascadeLower === "yes";
-    }
-
-    if (!shouldCascade) {
-      // Check if sous-famille has categories
-      if (sousFamille.categories && sousFamille.categories.length > 0) {
-        return response.status(409).json({
-          message: `Impossible de supprimer la sous-famille car elle contient ${sousFamille.categories.length} catégorie(s). Utilisez cascade=yes pour supprimer tout.`,
-        });
-      }
-      await sousFamillesRepository.delete(sousFamille.id);
-      return response.json({
-        message: "Sous-famille supprimée",
       });
     }
 

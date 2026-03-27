@@ -11,14 +11,8 @@ export class ConfirmDeleteFamilleComponent {
   @Output() close = new EventEmitter();
   @Output() confirm = new EventEmitter();
 
-  public isChecked = false;
-
-  public onCheck(event) {
-    this.isChecked = event.target.checked;
-  }
-
   public onConfirm() {
-    this.confirm.emit(this.isChecked);
+    this.confirm.emit();
   }
 
   public onClose() {

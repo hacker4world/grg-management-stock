@@ -3,10 +3,12 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConfirmDeleteComponent } from '../../deletion-modals/confirm-delete/confirm-delete';
 import { HttpClient } from '@angular/common/http';
 import { ArticlesService } from '../../../services/articles.service';
+import { LoadingComponent } from "../../loading/loading.component";
+import { ErrorComponent } from "../../error/error.component";
 
 @Component({
   selector: 'app-fournisseurs-list-modal',
-  imports: [CommonModule, ConfirmDeleteComponent],
+  imports: [CommonModule, ConfirmDeleteComponent, LoadingComponent, ErrorComponent],
   templateUrl: './fournisseurs-list-modal.component.html',
   styleUrl: './fournisseurs-list-modal.component.css',
 })
@@ -25,14 +27,19 @@ export class FournisseursListModalComponent implements OnInit {
     message: '',
   };
 
+  public loading = false;
+
   ngOnInit(): void {
+    this.loading = true;
+
     this.articleService.fetchFournisseurs(this.article.id).subscribe({
       next: (res: any) => {
         console.log(res);
-
+        this.loading = false;
         this.fournisseurs = res.fournisseurs;
       },
       error: () => {
+        this.loading = false;
         this.error = {
           show: true,
           message: 'Erreur de récupération des fournisseurs',

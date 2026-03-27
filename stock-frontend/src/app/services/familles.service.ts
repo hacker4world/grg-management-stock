@@ -10,8 +10,7 @@ import { environement } from '../../../environement';
   providedIn: 'root',
 })
 export class FamillesService {
-  private readonly url =
-    `${environement.api_url}/classement/familles`;
+  private readonly url = `${environement.api_url}/classement/familles`;
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -48,12 +47,11 @@ export class FamillesService {
     });
   }
 
-  public supprimerFamille(id: number, cascade: boolean) {
-    return this.httpClient.delete(
-      `${this.url}/supprimer?id=${id}&cascade=${cascade ? 'yes' : 'no'}`,
-      {
-        withCredentials: true,
-      },
-    );
+  public supprimerFamille(id: number) {
+    console.log(id);
+
+    return this.httpClient.delete(`${this.url}/supprimer?id=${id}`, {
+      withCredentials: true,
+    });
   }
 }

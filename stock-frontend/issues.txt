@@ -24,3 +24,14 @@ consider checking if every page and modal now uses the new backend endpoint and 
 - 503 error, server is busy (happened when confirming a sortie)
 - relationship bugs
 - some document based operations use a static localhost backend url, will cause an issue in production | fixed
+
+
+
+-- articles page
+
+
+-- what to test in each page :
+- happy paths
+- edge cases
+- null relationship behaviour
+- loading indicators and buttons disabled

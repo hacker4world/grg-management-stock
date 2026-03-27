@@ -2,7 +2,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3 class="modal-title">Ajouter Article</h3>
-      <button class="close-button" (click)="onClose()">&times;</button>
+      <button class="close-button" (click)="onClose()" [disabled]="loading" >&times;</button>
     </div>
 
     <div class="modal-body">
@@ -99,7 +99,9 @@
         [disabled]="loading"
         (click)="submit()"
       >
-        <span *ngIf="!loading">Enregistrer</span>
+        <span *ngIf="!loading">
+          {{ loading ? 'En cours...' : 'Enregistrer' }}
+        </span>
         <app-loading *ngIf="loading"></app-loading>
       </button>
     </div>

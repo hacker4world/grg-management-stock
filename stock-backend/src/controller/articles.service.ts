@@ -15,7 +15,7 @@ import {
   entreeRepository,
   uniteRepository,
 } from "../repository/repositories";
-import { Raw } from "typeorm";
+import { IsNull, Raw } from "typeorm";
 import { Fournisseur } from "../entity/Fournisseur";
 
 export class ArticleService {
@@ -78,9 +78,14 @@ export class ArticleService {
 
       // Depot filter
       if (q.depotId) {
-        const depotId = Number(q.depotId);
-        if (!isNaN(depotId)) {
-          where.depot = { id: depotId };
+        if (q.depotId == "none") {
+          where.depot = IsNull();
+        } else {
+          const depotId = Number(q.depotId);
+
+          if (!isNaN(depotId)) {
+            where.depot = { id: depotId };
+          }
         }
       }
 
@@ -94,9 +99,13 @@ export class ArticleService {
 
       // Unite filter
       if (q.uniteId) {
-        const uniteId = Number(q.uniteId);
-        if (!isNaN(uniteId)) {
-          where.unite = { id: uniteId };
+        if (q.uniteId == "none") {
+          where.unite = IsNull();
+        } else {
+          const uniteId = Number(q.uniteId);
+          if (!isNaN(uniteId)) {
+            where.unite = { id: uniteId };
+          }
         }
       }
 

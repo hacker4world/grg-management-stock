@@ -189,7 +189,9 @@ export class FamilleService {
   }
 
   public async supprimerFamille(request: Request, response: Response) {
-    const { id, cascade } = request.query;
+    const { id } = request.query;
+
+    console.log(id);
 
     // Validate ID
     if (!id) {
@@ -219,36 +221,6 @@ export class FamilleService {
     if (!famille) {
       return response.status(404).json({
         message: "Famille non trouvée",
-      });
-    }
-
-    // Validate cascade parameter if provided
-    if (cascade !== undefined) {
-      if (typeof cascade !== "string") {
-        return response.status(400).json({
-          message: "Le paramètre 'cascade' doit être une chaîne",
-        });
-      }
-      const cascadeLower = cascade.toLowerCase();
-      if (cascadeLower !== "yes" && cascadeLower !== "no") {
-        return response.status(422).json({
-          message: "Choix cascade invalide. Utilisez 'yes' ou 'no'",
-        });
-      }
-    }
-
-    const shouldCascade = cascade && cascade.toString().toLowerCase() === "yes";
-
-    if (!shouldCascade) {
-      // Check if famille has related sous-familles
-      if (famille.sous_familles && famille.sous_familles.length > 0) {
-        return response.status(409).json({
-          message: `Impossible de supprimer la famille car elle contient ${famille.sous_familles.length} sous-famille(s). Utilisez cascade=yes pour supprimer tout.`,
-        });
-      }
-      await familleRepository.delete(famille.id);
-      return response.json({
-        message: "Famille supprimée",
       });
     }
 

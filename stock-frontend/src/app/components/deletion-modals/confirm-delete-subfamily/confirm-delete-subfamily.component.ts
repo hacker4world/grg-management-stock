@@ -11,18 +11,12 @@ export class ConfirmDeleteSubfamilyComponent {
    @Output() confirm = new EventEmitter();
    @Output() close = new EventEmitter();
 
-   public cascade = false;
-
-   public onCheck(event) {
-    this.cascade = event.target.checked
-   }
-
    public onClose() {
     this.close.emit();
    }
 
    public onConfirm() {
-    this.confirm.emit(this.cascade)
+    this.confirm.emit()
    }
 
 }

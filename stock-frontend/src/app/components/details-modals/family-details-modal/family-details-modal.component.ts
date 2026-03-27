@@ -83,10 +83,10 @@ export class FamilyDetailsModalComponent implements OnInit {
     }
   }
 
-  public onDelete(cascade: boolean) {
+  public onDelete() {
     this.showConfirmationModal = false;
     this.loading.delete = true;
-    this.familleService.supprimerFamille(this.famille.id, cascade).subscribe({
+    this.familleService.supprimerFamille(this.famille.id).subscribe({
       next: () => {
         this.setConfirmationModal(false);
         this.loading.delete = false;

@@ -52,5 +52,5 @@ export class CategoriesService {
 
 export interface FetchCategoriesOptions {
   query?: string;
-  sousFamilleId: string;
+  sousFamilleId?: string;
 }

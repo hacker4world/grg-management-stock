@@ -40,6 +40,7 @@
             <label>Unité :</label>
             <select class="form-control" formControlName="uniteId">
               <option value="">Toutes les unités</option>
+              <option value="none">Non associé</option>
               <option *ngFor="let u of unites" [value]="u.id">
                 {{ u.nom }}
               </option>
@@ -84,6 +85,7 @@
             <label>Dépôt :</label>
             <select class="form-control" formControlName="depotId">
               <option value="">Tous les dépôts</option>
+              <option value="none">Non associé</option>
               <option *ngFor="let d of depots" [value]="d.id">
                 {{ d.nom }}
               </option>

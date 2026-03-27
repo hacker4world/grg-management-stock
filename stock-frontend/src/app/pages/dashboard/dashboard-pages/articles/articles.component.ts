@@ -230,8 +230,16 @@ export class ArticlesComponent implements OnInit {
     let articles = option == 'liste' ? this.articles : [];
 
     this.exportService.exportArticles(articles).subscribe({
-      next: (response: any) =>
-        this.exportService.downloadFile(response, 'articles.xlsx'),
+      next: (response: any) => {
+        this.exportService.downloadFile(response, 'articles.xlsx')
+      },
+      error: () => {
+        this.error = {
+          show: true,
+          message: "Erreur de l'éxportation"
+        }
+      }
+        
     });
   }
 
@@ -258,23 +266,31 @@ export class ArticlesComponent implements OnInit {
 
   onSearch() {
     const nom = this.searchForm.value.nom?.trim() || '';
+
     this.listOptions.searching = nom !== '';
     this.listOptions.query = nom;
     this.alert.show = this.listOptions.searching || this.listOptions.filtering;
     this.alert.message = 'Cette liste est filtrée';
     this.restoreList();
     this.fetchArticles();
-    this.alert = {
-      show: true,
-      message: 'Liste est filtée',
-    };
+
+    if (nom == '' && this.listOptions.filtering == false) {
+      this.alert = {
+        show: false,
+        message: '',
+      };
+    } else
+      this.alert = {
+        show: true,
+        message: 'Liste est filtée',
+      };
   }
 
   /* reset the list to its original state */
   onRestore() {
     this.listOptions.filtering = false;
     this.listOptions.searching = false;
-    this.listOptions.query = "";
+    this.listOptions.query = '';
     this.restoreList();
     this.fetchArticles();
     this.alert = {

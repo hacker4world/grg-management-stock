@@ -44,9 +44,9 @@ export class SousFamillesService {
     });
   }
 
-  public supprimerSousFamille(id: number, cascade: boolean) {
+  public supprimerSousFamille(id: number) {
     return this.httpClient.delete(
-      `${this.url}/supprimer?id=${id}&cascade=${cascade ? 'yest' : 'no'}`,
+      `${this.url}/supprimer?id=${id}`,
       {
         withCredentials: true,
       },

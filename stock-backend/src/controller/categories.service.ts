@@ -224,13 +224,6 @@ export class CategoriesService {
       });
     }
 
-    // Check if category has articles
-    if (categorie.articles && categorie.articles.length > 0) {
-      return response.status(409).json({
-        message: `Impossible de supprimer la catégorie car elle est utilisée par ${categorie.articles.length} article(s)`,
-      });
-    }
-
     await categoryRepository.delete(idNum);
     return response.json({
       message: "Catégorie supprimée",

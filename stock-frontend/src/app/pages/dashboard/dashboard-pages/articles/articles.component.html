@@ -59,8 +59,9 @@
           <th>Stock actuel</th>
           <th *ngIf="role != 'magazinier'">Prix moyen</th>
           <th>Unité</th>
-          <th>Stock minimum</th>
           <th>Dépôt</th>
+          <th>Stock minimum</th>
+          <th>Catégrorie</th>
           <th id="last-col">Fournisseurs</th>
         </tr>
       </thead>
@@ -73,9 +74,14 @@
           <td>{{ article.nom }}</td>
           <td>{{ article.stockActuel }}</td>
           <td *ngIf="role != 'magazinier'">{{ article.prixMoyenne }}</td>
-          <td>{{ article.unite?.nom }}</td>
+          <td>{{ article.unite ? article.unite.nom : "Non associé" }}</td>
+          <td>{{ article.depot ? article.depot.nom : "Non associé" }}</td>
           <td>{{ article.stockMinimum }}</td>
-          <td>{{ article.depot?.nom }}</td>
+
+          <td>
+            {{ article.categorie ? article.categorie.nom : "Non associé" }}
+          </td>
+
           <td>
             <button
               class="button black-button"

@@ -93,11 +93,11 @@ export class SubfamilyDetailsModalComponent implements OnInit {
     this.deleteConfirmModal = open;
   }
 
-  public onConfirmDelete(cascade) {
+  public onConfirmDelete() {
     this.loading.delete = true;
     this.deleteConfirmModal = false;
     this.sousFamilleService
-      .supprimerSousFamille(this.sousFamille.id, cascade)
+      .supprimerSousFamille(this.sousFamille.id)
       .subscribe({
         next: () => {
           this.loading.delete = false;

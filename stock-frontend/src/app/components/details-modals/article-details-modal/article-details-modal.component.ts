@@ -27,7 +27,7 @@ import { LoadingComponent } from '../../loading/loading.component';
   styleUrl: './article-details-modal.component.css',
 })
 export class ArticleDetailsModalComponent {
-  @Input() role = "";
+  @Input() role = '';
   @Input() article: any;
   @Input() unites: any[] = []; // NEW: Receive unites from parent
   @Input() depots: any[] = []; // NEW: Receive depots from parent
@@ -71,22 +71,35 @@ export class ArticleDetailsModalComponent {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.article);
+
     this.loadInitialData();
-    this.setupFormListeners();
-    this.initializeFormValues();
   }
 
   private loadInitialData(): void {
-    // Fetch all familles
-    this.famillesService.listeFamilles().subscribe({
+    this.categoriesService.fetchCategories(0, {}).subscribe({
       next: (response: any) => {
-        this.familles = response.familles;
-      },
-      error: () => {
-        this.error = {
-          show: true,
-          message: 'Erreur lors du chargement des familles',
-        };
+        this.categories = response.categories;
+
+        this.sousFamillesService.fetchSousFamilles(0).subscribe({
+          next: (response: any) => {
+            this.sousFamilles = response.sousFamilles;
+
+            this.famillesService.listeFamilles().subscribe({
+              next: (response: any) => {
+                this.familles = response.familles;
+
+                this.initializeFormValues();
+              },
+              error: () => {
+                this.error = {
+                  show: true,
+                  message: 'Erreur lors du chargement des familles',
+                };
+              },
+            });
+          },
+        });
       },
     });
   }
@@ -118,6 +131,8 @@ export class ArticleDetailsModalComponent {
   private initializeFormValues(): void {
     if (!this.article) return;
 
+    console.log(this.categories);
+
     // Set basic values
     this.articleForm.patchValue({
       nom: this.article.nom,
@@ -125,28 +140,11 @@ export class ArticleDetailsModalComponent {
       uniteId: this.article.unite?.id ?? null,
       depotId: this.article.depot?.id ?? null,
       categorieId: this.article.categorie?.id ?? null,
+      sousFamilleId: this.article.categorie?.sous_famille.id ?? null,
+      familleId: this.article.categorie?.sous_famille.famille.id ?? null,
     });
 
-    // Set famille and sous-famille if they exist
-    if (this.article.categorie?.sous_famille) {
-      const sousFamille = this.article.categorie.sous_famille;
-      this.articleForm.patchValue({
-        sousFamilleId: sousFamille.id,
-      });
-
-      if (sousFamille.famille) {
-        this.articleForm.patchValue({
-          familleId: sousFamille.famille.id,
-        });
-        // Load sous-familles for this famille
-        this.loadSousFamilles(sousFamille.famille.id);
-      }
-    }
-
-    // Load categories for the sous-famille
-    if (this.article.categorie?.sous_famille?.id) {
-      this.loadCategories(this.article.categorie.sous_famille.id);
-    }
+    this.setupFormListeners();
   }
 
   private loadSousFamilles(familleId: number): void {
@@ -251,6 +249,10 @@ export class ArticleDetailsModalComponent {
   }
 
   public onClose() {
+    this.familles = [];
+    this.sousFamilles = [];
+    this.categories = [];
+
     this.close.emit();
   }
 }
