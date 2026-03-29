@@ -17,7 +17,6 @@ import { Document, DocumentType } from "../entity/Document";
 import { Role } from "../enums/role.enum";
 
 export class EntreeService {
-  
   public async ajouterEntree(req: Request, res: Response) {
     // Auth and role are enforced by middleware
     const b = req.body as Record<string, string>;
@@ -44,7 +43,6 @@ export class EntreeService {
     };
 
     console.log(files);
-    
 
     const bandeCommande = files?.bande_commande?.[0];
     const bandeLivraison = files?.bande_livraison?.[0];
@@ -146,8 +144,6 @@ export class EntreeService {
   public async listerEntrees(req: Request, res: Response) {
     const q = req.query as Record<string, string>;
 
-    console.log(q);
-    
     const page = Number(q.page) || 1;
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
@@ -285,7 +281,19 @@ export class EntreeService {
   }
 
   public async supprimer(request: Request, response: Response) {
-    const { code } = request.query;
+    const code = request.query.code as string;
+
+    if (!code) {
+      return response.status(400).json({
+        message: "Code de l'entrée est obligatoire.",
+      });
+    }
+
+    if (isNaN(Number(code))) {
+      return response.status(404).json({
+        message: "Entree n'est pas trouvé",
+      });
+    }
 
     const entree = await entreeRepository.findOne({
       where: { id: Number(code) },

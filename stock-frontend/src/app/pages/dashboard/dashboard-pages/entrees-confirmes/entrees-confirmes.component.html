@@ -69,8 +69,8 @@
             </button>
           </td>
           <td>{{ e.date | date: "dd/MM/yyyy" }}</td>
-          <td>{{ e.fournisseur.nom }}</td>
-          <td>{{ e.compte.nom + " " + e.compte.prenom }}</td>
+          <td>{{ e.fournisseur ? e.fournisseur.nom : "Non associé" }}</td>
+          <td>{{ e.compte ? e.compte.nom + " " + e.compte.prenom : "Non associé" }}</td>
         </tr>
       </tbody>
     </table>

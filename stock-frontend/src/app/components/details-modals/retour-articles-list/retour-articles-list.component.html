@@ -26,9 +26,6 @@
                 <td>{{ item.quantite }}</td>
                 <td>{{ item.reason }}</td>
               </tr>
-              <tr *ngIf="!retour?.items || retour.items.length === 0">
-                <td colspan="3" class="no-data">Aucun article</td>
-              </tr>
             </tbody>
           </table>
         </div>

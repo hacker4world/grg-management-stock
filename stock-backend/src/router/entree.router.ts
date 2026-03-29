@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { requestBodyValidator } from "../settings/validators/validator";
-import { confirmerEntreeValidator } from "../settings/validators/entree.validator";
+import {
+  ajouterEntreeValidator,
+  confirmerEntreeValidator,
+} from "../settings/validators/entree.validator";
 import { uploadEntreeDocuments } from "../config/multer.config";
 import { EntreeService } from "../controller/entree.service";
 import { authenticate, requireRole } from "../middleware";
@@ -26,13 +29,14 @@ entreeRouter.post(
   authenticate,
   requireRole(Role.ADMIN, Role.ADMIN1, Role.MAGAZINIER),
   uploadEntreeDocuments,
+/*   requestBodyValidator.body(ajouterEntreeValidator), */
   service.ajouterEntree,
 );
 entreeRouter.put(
   "/traiter",
   authenticate,
   requireRole(Role.ADMIN, Role.ADMIN1, Role.MAGAZINIER),
-  requestBodyValidator.body(confirmerEntreeValidator),
+/*   requestBodyValidator.body(confirmerEntreeValidator), */
   service.confirmerOuRefuser.bind(service),
 );
 

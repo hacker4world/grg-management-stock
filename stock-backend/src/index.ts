@@ -60,10 +60,11 @@ app.use(
   }),
 );
 
-app.use(cookieParser());
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(cookieParser());
+
 app.use(globalRateLimiter);
 
 app.use("/api/fournisseurs", fournisseurRouter);
@@ -103,7 +104,7 @@ app.use(globalErrorHandler);
 AppDataSource.initialize()
   .then(() => {
     const PORT = process.env.SERVER_PORT || 4000;
-    app.listen(Number(PORT), '0.0.0.0', () => {
+    app.listen(Number(PORT), "0.0.0.0", () => {
       console.log(`✅ Server started on http://0.0.0.0:${PORT}`);
       console.log(
         `📱 Mobile app can connect via your local IP on port ${PORT}`,

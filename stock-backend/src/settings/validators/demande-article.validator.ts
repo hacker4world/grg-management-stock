@@ -2,7 +2,7 @@ import Joi = require("joi");
 
 export const CreateDemandeArticleValidator = Joi.object({
   chantierId: Joi.number().integer().positive().required(),
-  observation: Joi.string().optional(),
+  observation: Joi.string().max(80).optional(),
   items: Joi.array()
     .items(
       Joi.object({
@@ -16,7 +16,7 @@ export const CreateDemandeArticleValidator = Joi.object({
 
 export const ConfirmDenyDemandeValidator = Joi.object({
   demandeId: Joi.number().integer().positive().required(),
-  action: Joi.string().valid("confirm", "deny").required(),
+  action: Joi.string().max(80).valid("confirm", "deny").required(),
 });
 
 export const ListDemandeFiltersValidator = Joi.object({

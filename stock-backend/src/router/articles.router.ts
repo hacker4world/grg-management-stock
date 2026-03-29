@@ -21,6 +21,12 @@ articlesRouter.get(
 
 articlesRouter.get(
   "/fournisseur-list",
+  authenticate,
+  requireRole(
+    Role.ADMIN,
+    Role.ADMIN1,
+    Role.ADMIN2,
+  ),
   articlesService.listArticleFournisseurs,
 );
 

@@ -6,7 +6,7 @@ import {
 } from "../../dto/articles.dto";
 
 export const createArticleSchema = Joi.object<CreateArticleDto>({
-  nom: Joi.string().required(),
+  nom: Joi.string().max(80).required(),
   stockMin: Joi.number().integer().positive().required(),
   depotId: Joi.number().integer().positive().required(),
   categorieId: Joi.number().integer().positive().required(),
@@ -15,7 +15,7 @@ export const createArticleSchema = Joi.object<CreateArticleDto>({
 
 export const updateArticleSchema = Joi.object<UpdateArticleDto>({
   id: Joi.number().integer().positive().required(),
-  nom: Joi.string().required(),
+  nom: Joi.string().max(80).required(),
   stockMin: Joi.number().integer().positive().required(),
   depotId: Joi.number().integer().positive().required(),
   categorieId: Joi.number().integer().positive().required(),

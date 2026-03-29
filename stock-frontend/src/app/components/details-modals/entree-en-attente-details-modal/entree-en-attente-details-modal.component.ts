@@ -48,8 +48,12 @@ export class EntreeEnAttenteDetailsModalComponent implements OnInit {
 
     this.form.setValue({
       date: this.entree.date,
-      fournisseur: this.entree.fournisseur.nom,
-      magazinier: this.entree.compte.nom + ' ' + this.entree.compte.prenom,
+      fournisseur: this.entree.fournisseur
+        ? this.entree.fournisseur.nom
+        : 'Non associé',
+      magazinier: this.entree.compte
+        ? this.entree.compte.nom + ' ' + this.entree.compte.prenom
+        : 'Non associé',
     });
   }
 
@@ -60,15 +64,14 @@ export class EntreeEnAttenteDetailsModalComponent implements OnInit {
 
   /* -------- open document in new tab -------- */
   openDoc(type: 'bande_commande' | 'bande_livraison') {
-
     const doc = (this.entree as any).documents?.find(
       (d: any) => d.type === type,
     );
     if (!doc) {
       this.error = {
         show: true,
-        message: `Cet sortie n'a pas du ${type}`
-      }
+        message: `Cet sortie n'a pas du ${type}`,
+      };
     }
 
     this.service.ouvrirDocument(doc.id);

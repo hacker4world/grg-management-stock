@@ -110,6 +110,8 @@ export class EntreesEnAttenteService {
     bandeCommande: File,
     bandeLivraison: File,
   ): Observable<any> {
+    console.log(data);
+
     const form = new FormData();
 
     form.append('fournisseurId', data.fournisseurId.toString());
@@ -123,6 +125,10 @@ export class EntreesEnAttenteService {
 
     form.append('bande_commande', bandeCommande);
     form.append('bande_livraison', bandeLivraison);
+
+    form.forEach((value, key) => {
+      console.log(key, value);
+    });
 
     return this.http.post(`${this.base}/ajouter`, form, {
       withCredentials: true,
@@ -164,14 +170,10 @@ export class EntreesEnAttenteService {
   }
 
   public ouvrirDocument(documentId: number) {
-    const documentUrl = `${environement.api_url}/documents/${documentId}/download`
+    const documentUrl = `${environement.api_url}/documents/${documentId}/download`;
 
     console.log(`Opening document ${documentId} on url : ${documentUrl}`);
 
-    window.open(
-      documentUrl,
-      '_blank',
-    );
+    window.open(documentUrl, '_blank');
   }
-
 }

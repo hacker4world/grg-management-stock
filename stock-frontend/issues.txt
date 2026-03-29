@@ -10,8 +10,8 @@ organize the api url before | fixed
 - export fiche expedition does not work | fixed
 
 -- page entrée confirme :
-- entrée details does not load on the modal (probably linked to relationship errors)
-- list articles does not load articles (probably linked to relationship errors)
+- entrée details does not load on the modal (probably linked to relationship errors) | fixed
+- list articles does not load articles (probably linked to relationship errors) | fixed
 
 -- page sortie confirmes :
 - export bon de livraison does not work | fixed
@@ -25,13 +25,15 @@ consider checking if every page and modal now uses the new backend endpoint and 
 - relationship bugs
 - some document based operations use a static localhost backend url, will cause an issue in production | fixed
 
+-- backend checks :
+- Number() without verifying NaN
+- missing joi validators
+- multipart forms are sent empty and rejected by the validator (ajouter entree)
+- all routes divert into the global error handler if an error occures
 
-
--- articles page
-
-
--- what to test in each page :
+-- Frontend checks :
 - happy paths
 - edge cases
 - null relationship behaviour
 - loading indicators and buttons disabled
+- uses dynamic api url

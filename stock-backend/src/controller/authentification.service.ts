@@ -145,7 +145,13 @@ export class AuthentificationService {
 
   public async verifierCompte(request: Request, response: Response) {
     // authenticate middleware has already set req.user
-    const compte = (request as AuthRequest).user!;
+    const compte = (request as AuthRequest).user;
+
+    if (!compte) {
+      return response.status(403).json({
+        message: 'Connexion est obligatoire.'
+      })
+    }
 
     return response.json({
       role: compte.role,

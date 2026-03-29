@@ -16,13 +16,9 @@ export function extractToken(req: Request): string | null {
       return authHeader.substring(7);
     }
   }
-
-  console.log(req.cookies);
   
   // Fallback to cookie for web browsers
   const cookieToken = req.cookies?.token as string;
-
-  console.log(`Token : ${cookieToken}`);
 
   return cookieToken || null;
 }
@@ -33,7 +29,6 @@ export async function authenticate(
   next: NextFunction,
 ): Promise<void> {
   /* const token = extractToken(req);
-  console.log(token);
 
   if (!token) {
     res.status(401).json({ message: "Authentification requise" });

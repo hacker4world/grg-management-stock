@@ -42,8 +42,12 @@ export class EntreesConfirmesDetailsComponent implements OnInit {
       // Populate the form with existing data
       this.entreeForm.setValue({
         date: this.formatDateForInput(this.entree.date),
-        fournisseur: this.entree.fournisseur.nom,
-        magazinier: this.entree.compte.nom + ' ' + this.entree.compte.prenom,
+        fournisseur: this.entree.fournisseur
+          ? this.entree.fournisseur.nom
+          : 'Non associé',
+        magazinier: this.entree.compte
+          ? this.entree.compte.nom + ' ' + this.entree.compte.prenom
+          : 'Non associé',
       });
     }
   }

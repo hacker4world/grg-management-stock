@@ -16,6 +16,8 @@ const chantierService = new ChantierService();
 
 chantierRouter.get(
   "/liste",
+  authenticate,
+  requireRole(Role.ADMIN, Role.ADMIN1, Role.ADMIN2),
   chantierService.listeChantiers,
 );
 

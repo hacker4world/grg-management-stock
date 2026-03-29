@@ -1,8 +1,8 @@
 import Joi = require("joi");
 
 export const ajouterChantierValidator = Joi.object({
-  nom: Joi.string().min(1).required(),
-  adresse: Joi.string().min(1).required(),
+  nom: Joi.string().min(1).max(80).required(),
+  adresse: Joi.string().min(1).max(80).required(),
   compteId: Joi.number().integer().positive().required(),
 });
 

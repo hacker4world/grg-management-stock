@@ -4,8 +4,10 @@ export function globalErrorHandler(
   err: any,
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
+  console.log(request.body);
+
   if (err && err.type == "body") {
     return response.status(422).json({
       message: "Veuillez verifier les données",

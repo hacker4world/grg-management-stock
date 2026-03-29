@@ -17,7 +17,12 @@ categoryRouter.get(
   authenticate, categoriesService.listeCategories,
 );
 
-categoryRouter.post("/creer", categoriesService.ajouterCategorie);
+categoryRouter.post(
+  "/creer",
+  authenticate,
+  requireRole(Role.ADMIN),
+  categoriesService.ajouterCategorie,
+);
 categoryRouter.put(
   "/modifier",
   authenticate,
