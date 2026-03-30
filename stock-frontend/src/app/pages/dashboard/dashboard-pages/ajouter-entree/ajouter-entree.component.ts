@@ -187,15 +187,6 @@ export class AjouterEntreeComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    // Try to add current selection if not empty
-    if (this.addForm.get('code_article')?.value) {
-      this.onAddItem();
-    }
-
-    if (this.itemsAjoutes.length === 0) {
-      this.showError('Veuillez ajouter au moins un article.');
-      return;
-    }
 
     if (
       !this.bandeCommandeFile ||
@@ -203,8 +194,17 @@ export class AjouterEntreeComponent implements OnInit {
       this.addForm.get('code_fournisseur')?.invalid
     ) {
       this.showError(
-        'Fournisseur, Fabricant et les deux documents sont obligatoires.',
+        'Tous les champs sont obligatoires',
       );
+      return;
+    }
+
+    if (this.addForm.get('code_article')?.value) {
+      this.onAddItem();
+    }
+
+    if (this.itemsAjoutes.length === 0) {
+      this.showError('Veuillez ajouter au moins un article.');
       return;
     }
 

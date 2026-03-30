@@ -31,11 +31,20 @@ export class DemandeArticleService {
     const articles = await articlesRepositoy.findBy({
       id: In(articleIds),
     });
-    
+
     if (articles.length !== articleIds.length)
       return res
         .status(400)
         .json({ message: "Un ou plusieurs articles introuvables" });
+
+    // Edge case: validate quantity > 0
+    for (const item of dto.items) {
+      if (item.quantity <= 0) {
+        return res.status(400).json({
+          message: `Quantité invalide pour l'article ${item.articleId}`,
+        });
+      }
+    }
 
     // 3. build entity graph
     const demande = demandeArticlesRepository.create({
@@ -64,7 +73,13 @@ export class DemandeArticleService {
     const { demandeId, action } = req.body as ConfirmDenyDemandeDto;
     // Auth and role (magazinier/admin) are enforced by middleware
 
-    const demande = await fetchDemandeArticle(demandeId);
+    // Edge case: validate demandeId is a valid number
+    const demandeIdNum = Number(demandeId);
+    if (isNaN(demandeIdNum) || demandeIdNum <= 0) {
+      return res.status(400).json({ message: "ID de demande invalide" });
+    }
+
+    const demande = await fetchDemandeArticle(demandeIdNum);
     if (!demande)
       return res.status(404).json({ message: "Demande introuvable" });
 
@@ -126,26 +141,46 @@ export class DemandeArticleService {
 
   public async listDemandes(req: Request, res: Response) {
     const filters = req.query as ListDemandeFilters;
-    const page = filters.page || 1;
+
+    // Edge case: validate page is a valid number
+    const page = filters.page !== undefined ? Number(filters.page) : 1;
+    if (isNaN(page) || page < 1) {
+      return res.status(400).json({ message: "Page invalide" });
+    }
+
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
     // Initialize a single where object to ensure AND logic
     const where: any = {};
 
-    if (filters.chantierId) where.chantier = { code: filters.chantierId };
+    // Edge case: validate chantierId is a valid number
+    if (filters.chantierId) {
+      const chantierIdNum = Number(filters.chantierId);
+      if (!isNaN(chantierIdNum) && chantierIdNum > 0) {
+        where.chantier = { code: chantierIdNum };
+      }
+    }
+
     if (filters.date) where.date = filters.date;
     if (filters.status) where.status = filters.status;
 
-    // Add id filter - ignore if id = 0
-    if (filters.id != undefined) {
-      where.id = filters.id;
+    // Add id filter - ignore if id = 0, validate number
+    if (filters.id != undefined && filters.id !== 0) {
+      const idNum = Number(filters.id);
+      if (!isNaN(idNum)) {
+        where.id = idNum;
+      }
     }
 
     // Merge the article filter into the same object
     if (filters.articleId) {
-      where.items = {
-        article: { id: filters.articleId },
-      };
+      // Edge case: validate articleId is a valid number
+      const articleIdNum = Number(filters.articleId);
+      if (!isNaN(articleIdNum) && articleIdNum > 0) {
+        where.items = {
+          article: { id: articleIdNum },
+        };
+      }
     }
 
     const [demandes, total] = await demandeArticlesRepository.findAndCount({

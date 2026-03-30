@@ -29,8 +29,8 @@ import { LoadingComponent } from '../../loading/loading.component';
 export class ArticleDetailsModalComponent {
   @Input() role = '';
   @Input() article: any;
-  @Input() unites: any[] = []; // NEW: Receive unites from parent
-  @Input() depots: any[] = []; // NEW: Receive depots from parent
+  @Input() unites: any[] = [];
+  @Input() depots: any[] = [];
   @Output() public close = new EventEmitter();
   @Output() public update = new EventEmitter();
   @Output() public delete = new EventEmitter();
@@ -71,7 +71,6 @@ export class ArticleDetailsModalComponent {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.article);
 
     this.loadInitialData();
   }
@@ -105,10 +104,15 @@ export class ArticleDetailsModalComponent {
   }
 
   private setupFormListeners(): void {
+
     // Listen for famille changes
     this.articleForm.get('familleId')?.valueChanges.subscribe((familleId) => {
+      familleId = Number(familleId)
+      
       if (familleId) {
         this.loadSousFamilles(familleId);
+        console.log(familleId);
+        
         // Reset dependent fields
         this.articleForm.get('sousFamilleId')?.setValue(null);
         this.articleForm.get('categorieId')?.setValue(null);
@@ -131,8 +135,6 @@ export class ArticleDetailsModalComponent {
   private initializeFormValues(): void {
     if (!this.article) return;
 
-    console.log(this.categories);
-
     // Set basic values
     this.articleForm.patchValue({
       nom: this.article.nom,
@@ -148,6 +150,9 @@ export class ArticleDetailsModalComponent {
   }
 
   private loadSousFamilles(familleId: number): void {
+
+    if (!familleId) return;
+
     this.sousFamillesService
       .filtrerSousFamilles(0, {
         familleId: String(familleId),
@@ -185,19 +190,37 @@ export class ArticleDetailsModalComponent {
 
   // NEW: Update article method
   onUpdate() {
+    this.error = {
+      show: false,
+      message: '',
+    };
+
     const formValue = this.articleForm.value;
+
+     const depotId = formValue.depotId ? Number(formValue.depotId) : null;
+     const uniteId = formValue.uniteId ? Number(formValue.uniteId) : null;
+     const categorieId = formValue.categorieId
+       ? Number(formValue.categorieId)
+       : null;
 
     // Validation
     if (
       !formValue.nom?.trim() ||
-      !formValue.stockMin ||
       !formValue.depotId ||
       !formValue.uniteId ||
       !formValue.categorieId
     ) {
       this.error = {
         show: true,
-        message: 'Tous les champs obligatoires doivent être remplis',
+        message: 'Tous les champs sont obligatoires',
+      };
+      return;
+    }
+
+    if (formValue.stockMin < 1) {
+      this.error = {
+        show: true,
+        message: 'Stock minimum doit etre au minimum 1',
       };
       return;
     }

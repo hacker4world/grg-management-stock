@@ -91,9 +91,13 @@ export class ArticleService {
 
       // Categorie filter
       if (q.categorieId) {
-        const catId = Number(q.categorieId);
-        if (!isNaN(catId)) {
-          where.categorie = { id: catId };
+        if (q.categorieId == "none") {
+          where.categorie = IsNull();
+        } else {
+          const catId = Number(q.categorieId);
+          if (!isNaN(catId)) {
+            where.categorie = { id: catId };
+          }
         }
       }
 

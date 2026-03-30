@@ -107,6 +107,14 @@ export class AddArticleModalComponent implements OnInit {
       return; // stop here
     }
 
+    if (raw.stockMin < 1) {
+      this.error = {
+        show: true,
+        message: 'Stock minimum doit etre au minimum 1',
+      };
+      return;
+    }
+
     this.loading = true;
 
     this.articlesService

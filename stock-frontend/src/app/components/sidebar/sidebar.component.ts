@@ -40,10 +40,13 @@ export class SidebarComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe({
       next: (user) => {
-        this.currentUser = user;
-
-        const roles = rolePermissions[user?.role];
-        this.currentPermissions = roles;
+        if (!user) {
+          this.router.navigate(['../../login']);
+        } else {
+          this.currentUser = user;
+          const roles = rolePermissions[user?.role];
+          this.currentPermissions = roles;
+        }
       },
     });
   }

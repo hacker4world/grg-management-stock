@@ -99,6 +99,9 @@ export class FilterArticlesModalComponent implements OnInit {
 
   onFilter(): void {
     const raw = this.filterForm.value;
+
+    console.log(raw);
+
     const payload: any = {};
     Object.keys(raw).forEach((k) => {
       const v = raw[k as keyof typeof raw];

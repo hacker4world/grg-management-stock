@@ -53,6 +53,29 @@ export class SortieService {
         });
       }
 
+      // Edge case: validate articles array exists and has items
+      if (!dto.articles || dto.articles.length === 0) {
+        return res.status(400).json({ message: "Aucun article spécifié" });
+      }
+
+      // Edge case: validate each article has valid data
+      for (const item of dto.articles) {
+        if (!item.articleId || isNaN(Number(item.articleId))) {
+          return res.status(400).json({ message: "ID d'article invalide" });
+        }
+        if (
+          !item.stockSortie ||
+          isNaN(Number(item.stockSortie)) ||
+          Number(item.stockSortie) <= 0
+        ) {
+          return res
+            .status(400)
+            .json({
+              message: `Quantité invalide pour l'article ${item.articleId}`,
+            });
+        }
+      }
+
       // ============ BUILD SORTIE BASED ON TYPE ============
       const sortie = await this.buildSortieByType(dto, compte, res);
       if (!sortie) return; // Error already sent
@@ -64,6 +87,8 @@ export class SortieService {
       for (const l of dto.articles) {
         const article = await articlesRepositoy.findOneBy({ id: l.articleId });
         if (!article) {
+          // Cleanup: remove the sortie if article not found
+          await sortieRepository.remove(sortie);
           return res
             .status(404)
             .json({ message: `Article ${l.articleId} inconnu` });
@@ -118,6 +143,12 @@ export class SortieService {
 
     // ============ SORTIE INTERNE DEPOT ============
     if (dto.typeSortie === "interne_depot") {
+      // Edge case: validate depotId is a valid number
+      if (!dto.depotId || isNaN(Number(dto.depotId))) {
+        res.status(400).json({ message: "ID de dépôt invalide" });
+        return null;
+      }
+
       const depot = await depotRepository.findOneBy({
         id: dto.depotId,
       });
@@ -144,6 +175,12 @@ export class SortieService {
     }
 
     if (dto.typeSortie === "interne_chantier") {
+      // Edge case: validate chantierId is a valid number
+      if (!dto.chantierId || isNaN(Number(dto.chantierId))) {
+        res.status(400).json({ message: "ID de chantier invalide" });
+        return null;
+      }
+
       const chantier = await chantierRepository.findOneBy({
         code: dto.chantierId,
       });
@@ -171,6 +208,12 @@ export class SortieService {
 
     // ============ SORTIE EXTERNE ============
     if (dto.typeSortie === "externe") {
+      // Edge case: validate sousTypeSortieExterne
+      if (!dto.sousTypeSortieExterne) {
+        res.status(400).json({ message: "Sous-type de sortie externe requis" });
+        return null;
+      }
+
       const sortieExterne = sortieRepository.create({
         ...baseFields,
         typeSortie: "externe",
@@ -201,7 +244,13 @@ export class SortieService {
 
   public async listSorties(req: Request, res: Response) {
     const q = req.query as ListSortiesFilterDto;
-    const page = Number(q.page) || 1;
+
+    // Edge case: validate page is a valid number
+    const page = q.page !== undefined ? Number(q.page) : 1;
+    if (isNaN(page) || page < 1) {
+      return res.status(400).json({ message: "Page invalide" });
+    }
+
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
     const where: any = {
@@ -210,51 +259,83 @@ export class SortieService {
 
     if (q.date) where.date = q.date;
     if (q.typeSortie) where.typeSortie = q.typeSortie;
-    if (q.chantierId) where.chantier = { code: Number(q.chantierId) };
-    if (q.depotId) where.depot = { id: Number(q.depotId) };
-    if (q.compteId) where.compte = { id: Number(q.compteId) };
-    if (q.id != undefined) where.id = Number(q.id); // Add this line
+
+    // Edge case: validate chantierId is a valid number
+    if (q.chantierId) {
+      const chantierIdNum = Number(q.chantierId);
+      if (!isNaN(chantierIdNum) && chantierIdNum > 0) {
+        where.chantier = { code: chantierIdNum };
+      }
+    }
+
+    // Edge case: validate depotId is a valid number
+    if (q.depotId) {
+      const depotIdNum = Number(q.depotId);
+      if (!isNaN(depotIdNum) && depotIdNum > 0) {
+        where.depot = { id: depotIdNum };
+      }
+    }
+
+    // Edge case: validate compteId is a valid number
+    if (q.compteId) {
+      const compteIdNum = Number(q.compteId);
+      if (!isNaN(compteIdNum) && compteIdNum > 0) {
+        where.compte = { id: compteIdNum };
+      }
+    }
+
+    // Edge case: validate id is a valid number
+    if (q.id != undefined) {
+      const idNum = Number(q.id);
+      if (!isNaN(idNum)) {
+        where.id = idNum;
+      }
+    }
 
     // ============ FILTER BY ARTICLE ID ============
     let articleFilter: number[] | undefined;
     if (q.articleId) {
-      const rows = await articleSortieRepository.find({
-        where: { article: { id: Number(q.articleId) } },
-        select: { sortie: { id: true } },
-        relations: { sortie: true },
-      });
-      articleFilter = rows.map((r) => r.sortie.id);
-      if (!articleFilter.length) {
-        return res.json({
-          sorties: [],
-          count: 0,
-          totalPages: 0,
-          lastPage: true,
+      const articleIdNum = Number(q.articleId);
+      if (!isNaN(articleIdNum) && articleIdNum > 0) {
+        const rows = await articleSortieRepository.find({
+          where: { article: { id: articleIdNum } },
+          select: { sortie: { id: true } },
+          relations: { sortie: true },
         });
+        articleFilter = rows.map((r) => r.sortie.id);
+        if (!articleFilter.length) {
+          return res.json({
+            sorties: [],
+            count: 0,
+            totalPages: 0,
+            lastPage: true,
+          });
+        }
+        where.id = In(articleFilter);
       }
-      where.id = In(articleFilter);
     }
 
     // ============ FILTER BY STOCK SORTIE ============
     let stockSortieFilter: number | undefined;
     if (q.stockSortie) {
       stockSortieFilter = Number(q.stockSortie);
-
-      const rows = await articleSortieRepository.find({
-        where: { stockSortie: stockSortieFilter },
-        select: { sortie: { id: true } },
-        relations: { sortie: true },
-      });
-      const sortieIds = rows.map((r) => r.sortie.id);
-      if (!sortieIds.length) {
-        return res.json({
-          sorties: [],
-          count: 0,
-          totalPages: 0,
-          lastPage: true,
+      if (!isNaN(stockSortieFilter)) {
+        const rows = await articleSortieRepository.find({
+          where: { stockSortie: stockSortieFilter },
+          select: { sortie: { id: true } },
+          relations: { sortie: true },
         });
+        const sortieIds = rows.map((r) => r.sortie.id);
+        if (!sortieIds.length) {
+          return res.json({
+            sorties: [],
+            count: 0,
+            totalPages: 0,
+            lastPage: true,
+          });
+        }
+        where.id = In(sortieIds);
       }
-      where.id = In(sortieIds);
     }
 
     // ============ FETCH SORTIES ============
@@ -274,9 +355,11 @@ export class SortieService {
     // Filter article lines if stockSortie filter was applied
     if (stockSortieFilter !== undefined) {
       sorties.forEach((s) => {
-        s.articleSorties = s.articleSorties.filter(
-          (l) => l.stockSortie === stockSortieFilter,
-        );
+        if (s.articleSorties) {
+          s.articleSorties = s.articleSorties.filter(
+            (l) => l.stockSortie === stockSortieFilter,
+          );
+        }
       });
     }
 
@@ -305,32 +388,69 @@ export class SortieService {
     status: "pending" | "confirmed",
   ) {
     const q = req.query as ListSortiesFilterDto;
-    const page = Number(q.page) || 1;
+
+    // Edge case: validate page is a valid number
+    const page = q.page !== undefined ? Number(q.page) : 1;
+    if (isNaN(page) || page < 1) {
+      return res.status(400).json({ message: "Page invalide" });
+    }
+
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
     const where: any = { status };
 
     if (q.date) where.date = q.date;
     if (q.typeSortie) where.typeSortie = q.typeSortie;
-    if (q.chantierId) where.chantier = { code: Number(q.chantierId) };
-    if (q.depotId) where.depot = { id: Number(q.depotId) };
-    if (q.compteId) where.compte = { id: Number(q.compteId) };
-    if (q.id != undefined) where.id = Number(q.id);
+
+    // Edge case: validate chantierId is a valid number
+    if (q.chantierId) {
+      const chantierIdNum = Number(q.chantierId);
+      if (!isNaN(chantierIdNum) && chantierIdNum > 0) {
+        where.chantier = { code: chantierIdNum };
+      }
+    }
+
+    // Edge case: validate depotId is a valid number
+    if (q.depotId) {
+      const depotIdNum = Number(q.depotId);
+      if (!isNaN(depotIdNum) && depotIdNum > 0) {
+        where.depot = { id: depotIdNum };
+      }
+    }
+
+    // Edge case: validate compteId is a valid number
+    if (q.compteId) {
+      const compteIdNum = Number(q.compteId);
+      if (!isNaN(compteIdNum) && compteIdNum > 0) {
+        where.compte = { id: compteIdNum };
+      }
+    }
+
+    // Edge case: validate id is a valid number
+    if (q.id != undefined) {
+      const idNum = Number(q.id);
+      if (!isNaN(idNum)) {
+        where.id = idNum;
+      }
+    }
 
     // ============ HANDLE ARTICLE FILTERING ============
     if (q.articleId) {
-      const articleLines = await articleSortieRepository.find({
-        where: { article: { id: Number(q.articleId) } },
-        relations: { sortie: true },
-      });
+      const articleIdNum = Number(q.articleId);
+      if (!isNaN(articleIdNum) && articleIdNum > 0) {
+        const articleLines = await articleSortieRepository.find({
+          where: { article: { id: articleIdNum } },
+          relations: { sortie: true },
+        });
 
-      const validIds = articleLines.map((line) => line.sortie.id);
+        const validIds = articleLines.map((line) => line.sortie.id);
 
-      if (validIds.length === 0) {
-        return res.json(this.emptyResponse());
+        if (validIds.length === 0) {
+          return res.json(this.emptyResponse());
+        }
+
+        where.id = In(validIds);
       }
-
-      where.id = In(validIds);
     }
 
     // ============ EXECUTE QUERY ============
@@ -374,8 +494,14 @@ export class SortieService {
   public async confirmDenySortie(req: Request, res: Response) {
     const dto = req.body as ConfirmDenySortieDto;
 
+    // Edge case: validate sortieId is a valid number
+    const sortieIdNum = Number(dto.sortieId);
+    if (isNaN(sortieIdNum) || sortieIdNum <= 0) {
+      return res.status(400).json({ message: "ID de sortie invalide" });
+    }
+
     const sortie = await sortieRepository.findOne({
-      where: { id: dto.sortieId },
+      where: { id: sortieIdNum },
       relations: { articleSorties: { article: true } },
     });
 
@@ -396,17 +522,23 @@ export class SortieService {
     // ============ CONFIRM ACTION - DECREMENT STOCK ============
     const updatedArticles: (typeof sortie.articleSorties)[0]["article"][] = [];
 
-    for (const line of sortie.articleSorties) {
-      const article = line.article;
-      if (article.stockActuel < line.stockSortie) {
-        return res.status(409).json({
-          message: `Stock insuffisant pour article ${article.nom}`,
-        });
+    // Edge case: check if articleSorties exists before iterating
+    if (sortie.articleSorties && sortie.articleSorties.length > 0) {
+      for (const line of sortie.articleSorties) {
+        const article = line.article;
+        // Edge case: check if article exists
+        if (!article) continue;
+
+        if (article.stockActuel < line.stockSortie) {
+          return res.status(409).json({
+            message: `Stock insuffisant pour article ${article.nom}`,
+          });
+        }
+        article.stockActuel =
+          Number(article.stockActuel) - Number(line.stockSortie);
+        await articlesRepositoy.save(article);
+        updatedArticles.push(article);
       }
-      article.stockActuel =
-        Number(article.stockActuel) - Number(line.stockSortie);
-      await articlesRepositoy.save(article);
-      updatedArticles.push(article);
     }
 
     sortie.status = "confirmed";
@@ -481,7 +613,11 @@ export class SortieService {
    * Delete a sortie
    */
   public async deleteSortie(req: Request, res: Response) {
-    const id = Number(req.query.id);
+    // Edge case: validate id is a valid number
+    const id = req.query.id ? Number(req.query.id) : 0;
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ message: "ID de sortie invalide" });
+    }
 
     const sortie = await sortieRepository.findOneBy({ id });
 

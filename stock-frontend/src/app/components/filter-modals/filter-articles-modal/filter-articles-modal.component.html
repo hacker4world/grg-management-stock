@@ -76,6 +76,7 @@
             <label>Catégorie :</label>
             <select class="form-control" formControlName="categorieId">
               <option value="">Toutes les catégories</option>
+              <option [value]="'none'">Non associé</option>
               <option *ngFor="let c of categories" [value]="c.id">
                 {{ c.nom }}
               </option>

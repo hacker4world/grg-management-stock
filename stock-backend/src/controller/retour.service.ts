@@ -16,7 +16,7 @@ import {
 import { In, Raw, DataSource } from "typeorm";
 import { RetourArticle } from "../entity/RetourArticle";
 import { RetourArticleItem } from "../entity/RetourArticleItem";
-import { AppDataSource } from "../data-source"; // <-- central DS export
+import { AppDataSource } from "../data-source";
 import { generateBonDeRetourForRetour } from "../utilities/pdf.util";
 
 /* ---- helper: compute available stock per article in a chantier ---- */
@@ -32,6 +32,8 @@ async function getChantierAvailableStock(
   const deliveredMap = new Map<number, number>();
   for (const s of sorties) {
     for (const as of s.articleSorties) {
+      // Edge case: check if article exists before accessing id
+      if (!as.article) continue;
       const prev = deliveredMap.get(as.article.id) || 0;
       deliveredMap.set(as.article.id, prev + Number(as.stockSortie));
     }
@@ -49,6 +51,8 @@ async function getChantierAvailableStock(
   const returnedMap = new Map<number, number>();
   for (const r of retours) {
     for (const item of r.items) {
+      // Edge case: check if article exists before accessing id
+      if (!item.article) continue;
       const prev = returnedMap.get(item.article.id) || 0;
       returnedMap.set(item.article.id, prev + Number(item.quantite));
     }
@@ -78,25 +82,26 @@ export class RetourService {
     const chantier = await chantierRepository.findOneBy({
       code: dto.chantierId,
     });
-    if (!chantier)
+    if (!chantier) {
       return res.status(404).json({ message: "Chantier introuvable" });
+    }
 
     // 2. articles exist ?
     const articleIds = dto.items.map((i) => i.articleId);
     const articles = await articlesRepositoy.findBy({ id: In(articleIds) });
-    if (articles.length !== articleIds.length)
+    if (articles.length !== articleIds.length) {
       return res
         .status(400)
         .json({ message: "Un ou plusieurs articles introuvables" });
+    }
 
     // 3. validate: articles must be available in the chantier with sufficient qty
     const availableStock = await getChantierAvailableStock(dto.chantierId);
 
     for (const item of dto.items) {
       const available = availableStock.get(item.articleId) || 0;
-      const articleName =
-        articles.find((a) => a.id === item.articleId)?.nom ||
-        `#${item.articleId}`;
+      const article = articles.find((a) => a.id === item.articleId);
+      const articleName = article?.nom || `#${item.articleId}`;
 
       if (available <= 0) {
         return res.status(400).json({
@@ -137,26 +142,43 @@ export class RetourService {
   /* ---------------------------------------------------- */
   public async listRetours(req: Request, res: Response) {
     const q = req.query as any as ListRetoursDto;
-    const page = Number(q.page) || 1;
+
+    // Edge case: validate page is a valid number
+    const page = q.page !== undefined ? Number(q.page) : 1;
+    if (isNaN(page) || page < 1) {
+      return res.status(400).json({ message: "Page invalide" });
+    }
+
     const max = Number(process.env.MAX_PER_PAGE) || 20;
 
     /* ---------- base conditions ---------- */
     const where: any = {};
 
-    // Filter by Chantier
-    if (q.chantierId) where.chantier = { code: q.chantierId };
+    // Filter by Chantier - edge case: validate number
+    if (q.chantierId) {
+      const chantierIdNum = Number(q.chantierId);
+      if (!isNaN(chantierIdNum) && chantierIdNum > 0) {
+        where.chantier = { code: chantierIdNum };
+      }
+    }
 
-    // Filter by Article
+    // Filter by Article - edge case: validate number
     if (q.articleId) {
-      where.items = { article: { id: q.articleId } };
+      const articleIdNum = Number(q.articleId);
+      if (!isNaN(articleIdNum) && articleIdNum > 0) {
+        where.items = { article: { id: articleIdNum } };
+      }
     }
 
-    // Filter by ID - ignore if id = 0
-    if (q.id != undefined) {
-      where.id = q.id;
+    // Filter by ID - ignore if id = 0, validate number
+    if (q.id != undefined && q.id !== 0) {
+      const idNum = Number(q.id);
+      if (!isNaN(idNum)) {
+        where.id = idNum;
+      }
     }
 
-    // Filter by Status (pending | confirmed | denied)
+    // Filter by Status
     if (q.status) {
       where.status = q.status;
     }
@@ -192,9 +214,15 @@ export class RetourService {
   public async approveDenyRetour(req: Request, res: Response) {
     const dto = req.body as ApproveDenyRetourDto;
 
+    // Edge case: validate retourId is a valid number
+    const retourIdNum = Number(dto.retourId);
+    if (isNaN(retourIdNum) || retourIdNum <= 0) {
+      return res.status(400).json({ message: "ID de retour invalide" });
+    }
+
     // Load retour with items and articles
     const retour = await retourRepository.findOne({
-      where: { id: dto.retourId },
+      where: { id: retourIdNum },
       relations: { items: { article: true } },
     });
     if (!retour) return res.status(404).json({ message: "Retour introuvable" });
@@ -202,6 +230,9 @@ export class RetourService {
     if (dto.action === "approve") {
       // Update stock for each returned article (increment stock)
       for (const item of retour.items) {
+        // Edge case: check if article exists before accessing
+        if (!item.article) continue;
+
         const article = await articlesRepositoy.findOneBy({
           id: item.article.id,
         });
