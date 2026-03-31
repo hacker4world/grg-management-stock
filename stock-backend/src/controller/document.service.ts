@@ -10,11 +10,6 @@ export class DocumentService {
    * Auth via middleware. Role-based access: admin/magazinier = all; responsable-chantier = only docs from their chantiers.
    */
   public async download(req: Request, res: Response) {
-    const compte = (req as AuthRequest).user;
-
-    if (!compte) return response.status(403).json({
-      message: "Authentification requis"
-    })
 
     const id = Number(req.params.id);
     if (!id || isNaN(id))
@@ -26,26 +21,6 @@ export class DocumentService {
     });
     if (!document)
       return res.status(404).json({ message: "Document introuvable" });
-
-    // Vérification des permissions
-    /* if (compte.role === "admin" || compte.role === "magazinier") {
-      // Accès autorisé
-    } else if (compte.role === "responsable-chantier") {
-      if (document.demandeArticle) {
-        const chantierCode = document.demandeArticle.chantier?.code;
-        if (chantierCode == null)
-          return res.status(403).json({ message: "Accès refusé à ce document" });
-        const chantierDuCompte = await chantierRepository.findOne({
-          where: { code: chantierCode, compte: { id: compte.id } },
-        });
-        if (!chantierDuCompte)
-          return res.status(403).json({ message: "Accès refusé à ce document" });
-      } else if (document.entree) {
-        return res.status(403).json({ message: "Accès refusé (document d'entrée réservé au magasinier/admin)" });
-      }
-    } else {
-      return res.status(403).json({ message: "Rôle insuffisant pour télécharger ce document" });
-    } */
 
     const filePath = document.path;
     if (!fs.existsSync(filePath))

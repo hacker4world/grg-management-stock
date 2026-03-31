@@ -227,6 +227,7 @@ export class AjouterEntreeComponent implements OnInit {
             {
               fournisseurId: Number(v.code_fournisseur),
               fabriquantId: Number(v.code_fabriquant),
+              date: v.date,
               compteId: user.id,
               observation: v.observation || undefined,
               items: this.itemsAjoutes.map((i) => ({

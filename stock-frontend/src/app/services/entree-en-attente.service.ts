@@ -106,6 +106,7 @@ export class EntreesEnAttenteService {
       items: Array<{ articleId: number; stockEntree: number; prix: number }>;
       observation?: string;
       compteId: number;
+      date: string
     },
     bandeCommande: File,
     bandeLivraison: File,
@@ -117,6 +118,7 @@ export class EntreesEnAttenteService {
     form.append('fournisseurId', data.fournisseurId.toString());
     form.append('fabriquantId', data.fabriquantId.toString());
     form.append('compteId', String(data.compteId));
+    form.append('date', data.date)
 
     // The backend expects a JSON string for the items array
     form.append('items', JSON.stringify(data.items));
@@ -125,7 +127,7 @@ export class EntreesEnAttenteService {
 
     form.append('bande_commande', bandeCommande);
     form.append('bande_livraison', bandeLivraison);
-
+    
     form.forEach((value, key) => {
       console.log(key, value);
     });

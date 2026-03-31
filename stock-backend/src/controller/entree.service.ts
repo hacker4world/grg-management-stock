@@ -111,7 +111,7 @@ export class EntreeService {
 
     // 7. Créer l'entrée
     const nouvelle = entreeRepository.create({
-      date: new Date().toISOString().slice(0, 10),
+      date: b.date,
       observation,
       fournisseur,
       fabriquant,
