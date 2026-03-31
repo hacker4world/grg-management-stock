@@ -34,6 +34,8 @@ export class SortiesEnAttenteService {
   public ajouterSortie(
     dto: CreateSortieDto,
   ): Observable<{ message: string; sortieId: number }> {
+    console.log(dto);
+    
     return this.http.post<{ message: string; sortieId: number }>(
       `${this.base}/create`,
       dto,

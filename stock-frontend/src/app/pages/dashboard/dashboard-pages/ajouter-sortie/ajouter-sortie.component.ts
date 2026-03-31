@@ -35,6 +35,8 @@ export class AjouterSortieComponent implements OnInit {
   error = { show: false, message: '' };
   alert = { show: false, message: '' };
 
+  loading = false;
+
   public user = null;
 
   form: FormGroup;
@@ -53,6 +55,7 @@ export class AjouterSortieComponent implements OnInit {
       stockSortie: ['', [Validators.required, Validators.min(1)]],
       chantierId: [''],
       depotId: [''],
+      date: [''],
       observation: [''],
       typeSortie: ['interne-chantier'],
       transporteur: [false],
@@ -147,9 +150,12 @@ export class AjouterSortieComponent implements OnInit {
     // Build the request payload based on sortie type
     const payload = this.buildPayload(typeSortie);
 
+    this.loading = true;
+
     // Send the request to the backend
     this.sortiesService.ajouterSortie(payload).subscribe({
       next: (response) => {
+        this.loading = false;
         this.alert = {
           show: true,
           message: `Sortie ajouté avec succès`,
@@ -158,6 +164,7 @@ export class AjouterSortieComponent implements OnInit {
         this.resetForm();
       },
       error: (error) => {
+        this.loading = false;
         const errorMessage =
           error.error?.message || 'Erreur lors de la création de la sortie';
         this.showError(errorMessage);
@@ -242,6 +249,7 @@ export class AjouterSortieComponent implements OnInit {
         stockSortie: article.stockSortie,
       })),
       observation: this.form.get('observation')?.value || null,
+      date: this.form.get('date')?.value
     };
 
     // Add type-specific fields

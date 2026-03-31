@@ -3,6 +3,7 @@ import { requestBodyValidator } from "../settings/validators/validator";
 import {
   accepterRefuserCompteValidator,
   loginValidator,
+  modifierCompteValidator,
   signupValidator,
 } from "../settings/validators/authentification.validator";
 import { AuthentificationService } from "../controller/authentification.service";
@@ -59,6 +60,7 @@ compteRouter.put(
   "/modifier",
   authenticate,
   requireRole(Role.ADMIN),
+  requestBodyValidator.body(modifierCompteValidator),
   authentificationService.updateCompte
 );
 

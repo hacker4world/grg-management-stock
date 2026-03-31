@@ -35,6 +35,8 @@ export class EntreesConfirmesDetailsComponent implements OnInit {
     message: '',
   };
 
+  public loading = false
+
   constructor(private readonly entreesService: EntreesConfirmesService) {}
 
   ngOnInit(): void {
@@ -58,11 +60,16 @@ export class EntreesConfirmesDetailsComponent implements OnInit {
   }
 
   public onDelete(): void {
+
+    this.loading = true;
+
     this.entreesService.supprimerEntree(this.entree!.id).subscribe({
       next: () => {
+        this.loading = false;
         this.delete.emit();
       },
       error: () => {
+        this.loading = false;
         this.error = {
           show: true,
           message: 'Une erreur est survenue lors de la suppression',

@@ -135,7 +135,7 @@ export class SortieService {
     res: Response,
   ): Promise<Sortie | null> {
     const baseFields = {
-      date: new Date().toISOString().slice(0, 10),
+      date: dto.date,
       observation: dto.observation || null,
       status: "pending" as const,
       compte,
@@ -302,7 +302,7 @@ export class SortieService {
           select: { sortie: { id: true } },
           relations: { sortie: true },
         });
-        articleFilter = rows.map((r) => r.sortie.id);
+        articleFilter = rows.map((r) => r.sortie?.id);
         if (!articleFilter.length) {
           return res.json({
             sorties: [],
@@ -443,7 +443,7 @@ export class SortieService {
           relations: { sortie: true },
         });
 
-        const validIds = articleLines.map((line) => line.sortie.id);
+        const validIds = articleLines.map((line) => line.sortie?.id);
 
         if (validIds.length === 0) {
           return res.json(this.emptyResponse());

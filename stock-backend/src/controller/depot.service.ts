@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, response } from "express";
 import "dotenv/config";
 import { AjouterDepotDto, ModifierDepotDto } from "../dto/depot.dto";
 import { Depot } from "../entity/Depot";
@@ -9,6 +9,16 @@ export class DepotService {
   /* CREATE ------------------------------------------------------------- */
   public async creerDepot(req: Request, res: Response) {
     const data = req.body as AjouterDepotDto;
+
+    const existingDepot = await depotRepository.findOne({
+      where: { nom: data.nom }
+    })
+
+    if (existingDepot) {
+      return response.status(400).json({
+        message: 'Un dépot avec ce nom déja existe'
+      })
+    }
 
     const nouveau = depotRepository.create({
       nom: data.nom.trim(),

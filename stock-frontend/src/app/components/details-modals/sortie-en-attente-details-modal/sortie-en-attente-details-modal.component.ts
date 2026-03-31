@@ -68,11 +68,16 @@ export class SortieEnAttenteDetailsModalComponent {
   }
 
   refuser() {
+
+    this.loading = true;
+
     this.sortiesEnAttenteService.confirmDeny(this.sortie.id, 'deny').subscribe({
       next: () => {
+        this.loading = false;
         this.delete.emit();
       },
       error: () => {
+        this.loading = false;
         this.error = {
           show: true,
           message: 'Erreur lors du refus de la sortie',

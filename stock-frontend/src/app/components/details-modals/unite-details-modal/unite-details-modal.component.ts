@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+  import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -33,6 +33,8 @@ export class UniteDetailsModalComponent {
     message: '',
   };
 
+  public loading = false;
+
   public deleteConfirmationModal = false;
 
   constructor(
@@ -59,13 +61,18 @@ export class UniteDetailsModalComponent {
         message: 'Tous les champs sont obligatoires',
       };
     } else {
+
+      this.loading = true;
+
       this.service
         .updateUnite(this.unite.id, this.form.value.nom!.trim())
         .subscribe({
           next: () => {
+            this.loading = false;
             this.uniteUpdated.emit();
           },
           error: () => {
+            this.loading = false;
             this.error = {
               show: true,
               message: 'Une erreur est survenue',
@@ -76,11 +83,16 @@ export class UniteDetailsModalComponent {
   }
 
   onDelete() {
+
+    this.loading = true;
+
     this.service.deleteUnite(this.unite.id).subscribe({
       next: () => {
+        this.loading = false;
         this.uniteDeleted.emit();
       },
       error: () => {
+        this.loading = false;
         this.error = {
           show: true,
           message: 'Une erreur est survenue',

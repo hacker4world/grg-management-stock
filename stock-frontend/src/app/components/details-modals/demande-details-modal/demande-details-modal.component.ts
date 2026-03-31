@@ -24,7 +24,7 @@ export class DemandeDetailsModalComponent implements OnInit {
   ) {}
 
   public confirmationModal = false;
-  public isConfirming = false;
+  public loading = false;
 
   public error = {
     show: false,
@@ -46,7 +46,6 @@ export class DemandeDetailsModalComponent implements OnInit {
   }
 
   public onConfirm() {
-    this.isConfirming = true; // Set loading state
     this.confirm.emit();
   }
 
@@ -65,10 +64,5 @@ export class DemandeDetailsModalComponent implements OnInit {
     const documentId = this.demande.documents[0].id;
 
     this.demandeService.openDocument(documentId);
-  }
-
-  // Add this method to reset loading state when confirmation is done
-  public resetConfirmingState() {
-    this.isConfirming = false;
   }
 }

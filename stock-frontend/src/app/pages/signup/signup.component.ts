@@ -45,7 +45,7 @@ export class SignupComponent {
         show: true,
         message: 'Tous les champs sont obligatoires',
       };
-    } else if (formValues.nom_utilisateur.trim().length < 5) {
+    } else if (formValues.nom_utilisateur.trim().length < 4) {
       this.error = {
         show: true,
         message: "Nom d'utilisateur doit avoir 5 caractéres au minimum",

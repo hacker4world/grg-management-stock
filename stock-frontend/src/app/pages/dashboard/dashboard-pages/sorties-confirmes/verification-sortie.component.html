@@ -72,7 +72,7 @@
           </td>
           <td>{{ s.date | date: "dd/MM/yyyy" }}</td>
           <td>{{ getTypeSortieLabel(s.typeSortie) }}</td>
-          <td>{{ s.compte.nom + " " + s.compte.prenom }}</td>
+          <td>{{ s.compte ? s.compte.nom + " " + s.compte.prenom : "Non associé" }}</td>
         </tr>
       </tbody>
     </table>

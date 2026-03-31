@@ -3,7 +3,7 @@
     <!-- Modal Header -->
     <div class="modal-header">
       <h3 class="modal-title">Détails du sous famille</h3>
-      <button class="close-button" id="close-modal" (click)="onClose()">
+      <button class="close-button" id="close-modal" (click)="onClose()" [disabled]="loading.update || loading.delete">
         &times;
       </button>
     </div>

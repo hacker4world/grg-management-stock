@@ -12,6 +12,7 @@ export interface CreateSortieInterneDepotDto {
   depotId: number; // Required for this type
   nomTransporteur: string;
   matriculeTransporteur: string;
+  date: string;
 }
 
 // ============ SORTIE INTERNE CHANTIER ============
@@ -26,6 +27,7 @@ export interface CreateSortieInterneChantierDto {
   chantierId: number; // Required for this type
   nomTransporteur: string;
   matriculeTransporteur: string;
+  date: string;
 }
 
 // ============ SORTIE EXTERNE - AVEC TRANSPORTEUR ============
@@ -44,6 +46,7 @@ export interface CreateSortieExterneAvecTransporteurDto {
   nomClient: string;
   nomTransporteur: string;
   matriculeTransporteur: string;
+  date: string;
 }
 
 // ============ SORTIE EXTERNE - SANS TRANSPORTEUR ============
@@ -60,6 +63,7 @@ export interface CreateSortieExterneSansTransporteurDto {
   adresseEntreprise: string;
   matriculeFiscalEntreprise: string;
   nomClient: string;
+  date: string;
 }
 
 // Union type for all create DTOs

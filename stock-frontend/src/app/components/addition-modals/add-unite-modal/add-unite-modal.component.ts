@@ -27,6 +27,8 @@ export class AddUniteModalComponent {
     message: '',
   };
 
+  public loading = false;
+
   constructor(
     private fb: FormBuilder,
     private service: ConfigurationService,
@@ -49,11 +51,15 @@ export class AddUniteModalComponent {
       return;
     }
 
+    this.loading = true;
+
     this.service.addUnite(this.form.value.nom!.trim()).subscribe({
       next: () => {
+        this.loading = false;
         this.uniteAdded.emit();
       },
       error: () => {
+        this.loading = false;
         this.error = {
           show: true,
           message: 'Une erreur est survenue',

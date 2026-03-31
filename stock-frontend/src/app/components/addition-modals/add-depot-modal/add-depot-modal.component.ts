@@ -27,6 +27,8 @@ export class AddDepotModalComponent {
     message: '',
   };
 
+  public loading = false;
+
   constructor(
     private fb: FormBuilder,
     private service: ConfigurationService,
@@ -50,13 +52,17 @@ export class AddDepotModalComponent {
       return;
     }
 
+    this.loading = true;
+
     this.service
       .addDepot(this.form.value.nom!.trim(), this.form.value.adresse!.trim())
       .subscribe({
         next: () => {
+          this.loading = false;
           this.depotAdded.emit();
         },
         error: () => {
+          this.loading = false;
           this.error = {
             show: true,
             message: 'Une erreur est survenue',

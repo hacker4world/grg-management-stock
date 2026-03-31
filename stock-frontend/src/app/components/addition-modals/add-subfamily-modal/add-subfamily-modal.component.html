@@ -3,7 +3,7 @@
     <!-- Modal Header -->
     <div class="modal-header">
       <h3 class="modal-title">Ajouter Sous Famille</h3>
-      <button class="close-button" id="close-modal" (click)="onClose()">
+      <button class="close-button" id="close-modal" (click)="onClose()" [disabled]="loading">
         &times;
       </button>
     </div>
@@ -36,7 +36,7 @@
 
     <!-- Modal Footer -->
     <div class="modal-footer">
-      <button class="button black-button" (click)="onClose()">Annuler</button>
+      <button class="button black-button" (click)="onClose()" [disabled]="loading">Annuler</button>
       <button
         [disabled]="loading"
         class="button green-button"

@@ -2,7 +2,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3 class="modal-title">Détails de l'entrée</h3>
-      <button class="close-button" id="close-modal" (click)="onClose()">
+      <button class="close-button" id="close-modal" (click)="onClose()" [disabled]="loading.validate || loading.deny">
         &times;
       </button>
     </div>
@@ -65,17 +65,16 @@
 
       <!-- actions -->
       <div>
-        <button class="button red-button" (click)="confirmationModal = true">
-          Supprimer
+        <button class="button red-button" (click)="confirmationModal = true" [disabled]="loading.validate || loading.deny">
+          {{ loading.deny ? 'En cours' : 'Supprimer' }}
         </button>
       </div>
       <button
         class="button green-button"
-        [disabled]="loading.validate"
+        [disabled]="loading.validate || loading.deny"
         (click)="onValidate()"
       >
-        Valider l'entrée
-        <app-loading *ngIf="loading.validate" [size]="16"></app-loading>
+        {{ loading.validate ? "En cours" : "Confirmer" }}
       </button>
     </div>
   </div>

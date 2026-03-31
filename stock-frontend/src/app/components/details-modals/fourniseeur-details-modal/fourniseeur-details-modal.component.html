@@ -2,7 +2,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3 class="modal-title">Détails du Fournisseur</h3>
-      <button class="close-button" id="close-modal" (click)="onClose()">
+      <button class="close-button" id="close-modal" (click)="onClose()" [disabled]="loading.delete || loading.update">
         &times;
       </button>
     </div>

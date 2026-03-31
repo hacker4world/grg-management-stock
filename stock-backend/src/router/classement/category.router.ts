@@ -21,6 +21,7 @@ categoryRouter.post(
   "/creer",
   authenticate,
   requireRole(Role.ADMIN),
+  requestBodyValidator.body(createCategorySchema),
   categoriesService.ajouterCategorie,
 );
 categoryRouter.put(

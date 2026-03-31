@@ -23,9 +23,9 @@
             </thead>
             <tbody id="article-list">
               <tr *ngFor="let item of articles">
-                <td>{{ item.article.nom }}</td>
-                <td>{{ item.article.stockMinimum }}</td>
-                <td>{{ item.article.stockActuel }}</td>
+                <td>{{ item.article ? item.article.nom : 'Non associé' }}</td>
+                <td>{{ item.article ? item.article.stockMinimum : 'Non associé' }}</td>
+                <td>{{ item.article ? item.article.stockActuel : 'Non associé' }}</td>
                 <td>{{ item.quantite }}</td>
               </tr>
             </tbody>

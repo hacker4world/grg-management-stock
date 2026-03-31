@@ -2,7 +2,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3 class="modal-title">Ajouter unité</h3>
-      <button class="close-button" (click)="onClose()">&times;</button>
+      <button class="close-button" (click)="onClose()" [disabled]="loading">&times;</button>
     </div>
 
     <div class="modal-body">
@@ -18,11 +18,11 @@
     </div>
 
     <div class="modal-footer">
-      <button class="button black-button" (click)="onClose()">
+      <button class="button black-button" (click)="onClose()" [disabled]="loading">
         <span>Annuler</span>
       </button>
-      <button type="button" class="button green-button" (click)="onSubmit()">
-        Ajouter
+      <button type="button" class="button green-button" (click)="onSubmit()" [disabled]="loading" >
+        {{ loading ? 'En cours...' : 'Ajouter' }}
       </button>
     </div>
   </div>

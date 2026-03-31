@@ -81,10 +81,8 @@
         class="button green-button"
         (click)="onConfirm()"
         *ngIf="demande?.status === 'pending'"
-        [disabled]="isConfirming"
       >
-        <span *ngIf="!isConfirming">Confirmer</span>
-        <app-loading *ngIf="isConfirming" [size]="15"></app-loading>
+        <span>Confirmer</span>
       </button>
       <button
         *ngIf="demande?.status === 'confirmed'"

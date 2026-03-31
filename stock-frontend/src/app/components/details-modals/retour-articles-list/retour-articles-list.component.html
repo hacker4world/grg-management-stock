@@ -22,7 +22,7 @@
             </thead>
             <tbody id="article-list">
               <tr *ngFor="let item of retour?.items">
-                <td>{{ item.article.nom }}</td>
+                <td>{{ item.article ? item.article.nom : 'Non associé' }}</td>
                 <td>{{ item.quantite }}</td>
                 <td>{{ item.reason }}</td>
               </tr>

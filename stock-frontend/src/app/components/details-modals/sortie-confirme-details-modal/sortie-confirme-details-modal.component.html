@@ -39,7 +39,7 @@
               readonly
               type="text"
               class="form-control"
-              [value]="sortie.compte.nom + ' ' + sortie.compte.prenom"
+              [value]="sortie.compte ? sortie.compte.nom + ' ' + sortie.compte.prenom : 'Non associé'"
             />
           </div>
           <div class="form-group">
@@ -97,7 +97,7 @@
                 readonly
                 type="text"
                 class="form-control"
-                [value]="sortie.chantier?.nom || 'Non spécifié'"
+                [value]="sortie.chantier?.nom || 'Non associé'"
               />
             </div>
             <div class="form-group" *ngIf="hasTransporteur()">

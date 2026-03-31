@@ -8,8 +8,8 @@ export const ajouterChantierValidator = Joi.object({
 
 export const modifierChantierValidator = Joi.object({
   code_chantier: Joi.number().integer().positive().required(), // ← was string
-  nom: Joi.string().min(1).required(),
-  adresse: Joi.string().min(1).required(),
+  nom: Joi.string().min(1).max(50).required(),
+  adresse: Joi.string().min(1).max(50).required(),
   compteId: Joi.number().integer().positive().optional(),
 });
 

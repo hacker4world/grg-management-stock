@@ -67,7 +67,7 @@
             </button>
           </td>
           <td (click)="setModals({ showDetailsModal: true })">
-            {{ r.chantier.nom }}
+            {{ r.chantier ? r.chantier.nom : "Non associé" }}
           </td>
           <td (click)="setModals({ showDetailsModal: true })">
             {{ r.date | date: "dd/MM/yyyy" }}

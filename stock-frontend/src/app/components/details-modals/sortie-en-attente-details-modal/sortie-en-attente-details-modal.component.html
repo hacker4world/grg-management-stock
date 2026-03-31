@@ -40,7 +40,7 @@
               type="text"
               readonly
               class="form-control"
-              [value]="sortie.compte.nom + ' ' + sortie.compte.prenom"
+              [value]="sortie.compte ? sortie.compte.nom + ' ' + sortie.compte.prenom : 'Non associé'"
             />
           </div>
           <div class="form-group">
@@ -63,7 +63,7 @@
                 readonly
                 type="text"
                 class="form-control"
-                [value]="sortie.depot?.nom || 'Non spécifié'"
+                [value]="sortie.depot?.nom || 'Non associé'"
               />
             </div>
             <div class="form-group" *ngIf="sortie.nomTransporteurDepot">

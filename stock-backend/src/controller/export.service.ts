@@ -943,7 +943,7 @@ export class ExportService {
       >();
       for (const sortie of confirmedSorties) {
         for (const as of sortie.articleSorties) {
-          const existing = deliveredMap.get(as.article.id);
+          const existing = deliveredMap.get(as.article?.id);
           if (existing) {
             existing.delivered += Number(as.stockSortie);
           } else {
@@ -963,7 +963,7 @@ export class ExportService {
             ? confirmedReturnMap
             : pendingReturnMap;
         for (const item of retour.items) {
-          const prev = targetMap.get(item.article.id) || 0;
+          const prev = targetMap.get(item.article?.id) || 0;
           targetMap.set(item.article.id, prev + Number(item.quantite));
         }
       }

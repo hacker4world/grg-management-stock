@@ -3,7 +3,7 @@ import Joi = require("joi");
 const itemSchema = Joi.object({
   articleId: Joi.number().integer().positive().required(),
   quantite: Joi.number().integer().positive().required(),
-  reason: Joi.string().min(1).required(),
+  reason: Joi.string().min(1).max(50).required(),
 });
 
 export const createRetourValidator = Joi.object({

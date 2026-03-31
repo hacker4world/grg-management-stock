@@ -18,7 +18,6 @@ demandeArticlesRouter.get(
 
 demandeArticlesRouter.post(
   "/ajouter",
-  requestBodyValidator.body(CreateDemandeArticleValidator),
   authenticate,
   requireRole(
     Role.ADMIN,
@@ -27,13 +26,14 @@ demandeArticlesRouter.post(
     Role.RESPONSABLE_CHANTIER,
     Role.MERCHANT,
   ),
+  requestBodyValidator.body(CreateDemandeArticleValidator),
   demandeArticlesService.createDemande,
 );
 
 demandeArticlesRouter.post(
   "/traiter",
-  requestBodyValidator.body(ConfirmDenyDemandeValidator),
   authenticate,
   requireRole(Role.ADMIN, Role.ADMIN1, Role.ADMIN2),
+  requestBodyValidator.body(ConfirmDenyDemandeValidator),
   demandeArticlesService.confirmOrDeny,
 );

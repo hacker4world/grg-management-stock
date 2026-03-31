@@ -54,7 +54,7 @@
           *ngFor="let notification of notifications"
         >
           <td>{{ notification.message }}</td>
-          <td>{{ notification.article.nom }}</td>
+          <td>{{ notification.article ? notification.article.nom : "Non associé" }}</td>
           <td>{{ notification.stockMinimum }}</td>
           <td>{{ notification.stockActuel }}</td>
           <td>{{ notification.createdAt | date }}</td>

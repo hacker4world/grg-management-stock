@@ -396,6 +396,15 @@ export class AuthentificationService {
         });
       }
 
+      const existingUser = await compteRepository.findOne({
+        where: { nom_utilisateur: updateData.nom_utilisateur },
+      });
+
+    if (existingUser)
+      return response.status(400).json({
+        message: "Nom d'utilisateur deja existe",
+      });
+
       // Update only allowed fields
       if (updateData.nom) compte.nom = updateData.nom;
       if (updateData.prenom) compte.prenom = updateData.prenom;

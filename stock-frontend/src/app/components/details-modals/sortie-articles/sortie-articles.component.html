@@ -23,7 +23,7 @@
             </thead>
             <tbody id="article-list">
               <tr *ngFor="let article of articleList">
-                <td>{{ article.article.nom }}</td>
+                <td>{{ article.article ? article.article.nom : 'Non associé' }}</td>
                 <td>{{ article.stockSortie }}</td>
               </tr>
             </tbody>

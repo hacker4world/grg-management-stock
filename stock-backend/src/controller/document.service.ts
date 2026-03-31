@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import fs from "fs";
 import archiver from "archiver";
 import { documentRepository, chantierRepository, demandeArticlesRepository } from "../repository/repositories";
@@ -10,7 +10,12 @@ export class DocumentService {
    * Auth via middleware. Role-based access: admin/magazinier = all; responsable-chantier = only docs from their chantiers.
    */
   public async download(req: Request, res: Response) {
-    const compte = (req as AuthRequest).user!;
+    const compte = (req as AuthRequest).user;
+
+    if (!compte) return response.status(403).json({
+      message: "Authentification requis"
+    })
+
     const id = Number(req.params.id);
     if (!id || isNaN(id))
       return res.status(400).json({ message: "ID document invalide" });

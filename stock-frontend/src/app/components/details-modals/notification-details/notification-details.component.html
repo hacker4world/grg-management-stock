@@ -19,7 +19,7 @@
             <input
               type="text"
               class="form-control"
-              [value]="notification.article.nom"
+              [value]="notification.article ? notification.article.nom : 'Non associé'"
             />
           </div>
           <div class="form-group">

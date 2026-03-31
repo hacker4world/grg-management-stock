@@ -88,8 +88,8 @@ export class AjouterEntreeComponent implements OnInit {
       // Reset only article specific fields
       this.addForm.patchValue({
         code_article: '',
-        stock_entree: '',
-        prix: '',
+        stock_entree: 0,
+        prix: 0,
       });
       return true;
     }
@@ -101,8 +101,8 @@ export class AjouterEntreeComponent implements OnInit {
     code_fournisseur: new FormControl('', Validators.required),
     code_fabriquant: new FormControl('', Validators.required), // NEW
     date: new FormControl(''),
-    stock_entree: new FormControl('', Validators.required),
-    prix: new FormControl('', Validators.required), // NEW
+    stock_entree: new FormControl(0, Validators.required),
+    prix: new FormControl(0, Validators.required), // NEW
     observation: new FormControl(''), // NEW
   });
 
@@ -188,10 +188,19 @@ export class AjouterEntreeComponent implements OnInit {
 
   public onSubmit(): void {
 
+    if (this.addForm.get('stock_entree').value < 1 || this.addForm.get('prix').value < 1) {
+      this.showError(
+        'Stock entrée et prix doit etre 1 ou plus',
+      );
+      return;
+    }
+
+
     if (
       !this.bandeCommandeFile ||
       !this.bandeLivraisonFile ||
-      this.addForm.get('code_fournisseur')?.invalid
+      this.addForm.get('code_fournisseur')?.invalid ||
+      this.addForm.get('code_fabriquant')?.invalid
     ) {
       this.showError(
         'Tous les champs sont obligatoires',
@@ -236,7 +245,7 @@ export class AjouterEntreeComponent implements OnInit {
               this.resetForm();
               this.alert = {
                 show: true,
-                message: "L'entrée multiple a été ajoutée",
+                message: "L'entrée a été ajoutée",
               };
             },
             error: (err) => {

@@ -38,6 +38,8 @@ export class DepotDetailsModalComponent {
     message: '',
   };
 
+  public loading = false;
+
   public deleteConfirmationModal = false;
 
   constructor(
@@ -65,6 +67,9 @@ export class DepotDetailsModalComponent {
         message: 'Tous les champs sont obligatoires',
       };
     } else {
+
+      this.loading = true;
+
       this.service
         .updateDepot(
           this.depot.id,
@@ -73,9 +78,11 @@ export class DepotDetailsModalComponent {
         )
         .subscribe({
           next: () => {
+            this.loading = false;
             this.depotUpdated.emit();
           },
           error: () => {
+            this.loading = false;
             this.error = {
               show: true,
               message: 'UUne erreur est survenue',
@@ -86,11 +93,16 @@ export class DepotDetailsModalComponent {
   }
 
   onDelete() {
+
+    this.loading = true;
+
     this.service.deleteDepot(this.depot.id).subscribe({
       next: () => {
+        this.loading = false;
         this.depotDeleted.emit();
       },
       error: () => {
+        this.loading = false;
         this.error = {
           show: true,
           message: 'Une erreur est survenue',

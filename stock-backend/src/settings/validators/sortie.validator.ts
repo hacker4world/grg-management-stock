@@ -15,6 +15,7 @@ const createSortieInterneDepotValidator = Joi.object({
   depotId: Joi.number().integer().positive().required(),
   nomTransporteur: Joi.string().min(1).max(80).required(),
   matriculeTransporteur: Joi.string().min(1).max(80).required(),
+  date: Joi.string().required()
 });
 
 // ============ SORTIE INTERNE CHANTIER VALIDATOR ============
@@ -26,6 +27,7 @@ const createSortieInterneChantierValidator = Joi.object({
   chantierId: Joi.number().integer().positive().required(),
   nomTransporteur: Joi.string().min(1).max(80).required(),
   matriculeTransporteur: Joi.string().min(1).max(80).required(),
+  date: Joi.string().required()
 });
 
 // ============ SORTIE EXTERNE AVEC TRANSPORTEUR VALIDATOR ============
@@ -44,6 +46,7 @@ const createSortieExterneAvecTransporteurValidator = Joi.object({
   nomClient: Joi.string().min(1).max(80).required(),
   nomTransporteur: Joi.string().min(1).max(80).required(),
   matriculeTransporteur: Joi.string().min(1).max(80).required(),
+  date: Joi.string().required()
 });
 
 // ============ SORTIE EXTERNE SANS TRANSPORTEUR VALIDATOR ============
@@ -60,6 +63,7 @@ const createSortieExterneSansTransporteurValidator = Joi.object({
   adresseEntreprise: Joi.string().min(1).max(80).required(),
   matriculeFiscalEntreprise: Joi.string().min(1).max(80).required(),
   nomClient: Joi.string().min(1).max(80).required(),
+  date: Joi.string().required()
 });
 
 // ============ DYNAMIC VALIDATOR SELECTOR ============
