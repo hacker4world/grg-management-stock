@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ErrorComponent } from "../../error/error.component"
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
@@ -17,7 +18,7 @@ import { Article } from '../../../models/articles.model';
 @Component({
   selector: 'app-filter-articles-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ErrorComponent],
   templateUrl: './filter-articles-modal.component.html',
   styleUrls: ['./filter-articles-modal.component.css'],
 })
@@ -32,6 +33,12 @@ export class FilterArticlesModalComponent implements OnInit {
   public sousFamilles: SousFamilleModel[] = [];
   public categories: Category[] = [];
   public articles: Article[] = [];
+
+  public error = {
+    show: false,
+    message: ''
+  }
+
 
   public filterForm = new FormGroup({
     stockActuel: new FormControl(''),
@@ -101,13 +108,36 @@ export class FilterArticlesModalComponent implements OnInit {
     const raw = this.filterForm.value;
 
     console.log(raw);
+    
 
-    const payload: any = {};
+    if (isNaN(Number(raw.stockActuel))) {
+      this.error = {
+        message: 'Stock actuel doit etre numerique',
+        show: true
+      }
+    }
+
+    else if (isNaN(Number(raw.prixMoyenne))) {
+      this.error = {
+        message: 'Prix moyenne doit etre numerique',
+        show: true
+      }
+    }
+
+    else if (isNaN(Number(raw.stockMin))) {
+      this.error = {
+        message: 'Stock minimum doit etre numerique',
+        show: true
+      }
+    }
+    else {
+      const payload: any = {};
     Object.keys(raw).forEach((k) => {
       const v = raw[k as keyof typeof raw];
       if (v !== '' && v != null) payload[k] = v;
     });
     this.filter.emit(payload);
+    }
   }
 
   onClose(): void {

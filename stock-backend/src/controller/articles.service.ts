@@ -116,6 +116,8 @@ export class ArticleService {
       // Prix moyenne exact
       if (q.prixMoyenne) {
         const prix = Number(q.prixMoyenne);
+        console.log(prix);
+        
         if (!isNaN(prix)) {
           where.prixMoyenne = prix;
         }
@@ -132,6 +134,8 @@ export class ArticleService {
       // Stock actuel exact
       if (q.stockActuel) {
         const act = Number(q.stockActuel);
+        console.log(act);
+        
         if (!isNaN(act)) {
           where.stockActuel = act;
         }

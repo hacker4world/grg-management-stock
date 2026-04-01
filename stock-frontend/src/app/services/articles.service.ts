@@ -26,11 +26,11 @@ export class ArticlesService {
         if (options.depotId) queryParams += `&depotId=${options.depotId}`;
         if (options.categorieId)
           queryParams += `&categorieId=${options.categorieId}`;
-        if (options.prixMoyenne)
+        if (options.prixMoyenne || options.prixMoyenne == 0)
           queryParams += `&prixMoyenne=${options.prixMoyenne}`;
-        if (options.stockActuel)
+        if (options.stockActuel || options.stockActuel == 0)
           queryParams += `&stockActuel=${options.stockActuel}`;
-        if (options.stockMinimum)
+        if (options.stockMinimum || options.stockMinimum == 0)
           queryParams += `&stockMinimum=${options.stockMinimum}`;
         if (options.uniteId) queryParams += `&uniteId=${options.uniteId}`;
       }

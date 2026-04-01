@@ -6,11 +6,12 @@ import { Article } from '../../../models/articles.model';
 import { FabriquantModel } from '../../../models/fabriquants.model';
 import { FournisseursService } from '../../../services/fournisseurs.service';
 import { AuthenticationService } from '../../../services/authentication.service';
+import { ErrorComponent } from "../../error/error.component"
 
 @Component({
   selector: 'app-filter-entrees-confirmes-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ErrorComponent],
   templateUrl: './filter-entrees-confirmes-modal.component.html',
   styleUrls: ['./filter-entrees-confirmes-modal.component.css'],
 })
@@ -61,16 +62,26 @@ export class FilterEntreesConfirmesModalComponent implements OnInit {
 
   public onFilter(): void {
     const raw = this.filterForm.value;
+
+    if (isNaN(Number(raw.stock_entree))) {
+      this.error = {
+        show: true,
+        message: "Stock entrée doit etre numerique"
+      }
+    }
+
     // Emit only truthy fields
-    const payload = {
-      article: raw.article || '',
-      date: raw.date || '',
-      fournisseur: raw.fournisseur || '',
-      fabriquant: raw.fabriquant || '',
-      magazinier: raw.magazinier || '',
-      stock_entree: raw.stock_entree || '', // ← ADD THIS LINE
-    };
-    this.filter.emit(payload);
+    else {
+      const payload = {
+        article: raw.article || '',
+        date: raw.date || '',
+        fournisseur: raw.fournisseur || '',
+        fabriquant: raw.fabriquant || '',
+        magazinier: raw.magazinier || '',
+        stock_entree: raw.stock_entree || '', // ← ADD THIS LINE
+      };
+      this.filter.emit(payload);
+    }
   }
 
   public onClose(): void {

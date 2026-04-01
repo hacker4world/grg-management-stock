@@ -49,7 +49,6 @@ export class AddArticleModalComponent implements OnInit {
 
   public articleForm = new FormGroup({
     nom: new FormControl(''),
-    prix: new FormControl(0),
     uniteId: new FormControl(''),
     stockMin: new FormControl(0),
     famille: new FormControl(''),

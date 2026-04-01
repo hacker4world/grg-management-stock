@@ -114,14 +114,27 @@ export class AjouterSortieComponent implements OnInit {
     }
 
     const target = this.articles.find((a) => a.id == articleId);
+
+    
+
     if (target) {
-      this.articlesAjoute.push({
+
+      if (target.stockActuel < stockSortie) {
+      this.error = {
+        show: true,
+        message: "Stock de l'article est insuffisant"
+      }
+    }
+
+      else {
+        this.articlesAjoute.push({
         articleId,
         articleName: target.nom,
         stockSortie,
       });
       this.error.show = false;
       return true;
+      }
     }
 
     return false;
@@ -129,21 +142,26 @@ export class AjouterSortieComponent implements OnInit {
 
   onSubmit(): void {
     this.alert.show = false;
-
-    // Logic Fix: Try to add the current form selection to the array
-    // if it's not already there and the form is valid.
-    this.onAddSortie();
+    
 
     // If after trying to add, the array is still empty, it means the form was invalid
-    if (this.articlesAjoute.length === 0) {
-      this.showError('Veuillez ajouter au moins un article valide.');
-      return;
-    }
+    
+
+    const added = this.onAddSortie();
+
+    if (!added) return;
 
     // Validate required fields based on sortie type
     const typeSortie = this.form.get('typeSortie')?.value;
 
     if (!this.validateFormByType(typeSortie)) {
+      return;
+    }
+
+    
+
+    if (this.articlesAjoute.length === 0) {
+      this.showError('Veuillez ajouter au moins un article valide.');
       return;
     }
 

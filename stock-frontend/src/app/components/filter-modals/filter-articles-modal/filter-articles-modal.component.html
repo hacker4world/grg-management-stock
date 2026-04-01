@@ -6,12 +6,15 @@
     </div>
 
     <div class="modal-body">
+
+      <app-error [message]="error.message" *ngIf="error.show" ></app-error>
+
       <form [formGroup]="filterForm">
         <div class="form-row">
           <div class="form-group">
             <label>Prix moyen :</label>
             <input
-              type="number"
+              type="text"
               class="form-control"
               formControlName="prixMoyenne"
             />
@@ -19,7 +22,7 @@
           <div class="form-group">
             <label>Stock actuel :</label>
             <input
-              type="number"
+              type="text"
               class="form-control"
               formControlName="stockActuel"
             />
@@ -31,7 +34,7 @@
           <div class="form-group">
             <label>Stock Minimum :</label>
             <input
-              type="number"
+              type="text"
               class="form-control"
               formControlName="stockMin"
             />

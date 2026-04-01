@@ -7,7 +7,9 @@
 
     <form [formGroup]="filterForm" (ngSubmit)="onFilter()">
       <div class="modal-body">
-        <!-- Article Filter -->
+        
+        <app-error [message]="error.message" *ngIf="error.show" ></app-error>
+
         <div class="form-row">
           <div class="form-group">
             <label>Article :</label>
@@ -21,7 +23,7 @@
           <div class="form-group">
             <label>Stock d'entrée</label>
             <input
-              type="number"
+              type="text"
               class="form-control"
               formControlName="stock_entree"
               placeholder="Entrez la quantité"

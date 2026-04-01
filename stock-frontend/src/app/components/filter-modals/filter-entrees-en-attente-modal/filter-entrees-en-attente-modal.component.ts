@@ -65,7 +65,16 @@ export class FilterEntreesEnAttenteModalComponent implements OnInit {
   }
 
   onFilter() {
-    this.filter.emit({
+
+    if (isNaN(Number(this.form.value.stock_entree))) {
+      this.error = {
+        show: true,
+        message: 'Stock entrée doit etre numerique'
+      }
+    }
+
+    else {
+      this.filter.emit({
       article: this.form.value.article ?? '',
       fournisseur: this.form.value.fournisseur ?? '',
       date: this.form.value.date ?? '',
@@ -73,5 +82,6 @@ export class FilterEntreesEnAttenteModalComponent implements OnInit {
       stock_entree: this.form.value.stock_entree ?? undefined,
       magazinier: this.form.value.magazinier ?? '',
     });
+    }
   }
 }

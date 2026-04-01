@@ -70,8 +70,13 @@ export class LoginComponent {
             this.router.navigate(['../dashboard/articles']);
           else if (role == 'magazinier') {
             this.router.navigate(['../dashboard/articles']);
-          } else if (role == 'responsable-chantier')
-            this.router.navigate(['../dashboard/demandes-articles']);
+          } else if (role == 'responsable-chantier') {
+            this.error = {
+              show: true,
+              message: "L'interface web est pour les administrateurs et magaziniers"
+            }
+          }
+            
 
           this.loading = false;
 

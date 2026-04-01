@@ -308,6 +308,12 @@ export class AuthentificationService {
       options.prenom = Raw((alias) => `Lower(${alias}) LIKE LOWER(:prenom)`, {
         prenom: `%${data.prenom}%`,
       });
+    if (data.nom_utilisateur) {
+      options.nom_utilisateur = Raw(
+        (alias) => `LOWER(${alias}) LIKE LOWER(:nom_utilisateur)`,
+        { nom_utilisateur: `%${data.nom_utilisateur}%` },
+      );
+    }
     if (data.role)
       options.role = Raw((alias) => `Lower(${alias}) LIKE LOWER(:role)`, {
         role: `%${data.role}%`,
@@ -395,15 +401,6 @@ export class AuthentificationService {
           message: "Compte n'est pas confirmé",
         });
       }
-
-      const existingUser = await compteRepository.findOne({
-        where: { nom_utilisateur: updateData.nom_utilisateur },
-      });
-
-    if (existingUser)
-      return response.status(400).json({
-        message: "Nom d'utilisateur deja existe",
-      });
 
       // Update only allowed fields
       if (updateData.nom) compte.nom = updateData.nom;
