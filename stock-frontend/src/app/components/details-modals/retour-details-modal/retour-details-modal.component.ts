@@ -27,7 +27,10 @@ export class RetourDetailsModalComponent implements OnInit {
 
   public role = '';
   public confirmationModal = false;
-  public isConfirming = false;
+  
+  public confirmLoading = false;
+  public deleteLoading = false;
+
   public nomTransporteur = '';
   public matriculeTransporteur = '';
 
@@ -66,7 +69,9 @@ export class RetourDetailsModalComponent implements OnInit {
       return;
     }
 
-    this.isConfirming = true;
+    
+    this.confirmLoading = true;
+
     this.confirm.emit({
       nomTransporteur: this.nomTransporteur,
       matriculeTransporteur: this.matriculeTransporteur,
@@ -78,6 +83,7 @@ export class RetourDetailsModalComponent implements OnInit {
   }
 
   public onConfirmDeny() {
+    this.deleteLoading = true;
     this.deny.emit();
     this.confirmationModal = false;
   }
@@ -97,10 +103,5 @@ export class RetourDetailsModalComponent implements OnInit {
     const documentId = this.retour.documents[0].id;
 
     this.retourService.openDocument(documentId);
-  }
-
-  // Add this method to reset loading state when confirmation is done
-  public resetConfirmingState() {
-    this.isConfirming = false;
   }
 }

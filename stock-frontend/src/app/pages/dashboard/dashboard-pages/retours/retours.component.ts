@@ -173,6 +173,7 @@ export class RetoursComponent implements OnInit {
           this.selectedRetour = null;
         },
         error: () => {
+          this.setModals({ showDetailsModal: false });
           this.error = {
             show: true,
             message: 'Erreur lors de la confirmation du retour',
@@ -196,6 +197,7 @@ export class RetoursComponent implements OnInit {
           this.selectedRetour = null;
         },
         error: () => {
+          this.setModals({ showDetailsModal: false });
           this.error = {
             show: true,
             message: 'Erreur lors du refus du retour',

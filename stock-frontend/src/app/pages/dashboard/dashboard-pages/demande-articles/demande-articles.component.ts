@@ -166,6 +166,7 @@ export class DemandeArticlesComponent implements OnInit {
         this.selectedDemande = null;
       },
       error: () => {
+        this.setModals({ showDetailsModal: false });
         this.error = { show: true, message: 'Erreur lors de la confirmation' };
       },
     });
@@ -188,6 +189,7 @@ export class DemandeArticlesComponent implements OnInit {
         this.selectedDemande = null;
       },
       error: () => {
+        this.setModals({ showDetailsModal: false });
         this.error = { show: true, message: 'Erreur lors de la suppression' };
       },
     });

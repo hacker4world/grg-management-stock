@@ -2,7 +2,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3 class="modal-title">Détails du retour #{{ retour?.id }}</h3>
-      <button class="close-button" id="close-modal" (click)="onClose()">
+      <button class="close-button" id="close-modal" (click)="onClose()" [disabled]="confirmLoading || deleteLoading">
         &times;
       </button>
     </div>
@@ -103,17 +103,17 @@
         class="button red-button"
         (click)="onDeny()"
         *ngIf="retour?.status === 'pending'"
+        [disabled]="confirmLoading || deleteLoading"
       >
-        Refuser
+        {{ deleteLoading ? "En attente..." : "Supprimer" }}
       </button>
       <button
         class="button green-button"
         (click)="onConfirm()"
         *ngIf="retour?.status === 'pending'"
-        [disabled]="isConfirming"
+        [disabled]="confirmLoading || deleteLoading"
       >
-        <span *ngIf="!isConfirming">Confirmer</span>
-        <app-loading *ngIf="isConfirming" [size]="15"></app-loading>
+        {{ confirmLoading ? "En attente..." : "Confirmer" }}
       </button>
       <button
         class="button black-button"
