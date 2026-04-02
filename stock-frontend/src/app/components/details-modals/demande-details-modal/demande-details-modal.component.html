@@ -2,13 +2,17 @@
   <div class="modal">
     <div class="modal-header">
       <h3 class="modal-title">Détails de la demande #{{ demande?.id }}</h3>
-      <button class="close-button" id="close-modal" (click)="onClose()">
+      <button
+        class="close-button"
+        id="close-modal"
+        (click)="onClose()"
+        [disabled]="confirmLoading || deleteLoading"
+      >
         &times;
       </button>
     </div>
 
     <div class="modal-body" *ngIf="demande">
-      
       <app-error *ngIf="error.show" [message]="error.message"></app-error>
 
       <form>
@@ -74,15 +78,17 @@
         class="button red-button"
         (click)="confirmationModal = true"
         *ngIf="demande?.status === 'pending'"
+        [disabled]="confirmLoading || deleteLoading"
       >
-        Refuser
+        {{ deleteLoading ? "En attente..." : "Supprimer" }}
       </button>
       <button
         class="button green-button"
         (click)="onConfirm()"
         *ngIf="demande?.status === 'pending'"
+        [disabled]="confirmLoading || deleteLoading"
       >
-        <span>Confirmer</span>
+        {{ confirmLoading ? "En attente..." : "Confirmer" }}
       </button>
       <button
         *ngIf="demande?.status === 'confirmed'"

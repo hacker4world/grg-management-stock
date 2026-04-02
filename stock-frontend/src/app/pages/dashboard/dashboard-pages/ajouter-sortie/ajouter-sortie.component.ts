@@ -69,7 +69,28 @@ export class AjouterSortieComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const today = new Date().toISOString().split('T')[0];
+    this.form.patchValue({ date: today });
+
     const currentUser = this.authenticationService.getCurrentUser();
+
+    this.form.get('typeSortie')?.valueChanges.subscribe(() => {
+      if (this.articlesAjoute.length > 0) {
+        this.articlesAjoute = [];
+      }
+
+       this.form.patchValue({
+         chantierId: '',
+         depotId: '',
+         nomTransporteur: '',
+         matriculeTransporteur: '',
+         nomEntreprise: '',
+         adresseEntreprise: '',
+         matriculeFiscale: '',
+         nomClient: '',
+         transporteur: false,
+       });
+    });
 
     currentUser.subscribe({
       next: (user) => {
@@ -102,8 +123,34 @@ export class AjouterSortieComponent implements OnInit {
     // Check if the current selection in the form is valid
     const articleId = this.form.get('articleId')?.value;
     const stockSortie = this.form.get('stockSortie')?.value;
+    const date = this.form.get('date')?.value;
 
-    if (!articleId || !stockSortie || stockSortie < 1) {
+    if (!articleId || !stockSortie) {
+      this.showError('Article et stock sortie sont obligatoires.');
+      return false;
+    }
+
+    if (!Number.isInteger(stockSortie)) {
+      this.showError('Le stock doit être un nombre entier');
+      return false;
+    }
+
+    if (stockSortie <= 0) {
+      this.showError('Le stock doit être supérieur à 0');
+      return false;
+    }
+
+    if (!date) {
+      this.showError('Date de sortie est obligatoire');
+      return false;
+    }
+
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate > today) {
+      this.showError('La date de sortie ne peut pas être dans le futur');
       return false;
     }
 
@@ -115,25 +162,20 @@ export class AjouterSortieComponent implements OnInit {
 
     const target = this.articles.find((a) => a.id == articleId);
 
-    
-
     if (target) {
-
       if (target.stockActuel < stockSortie) {
-      this.error = {
-        show: true,
-        message: "Stock de l'article est insuffisant"
-      }
-    }
-
-      else {
+        this.error = {
+          show: true,
+          message: "Stock de l'article est insuffisant",
+        };
+      } else {
         this.articlesAjoute.push({
-        articleId,
-        articleName: target.nom,
-        stockSortie,
-      });
-      this.error.show = false;
-      return true;
+          articleId,
+          articleName: target.nom,
+          stockSortie,
+        });
+        this.error.show = false;
+        return true;
       }
     }
 
@@ -142,23 +184,16 @@ export class AjouterSortieComponent implements OnInit {
 
   onSubmit(): void {
     this.alert.show = false;
-    
 
-    // If after trying to add, the array is still empty, it means the form was invalid
-    
-
-    const added = this.onAddSortie();
-
-    if (!added) return;
-
-    // Validate required fields based on sortie type
     const typeSortie = this.form.get('typeSortie')?.value;
 
     if (!this.validateFormByType(typeSortie)) {
       return;
     }
 
-    
+    const added = this.onAddSortie();
+
+    if (!added) return;
 
     if (this.articlesAjoute.length === 0) {
       this.showError('Veuillez ajouter au moins un article valide.');
@@ -182,6 +217,8 @@ export class AjouterSortieComponent implements OnInit {
         this.resetForm();
       },
       error: (error) => {
+        console.log(error);
+
         this.loading = false;
         const errorMessage =
           error.error?.message || 'Erreur lors de la création de la sortie';
@@ -195,12 +232,22 @@ export class AjouterSortieComponent implements OnInit {
 
     switch (typeSortie) {
       case 'interne-chantier':
-        if (!this.form.get('chantierId')?.value) {
-          this.showError('Veuillez sélectionner un chantier.');
+        const chantierId = this.form.get('chantierId')?.value;
+        if (!chantierId || chantierId === '') {
+          this.showError('Veuillez sélectionner un chantier valide.');
           return false;
         }
-        if (!this.form.get('nomTransporteur')?.value) {
-          this.showError('Veuillez entrer le nom du transporteur.');
+        const nomTransporteur = this.form.get('nomTransporteur')?.value?.trim();
+        if (!nomTransporteur || nomTransporteur.length < 2) {
+          this.showError(
+            'Le nom du transporteur doit contenir au moins 2 caractères.',
+          );
+          return false;
+        }
+        if (nomTransporteur.length > 100) {
+          this.showError(
+            'Le nom du transporteur ne peut pas dépasser 100 caractères.',
+          );
           return false;
         }
         if (!this.form.get('matriculeTransporteur')?.value) {
@@ -214,6 +261,7 @@ export class AjouterSortieComponent implements OnInit {
           this.showError('Veuillez sélectionner un dépôt.');
           return false;
         }
+
         if (!this.form.get('nomTransporteur')?.value) {
           this.showError('Veuillez entrer le nom du transporteur.');
           return false;
@@ -225,32 +273,45 @@ export class AjouterSortieComponent implements OnInit {
         break;
 
       case 'externe':
-        if (!this.form.get('nomEntreprise')?.value) {
-          this.showError("Veuillez entrer le nom de l'entreprise.");
+        // Validate entreprise name
+        const nomEntreprise = this.form.get('nomEntreprise')?.value?.trim();
+        if (!nomEntreprise || nomEntreprise.length < 2) {
+          this.showError(
+            "Le nom de l'entreprise doit contenir au moins 2 caractères.",
+          );
           return false;
         }
-        if (!this.form.get('adresseEntreprise')?.value) {
-          this.showError("Veuillez entrer l'adresse de l'entreprise.");
+        if (nomEntreprise.length > 200) {
+          this.showError(
+            "Le nom de l'entreprise est trop long (max 200 caractères).",
+          );
           return false;
         }
-        if (!this.form.get('matriculeFiscale')?.value) {
-          this.showError('Veuillez entrer la matricule fiscale.');
+
+        // Validate address
+        const adresse = this.form.get('adresseEntreprise')?.value?.trim();
+        if (!adresse || adresse.length < 5) {
+          this.showError("L'adresse doit contenir au moins 5 caractères.");
           return false;
         }
-        if (!this.form.get('nomClient')?.value) {
-          this.showError('Veuillez entrer le nom du client.');
+
+        // Validate matricule fiscale format
+        const matriculeFiscale = this.form
+          .get('matriculeFiscale')
+          ?.value?.trim();
+        const mfPattern = /^[0-9]{15,20}$/; // Example: 15-20 digit number
+        if (!matriculeFiscale || !mfPattern.test(matriculeFiscale)) {
+          this.showError(
+            'Le matricule fiscale doit contenir entre 15 et 20 chiffres.',
+          );
           return false;
         }
-        // Check if transporter is required
-        if (this.form.get('transporteur')?.value) {
-          if (!this.form.get('nomTransporteur')?.value) {
-            this.showError('Veuillez entrer le nom du transporteur.');
-            return false;
-          }
-          if (!this.form.get('matriculeTransporteur')?.value) {
-            this.showError('Veuillez entrer la matricule du transporteur.');
-            return false;
-          }
+
+        // Validate client name (no numbers)
+        const nomClient = this.form.get('nomClient')?.value?.trim();
+        if (!nomClient || !/^[a-zA-Z\s]+$/.test(nomClient)) {
+          this.showError('Le nom du client ne doit contenir que des lettres.');
+          return false;
         }
         break;
     }
@@ -267,7 +328,7 @@ export class AjouterSortieComponent implements OnInit {
         stockSortie: article.stockSortie,
       })),
       observation: this.form.get('observation')?.value || null,
-      date: this.form.get('date')?.value
+      date: this.form.get('date')?.value,
     };
 
     // Add type-specific fields
@@ -325,11 +386,20 @@ export class AjouterSortieComponent implements OnInit {
   }
 
   private resetForm(): void {
+    const today = new Date().toISOString().split('T')[0];
     this.form.reset({
       typeSortie: 'interne-chantier',
       transporteur: false,
+      date: today,
     });
     this.articlesAjoute = [];
+    this.error = { show: false, message: '' };
+    this.alert = { show: false, message: '' };
+
+    // Clear form field errors
+    Object.keys(this.form.controls).forEach((key) => {
+      this.form.get(key)?.setErrors(null);
+    });
   }
 
   private showError(msg: string): void {

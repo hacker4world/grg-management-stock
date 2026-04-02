@@ -69,10 +69,12 @@ export class SignupComponent {
           this.router.navigate(['../login']);
         },
         error: (error) => {
+          console.log(error);
+          
           this.loading = false;
           this.error = {
             show: true,
-            message: 'Un erreur est survenu',
+            message: error.error.message,
           };
         },
       });

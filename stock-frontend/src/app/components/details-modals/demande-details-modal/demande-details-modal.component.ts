@@ -24,7 +24,8 @@ export class DemandeDetailsModalComponent implements OnInit {
   ) {}
 
   public confirmationModal = false;
-  public loading = false;
+  public confirmLoading = false;
+  public deleteLoading = false;
 
   public error = {
     show: false,
@@ -46,10 +47,12 @@ export class DemandeDetailsModalComponent implements OnInit {
   }
 
   public onConfirm() {
+    this.confirmLoading = true;
     this.confirm.emit();
   }
 
   public onDelete() {
+    this.deleteLoading = true;
     this.delete.emit();
   }
 

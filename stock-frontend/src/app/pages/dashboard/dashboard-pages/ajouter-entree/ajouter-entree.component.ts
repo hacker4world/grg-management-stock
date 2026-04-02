@@ -188,6 +188,8 @@ export class AjouterEntreeComponent implements OnInit {
 
   public onSubmit(): void {
 
+    console.log(this.addForm.get('code_article')?.value); 
+
     if (this.addForm.get('stock_entree').value < 1 || this.addForm.get('prix').value < 1) {
       this.showError(
         'Stock entrée et prix doit etre 1 ou plus',
@@ -208,8 +210,13 @@ export class AjouterEntreeComponent implements OnInit {
       return;
     }
 
-    if (this.addForm.get('code_article')?.value) {
-      this.onAddItem();
+    if (!this.addForm.get('code_article')?.value) {
+      this.showError("Article est obligatoire")
+      return;
+    }
+
+    if (!this.onAddItem()) {
+      return;
     }
 
     if (this.itemsAjoutes.length === 0) {

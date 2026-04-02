@@ -56,24 +56,31 @@ export class CompteEnAttenteDetailsModalComponent implements OnInit {
   }
 
   accepter() {
-
     const value = this.form.value;
 
-    this.loadingState.confirm = true;
+    if (!value.role) {
+      this.error = {
+        show: true,
+        message: "Role de l'utilisateur est obligatoire",
+      };
+    } else {
 
-    this.service.accepterCompte(this.compte.id, value.role).subscribe({
-      next: () => {
-        this.loadingState.confirm = false;
-        this.accepted.emit();
-      },
-      error: () => {
-        this.loadingState.confirm = false;
-        this.error = {
-          show: true,
-          message: 'Une erreur est survenu',
-        };
-      },
-    });
+      this.loadingState.confirm = true;
+
+      this.service.accepterCompte(this.compte.id, value.role).subscribe({
+        next: () => {
+          this.loadingState.confirm = false;
+          this.accepted.emit();
+        },
+        error: () => {
+          this.loadingState.confirm = false;
+          this.error = {
+            show: true,
+            message: 'Une erreur est survenu',
+          };
+        },
+      });
+    }
   }
 
   refuser() {
