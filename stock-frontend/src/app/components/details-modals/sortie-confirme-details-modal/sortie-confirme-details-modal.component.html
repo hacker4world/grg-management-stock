@@ -7,7 +7,7 @@
 
     <div class="modal-body">
       <app-error *ngIf="error.show" [message]="error.message"></app-error>
-      
+
       <form>
         <!-- Common Fields -->
         <div class="form-row">
@@ -26,8 +26,13 @@
               readonly
               type="text"
               class="form-control"
-              [value]="sortie.typeSortie === 'interne_depot' ? 'Interne Dépôt' : 
-                       sortie.typeSortie === 'interne_chantier' ? 'Interne Chantier' : 'Externe'"
+              [value]="
+                sortie.typeSortie === 'interne_depot'
+                  ? 'Interne Dépôt'
+                  : sortie.typeSortie === 'interne_chantier'
+                    ? 'Interne Chantier'
+                    : 'Externe'
+              "
             />
           </div>
         </div>
@@ -39,7 +44,11 @@
               readonly
               type="text"
               class="form-control"
-              [value]="sortie.compte ? sortie.compte.nom + ' ' + sortie.compte.prenom : 'Non associé'"
+              [value]="
+                sortie.compte
+                  ? sortie.compte.nom + ' ' + sortie.compte.prenom
+                  : 'Non associé'
+              "
             />
           </div>
           <div class="form-group">
@@ -182,7 +191,9 @@
                   readonly
                   type="text"
                   class="form-control"
-                  [value]="sortie.matriculeTransporteurExterne || 'Non spécifié'"
+                  [value]="
+                    sortie.matriculeTransporteurExterne || 'Non spécifié'
+                  "
                 />
               </div>
             </div>
@@ -192,8 +203,14 @@
     </div>
 
     <div class="modal-footer">
-      <button 
-        class="button black-button" 
+      <button
+        class="button red-button"
+        (click)="this.showConfirmationModal = true"
+      >
+        Supprimer
+      </button>
+      <button
+        class="button black-button"
         (click)="downloadBandeCommande()"
         [disabled]="loading"
       >
@@ -202,3 +219,10 @@
     </div>
   </div>
 </div>
+
+<app-confirm-delete
+  *ngIf="this.showConfirmationModal"
+  [resource]="'sortie'"
+  (close)="this.showConfirmationModal = false"
+  (confirm)="supprimerSortie()"
+></app-confirm-delete>

@@ -145,15 +145,6 @@ export class AjouterSortieComponent implements OnInit {
       return false;
     }
 
-    const selectedDate = new Date(date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (selectedDate > today) {
-      this.showError('La date de sortie ne peut pas être dans le futur');
-      return false;
-    }
-
     // Check if already added to prevent duplicates
     if (this.articlesAjoute.some((a) => a.articleId == articleId)) {
       this.showError('Cet article est déjà ajouté.');
@@ -394,7 +385,6 @@ export class AjouterSortieComponent implements OnInit {
     });
     this.articlesAjoute = [];
     this.error = { show: false, message: '' };
-    this.alert = { show: false, message: '' };
 
     // Clear form field errors
     Object.keys(this.form.controls).forEach((key) => {

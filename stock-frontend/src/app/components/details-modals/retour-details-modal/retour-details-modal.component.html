@@ -102,7 +102,6 @@
       <button
         class="button red-button"
         (click)="onDeny()"
-        *ngIf="retour?.status === 'pending'"
         [disabled]="confirmLoading || deleteLoading"
       >
         {{ deleteLoading ? "En attente..." : "Supprimer" }}

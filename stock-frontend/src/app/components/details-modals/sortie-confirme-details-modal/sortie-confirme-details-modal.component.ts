@@ -5,11 +5,12 @@ import { SortieEnAttenteModel } from '../../../models/sorties-en-attente.model';
 import { SortiesEnAttenteService } from '../../../services/sorties-en-attente.service';
 import { SortiesConfirmesService } from '../../../services/sorties-confirmes.service';
 import { SortieConfirmeModel } from '../../../models/sorties-confirmes.model';
+import { ConfirmDeleteComponent } from '../../deletion-modals/confirm-delete/confirm-delete';
 
 @Component({
   selector: 'app-sortie-confirme-details-modal',
   standalone: true,
-  imports: [ErrorComponent, CommonModule],
+  imports: [ErrorComponent, CommonModule, ConfirmDeleteComponent],
   templateUrl: './sortie-confirme-details-modal.component.html',
   styleUrl: './sortie-confirme-details-modal.component.css',
 })
@@ -19,7 +20,12 @@ export class SortieConfirmeDetailsModalComponent {
   @Output() approved = new EventEmitter<void>();
   @Output() denied = new EventEmitter<void>();
 
+  @Output() delete = new EventEmitter<void>();
+
   public error = { show: false, message: '' };
+
+  public showConfirmationModal = false;
+
   public loading = false;
 
   constructor(private sortiesService: SortiesConfirmesService) {}
@@ -99,17 +105,36 @@ export class SortieConfirmeDetailsModalComponent {
   }
 
   public downloadBandeCommande() {
-
     if (this.sortie.documents.length == 0) {
       this.error = {
         show: true,
-        message: "Cet sortie n'a pas une bon de livraison"
-      }
+        message: "Cet sortie n'a pas une bon de livraison",
+      };
       return;
     }
 
     const documentId = this.sortie.documents[0].id;
 
     this.sortiesService.openDocument(documentId);
+  }
+
+  public supprimerSortie() {
+    this.showConfirmationModal = false;
+
+    this.loading = true;
+
+    this.sortiesService.supprimerSortie(this.sortie.id).subscribe({
+      next: () => {
+        this.loading = false;
+        this.delete.emit();
+      },
+      error: () => {
+        this.loading = false;
+        this.error = {
+          show: true,
+          message: 'Erreur de supression',
+        };
+      },
+    });
   }
 }
