@@ -88,7 +88,7 @@ export class ComptesConfirmesComponent {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('comptes')) {
+        if (rolePermissions[user?.role].includes('comptes')) {
           this.fetchComptesConfirmes();
         } else {
           this.router.navigate(['../../login']);

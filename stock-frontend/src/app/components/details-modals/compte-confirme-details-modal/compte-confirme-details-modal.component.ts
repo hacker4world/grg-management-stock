@@ -67,7 +67,7 @@ export class CompteConfirmeDetailsModalComponent {
         show: true,
         message: 'Tous les champs sont obligatoires',
       };
-    else if (values.nomUtilisateur.trim().length < 5) {
+    else if (values.nomUtilisateur.trim().length < 4) {
       this.error = {
         show: true,
         message: "Le nom d'utilisateur doit avoir 5 caractères au minimum",

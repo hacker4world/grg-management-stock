@@ -6,7 +6,7 @@ import { FamilleModel } from '../../../models/familles.model';
 import { SousFamillesService } from '../../../services/sous-familles.service';
 import { ConfirmDeleteSubfamilyComponent } from '../../deletion-modals/confirm-delete-subfamily/confirm-delete-subfamily.component';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ErrorComponent } from "../../error/error.component";
+import { ErrorComponent } from '../../error/error.component';
 
 @Component({
   selector: 'app-subfamily-details-modal',
@@ -15,8 +15,8 @@ import { ErrorComponent } from "../../error/error.component";
     ReactiveFormsModule,
     ConfirmDeleteSubfamilyComponent,
     LoadingComponent,
-    ErrorComponent
-],
+    ErrorComponent,
+  ],
   templateUrl: './subfamily-details-modal.component.html',
   styleUrl: './subfamily-details-modal.component.css',
 })
@@ -51,7 +51,7 @@ export class SubfamilyDetailsModalComponent implements OnInit {
       nom: this.sousFamille.nom,
       famille: this.sousFamille.famille
         ? String(this.sousFamille.famille.id)
-        : '-1',
+        : '',
     });
   }
 
@@ -63,7 +63,12 @@ export class SubfamilyDetailsModalComponent implements OnInit {
         show: true,
         message: 'Nom du sous famille est obligatoire',
       };
-    else {
+    else if (values.famille.trim() == '') {
+      this.error = {
+        show: true,
+        message: 'Famille est obligatoire',
+      };
+    } else {
       this.loading.update = true;
       let data = {
         sous_famille_id: this.sousFamille.id,

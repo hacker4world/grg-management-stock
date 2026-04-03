@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FabriquantModel } from '../../../models/fabriquants.model';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { FabriquantsService } from '../../../services/fabriquants.service';
 import { ErrorComponent } from '../../error/error.component';
 import { LoadingComponent } from '../../loading/loading.component';

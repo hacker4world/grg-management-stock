@@ -106,7 +106,7 @@ export class ArticlesComponent implements OnInit {
       next: (user) => {
         this.role = user.role;
 
-        if (rolePermissions[user.role].includes('articles')) {
+        if (rolePermissions[user?.role].includes('articles')) {
           this.fetchArticles();
           this.fetchUnitesAndDepots();
         } else {

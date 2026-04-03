@@ -17,8 +17,6 @@ export class SortiesConfirmesService {
   ): Observable<SortieConfirmeListResponse> {
     let url = `${this.base}/list-confirme?page=${page}`;
 
-    console.log(options);
-
     if (options) {
       if (options.filtering) {
         if (options.date) url += `&date=${options.date}`;
@@ -30,8 +28,6 @@ export class SortiesConfirmesService {
         if (options.id != undefined) url += `&id=${options.id}`; // ✅ ADD THIS LINE
       }
     }
-
-    console.log(url);
 
     return this.http.get<SortieConfirmeListResponse>(url, {
       withCredentials: true,
@@ -63,8 +59,6 @@ export class SortiesConfirmesService {
 
   public openDocument(documentId: number) {
     const url = `${environement.api_url}/documents/${documentId}/download`;
-
-    console.log(`Opening document ${documentId} with url : ${url}`);
 
     window.open(url, '_blank');
   }

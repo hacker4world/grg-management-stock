@@ -9,7 +9,6 @@ import { SousFamillesComponent } from './pages/dashboard/dashboard-pages/sous-fa
 import { CategoriesComponent } from './pages/dashboard/dashboard-pages/categories/categories.component';
 import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
-import { VerificationCompteComponent } from './pages/dashboard/dashboard-pages/verification-compte/verification-compte.component';
 import { ComptesConfirmesComponent } from './pages/dashboard/dashboard-pages/comptes-confirmes/comptes-confirmes.component';
 import { ComptesEnAttenteComponent } from './pages/dashboard/dashboard-pages/comptes-en-attente/comptes-en-attente.component';
 import { EntreesConfirmesComponent } from './pages/dashboard/dashboard-pages/entrees-confirmes/entrees-confirmes.component';
@@ -82,10 +81,6 @@ export const routes: Routes = [
       {
         path: 'sorties-en-attente',
         component: SortiesEnAttenteComponent,
-      },
-      {
-        path: 'verification-compte',
-        component: VerificationCompteComponent,
       },
       {
         path: 'fournisseurs',

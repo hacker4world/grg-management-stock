@@ -51,8 +51,6 @@ export class EntreesEnAttenteService {
       if (options.magazinier) params.compteId = options.magazinier;
     }
 
-    console.log(params);
-
     return this.http.get<EntreeEnAttenteListResponse>(
       `${this.base}/liste-pending`,
       {
@@ -88,8 +86,6 @@ export class EntreesEnAttenteService {
       if (options.stock_entree) params.stockEntree = options.stock_entree;
     }
 
-    console.log(params);
-
     return this.http.get<EntreeEnAttenteListResponse>(
       `${this.base}/liste-confirme`,
       {
@@ -111,7 +107,6 @@ export class EntreesEnAttenteService {
     bandeCommande: File,
     bandeLivraison: File,
   ): Observable<any> {
-    console.log(data);
 
     const form = new FormData();
 
@@ -127,11 +122,7 @@ export class EntreesEnAttenteService {
 
     form.append('bande_commande', bandeCommande);
     form.append('bande_livraison', bandeLivraison);
-    
-    form.forEach((value, key) => {
-      console.log(key, value);
-    });
-
+  
     return this.http.post(`${this.base}/ajouter`, form, {
       withCredentials: true,
     });
@@ -173,8 +164,6 @@ export class EntreesEnAttenteService {
 
   public ouvrirDocument(documentId: number) {
     const documentUrl = `${environement.api_url}/documents/${documentId}/download`;
-
-    console.log(`Opening document ${documentId} on url : ${documentUrl}`);
 
     window.open(documentUrl, '_blank');
   }

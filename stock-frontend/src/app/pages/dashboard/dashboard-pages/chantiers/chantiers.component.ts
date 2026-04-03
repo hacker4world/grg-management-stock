@@ -49,7 +49,7 @@ export class ChantiersComponent implements OnInit {
       let keyValue: boolean = options[key];
       this.modalSettings[key] = keyValue;
     });
-    console.log(this.modalSettings);
+
   }
 
   chantiers: ChantierModel[] = [];
@@ -88,7 +88,7 @@ export class ChantiersComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('classement')) {
+        if (rolePermissions[user?.role].includes('classement')) {
           this.fetchChantiers();
           this.loadResponsables();
         } else {
@@ -201,8 +201,6 @@ export class ChantiersComponent implements OnInit {
     this.setModals({ showExportModal: false });
 
     const chantiersToExport = option === 'liste' ? this.chantiers : [];
-
-    console.log(chantiersToExport);
 
     this.exportService.exportChantiers(chantiersToExport).subscribe({
       next: (response: any) => {

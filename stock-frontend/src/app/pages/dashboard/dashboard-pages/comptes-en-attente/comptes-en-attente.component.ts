@@ -73,7 +73,7 @@ export class ComptesEnAttenteComponent {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('comptes')) {
+        if (rolePermissions[user?.role].includes('comptes')) {
           this.fetchComptesEnAttente();
         } else {
           this.router.navigate(['../../login']);

@@ -127,7 +127,6 @@ export class FilterSortieEnAttenteModalComponent implements OnInit {
       filterData.depotId = formValue.depotId;
     }
 
-    console.log(filterData);
     this.filter.emit(filterData);
   }
 

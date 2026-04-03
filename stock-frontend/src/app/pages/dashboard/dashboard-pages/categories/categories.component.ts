@@ -76,7 +76,7 @@ export class CategoriesComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('classement')) {
+        if (rolePermissions[user?.role].includes('classement')) {
           this.famillesService.listeFamilles().subscribe({
             next: (result: FamilleListResponseModel) => {
               this.familles = result.familles;
@@ -241,8 +241,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   public onUpdate(event: Category) {
-    console.log(event);
-
+    
     this.setModals({ showDetailsModal: false });
     this.categories = this.categories.map((c) => {
       if (c.id == event.id)

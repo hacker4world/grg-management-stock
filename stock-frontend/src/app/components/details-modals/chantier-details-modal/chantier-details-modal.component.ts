@@ -69,7 +69,7 @@ export class ChantierDetailsModalComponent {
 
     this.service
       .modifierChantier({
-        code_chantier: String(this.chantier.code),
+        code_chantier: Number(this.chantier.code),
         ...v,
       } as ModifierChantier)
       .subscribe({
@@ -89,10 +89,6 @@ export class ChantierDetailsModalComponent {
   }
 
   onDelete() {
-
-    console.log(this.chantier.code);
-    
-
     this.confirmationModal = false;
     this.loading.delete = true;
     this.service.deleteChantier(this.chantier.code).subscribe({

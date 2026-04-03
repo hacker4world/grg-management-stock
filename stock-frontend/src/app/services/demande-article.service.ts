@@ -27,8 +27,6 @@ export class DemandesArticlesService {
       if (options.id !== undefined) base += `&id=${options.id}`; // ✅ ADD THIS LINE
     }
 
-    console.log(base);
-
     return this.http.get<DemandeArticleListResponse>(base, {
       withCredentials: true,
     });

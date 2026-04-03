@@ -34,7 +34,6 @@ export class SortiesEnAttenteService {
   public ajouterSortie(
     dto: CreateSortieDto,
   ): Observable<{ message: string; sortieId: number }> {
-    console.log(dto);
     
     return this.http.post<{ message: string; sortieId: number }>(
       `${this.base}/create`,
@@ -48,7 +47,6 @@ export class SortiesEnAttenteService {
     options?: SortieListOptions,
   ): Observable<SortieEnAttenteListResponse> {
     let url = `${this.base}/list-pending?page=${page}`;
-    console.log(options);
 
     if (options) {
       if (options.filtering) {
@@ -61,8 +59,6 @@ export class SortiesEnAttenteService {
         if (options.id != undefined) url += `&id=${options.id}`; // ✅ ADD THIS LINE
       }
     }
-
-    console.log(url);
 
     return this.http.get<SortieEnAttenteListResponse>(url, {
       withCredentials: true,

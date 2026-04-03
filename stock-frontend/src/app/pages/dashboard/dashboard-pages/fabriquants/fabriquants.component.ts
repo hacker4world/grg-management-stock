@@ -47,7 +47,7 @@ export class FabriquantsComponent implements OnInit {
       let keyValue: boolean = options[key];
       this.modalSettings[key] = keyValue;
     });
-    console.log(this.modalSettings);
+
   }
 
   public fabriquants: FabriquantModel[] = [];
@@ -95,7 +95,7 @@ export class FabriquantsComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('fabriquants')) {
+        if (rolePermissions[user?.role].includes('fabriquants')) {
           this.fetchFabriquants();
         } else {
           this.router.navigate(['../../login']);

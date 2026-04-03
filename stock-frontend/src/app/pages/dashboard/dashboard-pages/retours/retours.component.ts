@@ -89,7 +89,7 @@ export class RetoursComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('retours')) {
+        if (rolePermissions[user?.role].includes('retours')) {
           this.fetchRetours();
         } else {
           this.router.navigate(['../../../login']);

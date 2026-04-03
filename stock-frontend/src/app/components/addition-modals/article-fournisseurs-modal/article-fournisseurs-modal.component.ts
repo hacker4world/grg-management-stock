@@ -33,8 +33,6 @@ export class ArticleFournisseursModalComponent implements OnInit {
   ngOnInit(): void {
     let items = [];
 
-    console.log(this.selectedFournisseurs);
-
     if (this.selectedFournisseurs.length == 0) {
       items.push(
         this.formBuilder.group({
@@ -83,8 +81,6 @@ export class ArticleFournisseursModalComponent implements OnInit {
     let errorOccured = false;
 
     value.items.forEach((fournisseurItem) => {
-      console.log(fournisseurItem);
-
       if (
         fournisseurItem.fournisseur == '' ||
         fournisseurItem.fabriquant == '' ||

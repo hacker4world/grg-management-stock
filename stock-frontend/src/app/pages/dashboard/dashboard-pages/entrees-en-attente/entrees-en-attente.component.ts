@@ -108,7 +108,7 @@ export class EntreesEnAttenteComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('entrees-en-attente')) {
+        if (rolePermissions[user?.role].includes('entrees-en-attente')) {
           this.fetchEntrees();
           this.loadArticles();
           this.loadFournisseurs();

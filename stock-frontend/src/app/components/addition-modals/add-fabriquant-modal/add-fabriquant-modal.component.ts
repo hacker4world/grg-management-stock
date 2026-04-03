@@ -36,7 +36,7 @@ export class AddFabriquantModalComponent {
   public ajouterFabriquant(): void {
     const val = this.fabriquantForm.value;
 
-    if (!val.nom?.trim() || !val.adresse?.trim() || !val.contact.trim()) {
+    if (!val.nom?.trim() || !val.adresse?.trim() || !val.contact?.trim()) {
       this.error = { show: true, message: 'Tous les champs sont obligatoires' };
       return;
     }

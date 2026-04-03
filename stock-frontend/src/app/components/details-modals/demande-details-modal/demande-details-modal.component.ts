@@ -60,8 +60,9 @@ export class DemandeDetailsModalComponent implements OnInit {
     if (this.demande.documents.length == 0) {
       this.error = {
         show: true,
-        message: "Cet retour n'a pas des documents",
+        message: "Cet demande n'a pas des documents",
       };
+      return;
     }
 
     const documentId = this.demande.documents[0].id;

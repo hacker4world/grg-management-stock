@@ -71,8 +71,6 @@ export class FamilyDetailsModalComponent implements OnInit {
             });
           },
           error: (error) => {
-            console.log(error);
-
             this.loading.update = false;
             this.error = {
               show: true,

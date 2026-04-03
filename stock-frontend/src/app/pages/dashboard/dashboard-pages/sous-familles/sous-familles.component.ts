@@ -104,7 +104,7 @@ export class SousFamillesComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('classement')) {
+        if (rolePermissions[user?.role].includes('classement')) {
           this.loading = true;
           this.famillesService.listeFamilles().subscribe({
             next: (response: FamilleListResponseModel) => {

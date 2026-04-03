@@ -34,7 +34,6 @@ export class FournisseursListModalComponent implements OnInit {
 
     this.articleService.fetchFournisseurs(this.article.id).subscribe({
       next: (res: any) => {
-        console.log(res);
         this.loading = false;
         this.fournisseurs = res.fournisseurs;
       },

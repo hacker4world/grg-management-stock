@@ -5,11 +5,16 @@ import { ErrorComponent } from '../../error/error.component';
 import { FamilleModel } from '../../../models/familles.model';
 import { SousFamillesService } from '../../../services/sous-familles.service';
 import { CreerSousFamilleResponseModel } from '../../../models/sous-familles.model';
-import { LoadingComponent } from "../../loading/loading.component";
+import { LoadingComponent } from '../../loading/loading.component';
 
 @Component({
   selector: 'app-add-subfamily-modal',
-  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, LoadingComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ErrorComponent,
+    LoadingComponent,
+  ],
   templateUrl: './add-subfamily-modal.component.html',
   styleUrl: './add-subfamily-modal.component.css',
 })
@@ -20,7 +25,7 @@ export class AddSubfamilyModalComponent {
 
   public creationForm = new FormGroup({
     nom: new FormControl(''),
-    famille: new FormControl('-1'),
+    famille: new FormControl(''),
   });
 
   public error = {
@@ -39,6 +44,11 @@ export class AddSubfamilyModalComponent {
       this.error = {
         show: true,
         message: 'Tous les champs sont obligatoires',
+      };
+    } else if (sousFamilleValues.famille.trim() == '') {
+      this.error = {
+        show: true,
+        message: 'Famille est obligatoire.',
       };
     } else {
       this.loading = true;

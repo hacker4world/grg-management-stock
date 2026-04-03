@@ -75,7 +75,7 @@ export class FamillesComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('classement')) {
+        if (rolePermissions[user?.role].includes('classement')) {
           this.loading = true;
 
           this.famillesService.fetchFamilles(this.pagination.page).subscribe({
@@ -101,7 +101,6 @@ export class FamillesComponent implements OnInit {
 
   public onFamilyCreated(data: FamilleModel) {
     this.familles.unshift(data);
-    console.log(this.familles);
     this.setModals({
       showAddModal: false,
     });
@@ -158,7 +157,6 @@ export class FamillesComponent implements OnInit {
 
   public selectFamille(id: number) {
     let famille = this.familles.find((f) => f.id == id);
-    console.log(famille);
 
     this.familleDetails = famille;
     this.setModals({
@@ -167,7 +165,6 @@ export class FamillesComponent implements OnInit {
   }
 
   public onFamilleUpdate(data: FamilleModel) {
-    console.log(data);
 
     this.familles = this.familles.map((f) => {
       if (f.id === data.id) return { ...f, nom: data.nom };

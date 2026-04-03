@@ -20,8 +20,7 @@ export class FilterFabriquantModalComponent {
 
   public onFilter() {
     let values = this.filterForm.value;
-    console.log(values);
-    
+  
     this.filter.emit(values);
   }
 

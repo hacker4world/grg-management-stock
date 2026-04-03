@@ -70,8 +70,9 @@ export class EntreeEnAttenteDetailsModalComponent implements OnInit {
     if (!doc) {
       this.error = {
         show: true,
-        message: `Cet sortie n'a pas du ${type}`,
+        message: `Cet entrée n'a pas du ${type}`,
       };
+      return;
     }
 
     this.service.ouvrirDocument(doc.id);

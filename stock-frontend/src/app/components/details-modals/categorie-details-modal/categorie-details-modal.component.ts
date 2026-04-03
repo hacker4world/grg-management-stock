@@ -80,7 +80,7 @@ export class CategorieDetailsModalComponent implements OnInit {
         next: (response: SousFamillesListModel) => {
           this.sousFamilles = response.sousFamilles;
           this.categoryForm.setValue({
-            sousFamille: String(response.sousFamilles[0].id),
+            sousFamille:  response.sousFamilles.length  > 0 ? String(response.sousFamilles[0].id) : "",
             nom: this.categoryForm.value.nom,
             famille: String(event.target.value),
           });
@@ -102,6 +102,13 @@ export class CategorieDetailsModalComponent implements OnInit {
         show: true,
         message: 'Nom du catégorie est obligatoire',
       };
+
+    else if (values.sousFamille.trim() == '') {
+        this.error = {
+          show: true,
+          message: 'Sous famille est obligatoire',
+        };
+    } 
     else {
       this.loading.update = true;
 

@@ -120,7 +120,7 @@ export class AjouterEntreeComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('ajouter-entree')) {
+        if (rolePermissions[user?.role].includes('ajouter-entree')) {
           const today = new Date().toISOString().split('T')[0];
           this.addForm.patchValue({ date: today });
 
@@ -166,8 +166,6 @@ export class AjouterEntreeComponent implements OnInit {
   private loadArticles(): void {
     this.articlesService.fetchProducts(0, {}).subscribe({
       next: (res: any) => {
-        console.log(res.articles);
-
         this.articles = res.articles || [];
       },
       error: () => this.showError('Erreur lors du chargement des articles'),
@@ -187,10 +185,7 @@ export class AjouterEntreeComponent implements OnInit {
   }
 
   public onSubmit(): void {
-
-    console.log(this.addForm.get('code_article')?.value); 
-
-    if (this.addForm.get('stock_entree').value < 1 || this.addForm.get('prix').value < 1) {
+    if (this.addForm.get('stock_entree')?.value < 1 || this.addForm.get('prix')?.value < 1) {
       this.showError(
         'Stock entrée et prix doit etre 1 ou plus',
       );

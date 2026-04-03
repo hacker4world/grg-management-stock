@@ -41,8 +41,6 @@ export class EntreesConfirmesService {
         params.stock_entree = Number(options.stock_entree);
     }
 
-    console.log(params);
-
     return this.http.get<EntreeConfirmeeListResponse>(
       `${this.base}/liste-confirme`,
       { params, withCredentials: true },
@@ -68,8 +66,6 @@ export class EntreesConfirmesService {
 
   public ouvrirDocument(documentId: number) {
     const documentUrl = `${environement.api_url}/documents/${documentId}/download`;
-
-    console.log(`Opening document ${documentId} on url : ${documentUrl}`);
 
     window.open(documentUrl, '_blank');
   }

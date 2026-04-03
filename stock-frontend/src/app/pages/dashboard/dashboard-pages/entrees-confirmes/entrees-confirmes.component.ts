@@ -111,7 +111,7 @@ export class EntreesConfirmesComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (!user || !rolePermissions[user.role].includes('entrees-confirme')) {
+        if (!user || !rolePermissions[user?.role].includes('entrees-confirme')) {
           this.router.navigate(['../../login']);
         } else {
           this.fetchEntrees();
@@ -176,8 +176,7 @@ export class EntreesConfirmesComponent implements OnInit {
       .fetchEntrees(this.pagination.page, this.listOptions)
       .subscribe({
         next: (res: EntreeConfirmeeListResponse) => {
-          console.log(res);
-
+          
           this.loading = false;
           this.entrees = [...this.entrees, ...res.entrees];
           this.pagination.lastPage = res.lastPage;

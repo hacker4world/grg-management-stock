@@ -17,7 +17,7 @@ export interface CreateChantierModel {
 }
 
 export interface ModifierChantier {
-  code_chantier: string;
+  code_chantier: number;
   nom: string;
   adresse: string;
   compteId: number;

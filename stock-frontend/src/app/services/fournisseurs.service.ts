@@ -18,8 +18,6 @@ export class FournisseursService {
     if (options.contact) baseUrl += `&contact=${options.contact}`;
     if (options.nom) baseUrl += `&nom=${options.nom}`;
 
-    console.log(baseUrl);
-
     return this.http.get(baseUrl, {
       withCredentials: true,
     });

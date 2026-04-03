@@ -48,8 +48,6 @@ export class FamillesService {
   }
 
   public supprimerFamille(id: number) {
-    console.log(id);
-
     return this.httpClient.delete(`${this.url}/supprimer?id=${id}`, {
       withCredentials: true,
     });

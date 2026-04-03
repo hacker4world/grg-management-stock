@@ -22,15 +22,12 @@ export class ComptesConfirmesService {
       if (options.role) baseUrl += `&role=${options.role}`;
     }
 
-    console.log(baseUrl);
-
     return this.httpClient.get(baseUrl, {
       withCredentials: true,
     });
   }
 
   public modifierCompteConfirme(data: ModifierCompteConfirme) {
-    console.log(data);
 
     return this.httpClient.put(`${this.url}/modifier`, data, {
       withCredentials: true,

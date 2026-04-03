@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { LoginModel } from '../../models/authentication.model';
 import { ErrorComponent } from '../../components/error/error.component';
 import { LoadingComponent } from '../../components/loading/loading.component';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -42,14 +41,13 @@ export class LoginComponent {
   constructor(
     private readonly authenticationService: AuthenticationService,
     private readonly router: Router,
-    private readonly httpClient: HttpClient,
   ) {}
 
   public login() {
     const loginValues = this.loginForm.value as LoginModel;
 
     if (
-      loginValues.nom_utilisateur.trim().length < 5 ||
+      loginValues.nom_utilisateur.trim().length < 4 ||
       loginValues.motdepasse.trim().length < 8
     ) {
       this.error = {
@@ -64,23 +62,28 @@ export class LoginComponent {
         next: (response: any) => {
           const role = response.account.role;
 
-          console.log(role);
-
-          if (role == 'admin' || role == 'admin1' || role == 'admin2')
+          if (role == 'admin' || role == 'admin1' || role == 'admin2') {
+            this.authenticationService.setCurrentUser(response.account);
             this.router.navigate(['../dashboard/articles']);
+          }
+            
           else if (role == 'magazinier') {
+            this.authenticationService.setCurrentUser(response.account);
             this.router.navigate(['../dashboard/articles']);
           } else if (role == 'responsable-chantier') {
             this.error = {
               show: true,
-              message: "L'interface web est pour les administrateurs et magaziniers"
+              message: "L'interface web est pour les administrateurs et magaziniers seulement"
             }
           }
-            
-
+          else {
+            this.error = {
+              show: true,
+              message: "Role du compte est invalide"
+            }
+          }
+          
           this.loading = false;
-
-          this.authenticationService.setCurrentUser(response.account);
         },
         error: (error) => {
           this.loading = false;

@@ -48,7 +48,7 @@ export class FournisseursComponent {
       let keyValue: boolean = options[key];
       this.modalSettings[key] = keyValue;
     });
-    console.log(this.modalSettings);
+
   }
 
   public pagination = { page: 1, lastPage: false };
@@ -119,7 +119,7 @@ export class FournisseursComponent {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('fournisseurs')) {
+        if (rolePermissions[user?.role].includes('fournisseurs')) {
           this.loadPage();
         } else {
           this.router.navigate(['../../login']);
@@ -193,8 +193,6 @@ export class FournisseursComponent {
     this.setModals({ showExportModal: false });
 
     const fournisseurs = option == 'liste' ? this.fournisseurs : [];
-
-    console.log(fournisseurs);
 
     this.exportService.exportFournisseurs(fournisseurs).subscribe({
       next: (response: any) =>

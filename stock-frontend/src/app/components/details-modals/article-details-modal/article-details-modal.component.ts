@@ -111,7 +111,6 @@ export class ArticleDetailsModalComponent {
       
       if (familleId) {
         this.loadSousFamilles(familleId);
-        console.log(familleId);
         
         // Reset dependent fields
         this.articleForm.get('sousFamilleId')?.setValue(null);
@@ -142,8 +141,8 @@ export class ArticleDetailsModalComponent {
       uniteId: this.article.unite?.id ?? null,
       depotId: this.article.depot?.id ?? null,
       categorieId: this.article.categorie?.id ?? null,
-      sousFamilleId: this.article.categorie?.sous_famille.id ?? null,
-      familleId: this.article.categorie?.sous_famille.famille.id ?? null,
+      sousFamilleId: this.article.categorie?.sous_famille?.id ?? null,
+      familleId: this.article.categorie?.sous_famille?.famille?.id ?? null,
     });
 
     this.setupFormListeners();

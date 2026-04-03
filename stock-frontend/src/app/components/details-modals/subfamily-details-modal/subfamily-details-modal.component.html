@@ -25,7 +25,6 @@
           <div class="form-group">
             <label>Famille : </label>
             <select formControlName="famille" class="form-control">
-              <option value="-1">Non Associé</option>
               <option [value]="famille.id" *ngFor="let famille of familles">
                 {{ famille.nom }}
               </option>

@@ -55,8 +55,6 @@ export class SortieEnAttenteDetailsModalComponent {
           this.delete.emit();
         },
         error: (err) => {
-          console.log(err);
-
           this.loading = false;
 
           this.error = {

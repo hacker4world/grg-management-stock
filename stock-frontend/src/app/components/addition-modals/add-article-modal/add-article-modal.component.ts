@@ -65,9 +65,6 @@ export class AddArticleModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.unites.length);
-    console.log(this.depots.length);
-
     this.loadInitialData();
     this.setupFormListeners();
   }

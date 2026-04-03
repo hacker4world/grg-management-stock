@@ -61,7 +61,7 @@ export class NotificationsComponent implements OnInit {
   checkPermissionsAndFetch() {
     this.authenticationService.getCurrentUser().subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('notifications')) {
+        if (rolePermissions[user?.role].includes('notifications')) {
           this.fetchNotifications();
         } else {
           this.router.navigate(['../../../login']);

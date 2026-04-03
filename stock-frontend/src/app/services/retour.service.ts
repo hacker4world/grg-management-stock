@@ -35,16 +35,12 @@ export class RetourService {
       }
     }
 
-    console.log(queryParams);
-
     return this.httpClient.get<RetourListResponseModel>(
       `${this.url}/liste${queryParams}`,
       { withCredentials: true },
     );
   }
   public traiterRetour(data: TraiterRetourRequest): Observable<any> {
-    console.log(data);
-
     return this.httpClient.put(`${this.url}/traiter`, data, {
       withCredentials: true,
     });

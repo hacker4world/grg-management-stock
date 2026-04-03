@@ -23,16 +23,12 @@ export class SousFamillesService {
     if (options.query) filterUrl += `nom=${options.query}&`;
     if (options.familleId) filterUrl += `familleId=${options.familleId}`;
 
-    console.log(filterUrl);
-
     return this.httpClient.get(filterUrl, {
       withCredentials: true,
     });
   }
 
   public creerSousFamille(sousFamilleData: CreerSousFamilleModel) {
-    console.log(sousFamilleData);
-
     return this.httpClient.post(`${this.url}/creer`, sousFamilleData, {
       withCredentials: true,
     });

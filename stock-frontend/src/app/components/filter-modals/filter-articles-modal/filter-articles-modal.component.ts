@@ -107,9 +107,6 @@ export class FilterArticlesModalComponent implements OnInit {
   onFilter(): void {
     const raw = this.filterForm.value;
 
-    console.log(raw);
-    
-
     if (isNaN(Number(raw.stockActuel))) {
       this.error = {
         message: 'Stock actuel doit etre numerique',

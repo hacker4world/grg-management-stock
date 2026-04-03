@@ -104,7 +104,7 @@ export class SortieConfirmeDetailsModalComponent {
     });
   }
 
-  public downloadBandeCommande() {
+  public downloadBandeLivraison() {
     if (this.sortie.documents.length == 0) {
       this.error = {
         show: true,

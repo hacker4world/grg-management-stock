@@ -86,7 +86,7 @@ export class SortiesEnAttenteComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('sorties-en-attente')) {
+        if (rolePermissions[user?.role].includes('sorties-en-attente')) {
           this.fetchSorties();
         } else {
           this.router.navigate(['../../login']);
@@ -97,10 +97,7 @@ export class SortiesEnAttenteComponent implements OnInit {
 
   fetchSorties() {
     this.loading = true;
-    // Pass this.listOptions here
-
-    console.log(this.listOptions);
-
+    
     this.sortiesService
       .fetchSorties(this.pagination.page, this.listOptions)
       .subscribe({

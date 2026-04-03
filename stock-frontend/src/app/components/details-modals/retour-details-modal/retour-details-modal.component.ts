@@ -48,7 +48,6 @@ export class RetourDetailsModalComponent implements OnInit {
     this.authenticationService.getCurrentUser().subscribe({
       next: (user) => {
         this.role = user.role;
-        console.log(this.retour);
       },
     });
   }
@@ -98,6 +97,7 @@ export class RetourDetailsModalComponent implements OnInit {
         show: true,
         message: "Cet retour n'a pas des documents",
       };
+      return;
     }
 
     const documentId = this.retour.documents[0].id;

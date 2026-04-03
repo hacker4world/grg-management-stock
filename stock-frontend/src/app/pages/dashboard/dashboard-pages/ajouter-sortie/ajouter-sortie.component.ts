@@ -96,7 +96,7 @@ export class AjouterSortieComponent implements OnInit {
       next: (user) => {
         this.user = user;
 
-        if (rolePermissions[user.role].includes('ajouter-sortie')) {
+        if (rolePermissions[user?.role].includes('ajouter-sortie')) {
           this.articleService.fetchProducts(0).subscribe({
             next: (res) => (this.articles = res.articles),
             error: () => this.showError('Erreur de chargement des articles'),
@@ -130,7 +130,7 @@ export class AjouterSortieComponent implements OnInit {
       return false;
     }
 
-    if (!Number.isInteger(stockSortie)) {
+    if (!Number.isInteger(Number(stockSortie))) {
       this.showError('Le stock doit être un nombre entier');
       return false;
     }
@@ -208,8 +208,6 @@ export class AjouterSortieComponent implements OnInit {
         this.resetForm();
       },
       error: (error) => {
-        console.log(error);
-
         this.loading = false;
         const errorMessage =
           error.error?.message || 'Erreur lors de la création de la sortie';
@@ -290,8 +288,7 @@ export class AjouterSortieComponent implements OnInit {
         const matriculeFiscale = this.form
           .get('matriculeFiscale')
           ?.value?.trim();
-        const mfPattern = /^[0-9]{15,20}$/; // Example: 15-20 digit number
-        if (!matriculeFiscale || !mfPattern.test(matriculeFiscale)) {
+        if (!matriculeFiscale) {
           this.showError(
             'Le matricule fiscale doit contenir entre 15 et 20 chiffres.',
           );

@@ -36,8 +36,6 @@ export class ArticlesService {
       }
     }
 
-    console.log(`${this.url}/liste${queryParams}`);
-
     return this.httpClient.get<ArticleListResponseModel>(
       `${this.url}/liste${queryParams}`,
       {

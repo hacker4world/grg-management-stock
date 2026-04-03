@@ -56,7 +56,7 @@ export class ConfigurationComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('notifications')) {
+        if (rolePermissions[user?.role].includes('notifications')) {
           this.loadDepots();
           this.loadUnites();
         } else {
@@ -69,7 +69,6 @@ export class ConfigurationComponent implements OnInit {
   /* --------------------  DEPOTS  -------------------- */
   loadDepots() {
     this.configService.listDepots().subscribe((list: any) => {
-      console.log(list);
 
       this.depots = list.depots;
     });
@@ -98,7 +97,6 @@ export class ConfigurationComponent implements OnInit {
   /* --------------------  UNITES  -------------------- */
   loadUnites() {
     this.configService.listUnites().subscribe((list: any) => {
-      console.log(list);
 
       this.unites = list.unites;
     });

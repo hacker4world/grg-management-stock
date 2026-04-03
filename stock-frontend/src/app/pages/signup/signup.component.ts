@@ -5,11 +5,17 @@ import { ErrorComponent } from '../../components/error/error.component';
 import { CommonModule } from '@angular/common';
 import { AuthenticationService } from '../../services/authentication.service';
 import { SignupModel } from '../../models/authentication.model';
-import { LoadingComponent } from "../../components/loading/loading.component";
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 @Component({
   selector: 'app-signup',
-  imports: [RouterModule, ReactiveFormsModule, ErrorComponent, CommonModule, LoadingComponent],
+  imports: [
+    RouterModule,
+    ReactiveFormsModule,
+    ErrorComponent,
+    CommonModule,
+    LoadingComponent,
+  ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css',
 })
@@ -30,7 +36,7 @@ export class SignupComponent {
 
   constructor(
     private readonly authenticationService: AuthenticationService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   public handleSignup() {
@@ -45,15 +51,35 @@ export class SignupComponent {
         show: true,
         message: 'Tous les champs sont obligatoires',
       };
+    } else if (formValues.nom.trim().length < 2) {
+      this.error = {
+        show: true,
+        message: 'Nom doit avoir au moins 2 caractères',
+      };
+    } else if (formValues.nom.trim().length > 80) {
+      this.error = {
+        show: true,
+        message: 'Taille limite du nom est 80.',
+      };
+    } else if (formValues.prenom.trim().length < 2) {
+      this.error = {
+        show: true,
+        message: 'Prénom doit avoir au moins 2 caractères',
+      };
+    } else if (formValues.prenom.trim().length > 80) {
+      this.error = {
+        show: true,
+        message: 'Taille limite du prénom est 80.',
+      };
     } else if (formValues.nom_utilisateur.trim().length < 4) {
       this.error = {
         show: true,
-        message: "Nom d'utilisateur doit avoir 5 caractéres au minimum",
+        message: "Nom d'utilisateur doit avoir 4 caractères au minimum",
       };
     } else if (formValues.motdepasse.trim().length < 8) {
       this.error = {
         show: true,
-        message: 'Mot de passe doit avoir 8 caractéres au minimum',
+        message: 'Mot de passe doit avoir 8 caractères au minimum',
       };
     } else {
       this.error = {
@@ -69,8 +95,6 @@ export class SignupComponent {
           this.router.navigate(['../login']);
         },
         error: (error) => {
-          console.log(error);
-          
           this.loading = false;
           this.error = {
             show: true,

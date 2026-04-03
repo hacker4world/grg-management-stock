@@ -36,7 +36,6 @@ export class FabriquantsService {
   }
 
   public modifierFabriquant(data: ModifierFabriquant) {
-    console.log(data);
 
     return this.httpClient.put(`${this.url}/modifier`, data, {
       withCredentials: true,
@@ -44,7 +43,6 @@ export class FabriquantsService {
   }
 
   public deleteFabriquant(code: string) {
-    console.log(`${this.url}/supprimer?code=${code}`);
 
     return this.httpClient.delete(`${this.url}/supprimer?code=${code}`, {
       withCredentials: true,

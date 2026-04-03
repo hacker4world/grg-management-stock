@@ -22,8 +22,6 @@ export class CategoriesService {
     if (options.sousFamilleId)
       baseUrl += `&sousFamilleId=${options.sousFamilleId}`;
 
-    console.log(baseUrl);
-
     return this.httpClient.get(baseUrl, {
       withCredentials: true,
     });
@@ -36,8 +34,6 @@ export class CategoriesService {
   }
 
   public modifierCategorie(data: ModifierCategorieModel) {
-    console.log(data);
-
     return this.httpClient.put(`${this.url}/modifier`, data, {
       withCredentials: true,
     });

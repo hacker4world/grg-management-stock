@@ -103,7 +103,7 @@ export class SortiesConfirmesComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user.role].includes('sorties-confirme')) {
+        if (rolePermissions[user?.role].includes('sorties-confirme')) {
           this.loadSorties();
         } else {
           this.router.navigate(['../../login']);
@@ -122,7 +122,6 @@ export class SortiesConfirmesComponent implements OnInit {
       .fetchSorties(this.pagination.page, this.listOptions)
       .subscribe({
         next: (response: SortieConfirmeListResponse) => {
-          console.log(response.sorties);
 
           this.sorties = [...this.sorties, ...response.sorties];
           this.pagination.lastPage = response.lastPage;
@@ -190,8 +189,6 @@ export class SortiesConfirmesComponent implements OnInit {
 
     // Check if the input is a number (ID search)
     const isNumeric = /^\d+$/.test(code);
-
-    console.log(isNumeric);
 
     if (isNumeric) {
       // Search by ID (including 0)

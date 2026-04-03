@@ -29,7 +29,6 @@
           <div class="form-group" style="width: 100%">
             <label>Famille : </label>
             <select class="form-control" (change)="onFamilleChange($event)">
-              <option value="no-family">Non associé</option>
               <option *ngFor="let famille of familles" [value]="famille.id">
                 {{ famille.nom }}
               </option>
@@ -38,7 +37,6 @@
           <div class="form-group" style="width: 100%">
             <label>Sous Famille : </label>
             <select class="form-control" formControlName="sousFamille">
-              <option value="no-subfamily">Non associé</option>
               <option
                 *ngFor="let sousFamille of sousFamilles"
                 [value]="sousFamille.id"

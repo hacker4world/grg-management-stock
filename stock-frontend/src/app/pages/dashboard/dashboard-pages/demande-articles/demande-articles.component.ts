@@ -95,8 +95,6 @@ export class DemandeArticlesComponent implements OnInit {
       .fetchDemandes(this.pagination.page, this.listOptions)
       .subscribe({
         next: (res) => {
-          console.log(res);
-
           this.loading = false;
           // Replace results when searching, append when loading more
           if (this.pagination.page === 1 || this.listOptions.searching) {

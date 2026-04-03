@@ -41,8 +41,6 @@ export class FilterCategorieModalComponent {
       })
       .subscribe({
         next: (response: SousFamillesListModel) => {
-          console.log(response.sousFamilles);
-
           this.sousFamilles = response.sousFamilles;
           this.filterForm.setValue({
             sousFamilleId: String(response.sousFamilles[0].id),
@@ -59,8 +57,6 @@ export class FilterCategorieModalComponent {
   }
 
   public onFilter() {
-    console.log(this.filterForm.value.sousFamilleId);
-
     this.filter.emit(this.filterForm.value.sousFamilleId);
   }
 

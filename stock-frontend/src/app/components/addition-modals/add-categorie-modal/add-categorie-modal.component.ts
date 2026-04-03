@@ -10,11 +10,16 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CategoriesService } from '../../../services/categories.service';
 import { CreerCategorieResponse } from '../../../models/categories.model';
 import { ErrorComponent } from '../../error/error.component';
-import { LoadingComponent } from "../../loading/loading.component";
+import { LoadingComponent } from '../../loading/loading.component';
 
 @Component({
   selector: 'app-add-categorie-modal',
-  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, LoadingComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ErrorComponent,
+    LoadingComponent,
+  ],
   templateUrl: './add-categorie-modal.component.html',
   styleUrl: './add-categorie-modal.component.css',
 })
@@ -34,12 +39,12 @@ export class AddCategorieModalComponent {
 
   public creationForm = new FormGroup({
     nom: new FormControl(''),
-    sousFamille: new FormControl('no-subfamily'),
+    sousFamille: new FormControl(''),
   });
 
   constructor(
     private readonly sousFamillesService: SousFamillesService,
-    private readonly categoriesService: CategoriesService
+    private readonly categoriesService: CategoriesService,
   ) {}
 
   public onSubmit() {
@@ -50,7 +55,12 @@ export class AddCategorieModalComponent {
         show: true,
         message: 'Nom du catégorie est obligatoire',
       };
-    else {
+    else if (values.sousFamille == '') {
+      this.error = {
+        show: true,
+        message: 'Sous famille est obligatoire',
+      };
+    } else {
       this.loading = true;
       this.categoriesService
         .creerCatégorie({
@@ -82,7 +92,10 @@ export class AddCategorieModalComponent {
         next: (response: SousFamillesListModel) => {
           this.sousFamilles = response.sousFamilles;
           this.creationForm.setValue({
-            sousFamille: String(response.sousFamilles[0].id),
+            sousFamille:
+              response.sousFamilles.length > 0
+                ? String(response.sousFamilles[0].id)
+                : '',
             nom: this.creationForm.value.nom,
           });
         },
