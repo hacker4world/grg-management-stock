@@ -34,6 +34,10 @@ export class AuthenticationService {
   }
 
   public verifyCompte() {
+
+    console.log(`${this.url}/verify`);
+    
+
     return this.httpClient.get(`${this.url}/verify`, {
       withCredentials: true,
     });

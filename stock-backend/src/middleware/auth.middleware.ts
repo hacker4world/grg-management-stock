@@ -28,7 +28,10 @@ export async function authenticate(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  /* const token = extractToken(req);
+  const token = extractToken(req);
+
+  console.log(`Auth middleware : Extracted token : ${token}`);
+  
 
   if (!token) {
     res.status(401).json({ message: "Authentification requise" });
@@ -52,6 +55,6 @@ export async function authenticate(
     return;
   }
 
-  (req as AuthRequest).user = compte; */
+  (req as AuthRequest).user = compte;
   next();
 }

@@ -17,13 +17,15 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    /* this.authenticationService.verifyCompte().subscribe({
+    this.authenticationService.verifyCompte().subscribe({
       next: (response: any) => {
         this.authenticationService.setCurrentUser(response.account);
       },
       error: () => {
+        console.log('Failed at dashboard level');
+        
         this.router.navigate(['../../login']);
       },
-    }); */
+    });
   }
 }
