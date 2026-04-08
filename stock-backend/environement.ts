@@ -1,6 +1,6 @@
 import { CookieOptions } from "express";
 
-const isProduction = false;
+const isProduction = true;
 
 export const cookieSettings: CookieOptions = {
   secure: isProduction,
