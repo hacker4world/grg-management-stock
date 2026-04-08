@@ -123,5 +123,7 @@ process.on("unhandledRejection", (reason, promise) => {
 });
 
 process.on("uncaughtException", (error) => {
+  console.log(error);
+  
   console.error("Uncaught Exception");
 });

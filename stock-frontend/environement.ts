@@ -1,5 +1,7 @@
-const isProduction = false
+const isProduction = false;
 
 export const environement = {
-    api_url: isProduction ? "https://stock.grg-group.com.tn/api" : "http://localhost:4000/api"
-}
+  api_url: isProduction
+    ? 'https://stock.grg-group.com.tn/api'
+    : 'http://localhost:4000/api',
+};
