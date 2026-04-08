@@ -16,11 +16,15 @@ export class AuthenticationService {
   constructor(private readonly httpClient: HttpClient) {}
 
   public login(loginData: LoginModel) {
-    return this.httpClient.post(`${this.url}/login`, loginData);
+    return this.httpClient.post(`${this.url}/login`, loginData, {
+      withCredentials: true
+    });
   }
 
   public signup(signupData: SignupModel) {
-    return this.httpClient.post(`${this.url}/signup`, signupData);
+    return this.httpClient.post(`${this.url}/signup`, signupData, {
+      withCredentials: true
+    });
   }
 
   public logout() {
@@ -34,10 +38,6 @@ export class AuthenticationService {
   }
 
   public verifyCompte() {
-
-    console.log(`${this.url}/verify`);
-    
-
     return this.httpClient.get(`${this.url}/verify`, {
       withCredentials: true,
     });

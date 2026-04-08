@@ -54,7 +54,6 @@ export class ArticleService {
       await articlesRepositoy.save(newArticle);
       return res.json({ message: "Article créé", article: newArticle });
     } catch (error) {
-      console.error("Error in createArticle:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -116,7 +115,6 @@ export class ArticleService {
       // Prix moyenne exact
       if (q.prixMoyenne) {
         const prix = Number(q.prixMoyenne);
-        console.log(prix);
         
         if (!isNaN(prix)) {
           where.prixMoyenne = prix;
@@ -134,7 +132,6 @@ export class ArticleService {
       // Stock actuel exact
       if (q.stockActuel) {
         const act = Number(q.stockActuel);
-        console.log(act);
         
         if (!isNaN(act)) {
           where.stockActuel = act;
@@ -187,7 +184,6 @@ export class ArticleService {
         lastPage: page >= Math.ceil(total / max),
       });
     } catch (error) {
-      console.error("Error in listArticles:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -252,7 +248,6 @@ export class ArticleService {
         fournisseurs,
       });
     } catch (error) {
-      console.error("Error in listArticleFournisseurs:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -268,7 +263,6 @@ export class ArticleService {
       try {
         article = await fetchArticle(data.id);
       } catch (err) {
-        console.error("fetchArticle error:", err);
         return res
           .status(500)
           .json({ message: "Erreur lors de la récupération de l'article" });
@@ -341,7 +335,6 @@ export class ArticleService {
       await articlesRepositoy.save(article);
       return res.json({ message: "Article modifié", article });
     } catch (error) {
-      console.error("Error in updateArticle:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -369,7 +362,6 @@ export class ArticleService {
       await articlesRepositoy.delete(idNum);
       return res.json({ message: "Article supprimé" });
     } catch (error) {
-      console.error("Error in deleteArticle:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }

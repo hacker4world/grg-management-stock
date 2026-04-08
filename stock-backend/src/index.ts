@@ -36,14 +36,13 @@ const allowedOrigins = [
   "http://localhost:8081", // Expo web
   "http://localhost:19006", // Expo web alt
   "http://10.0.2.2:8081", // Android emulator
+  "https://stock.grg-group.com.tn",
 ];
 
 app.use(
   cors({
     credentials: true,
     origin: (origin, callback) => {
-      console.log(origin);
-
       if (!origin) {
         return callback(null, true);
       }
@@ -60,7 +59,9 @@ app.use(
   }),
 );
 
-app.use(bodyParser.json());
+app.use(helmet());
+
+app.use(bodyParser.json({ limit: "5mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
@@ -111,4 +112,16 @@ AppDataSource.initialize()
       );
     });
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.log('database connection failed');
+    process.exit(1)
+    
+  });
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection");
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception");
+});

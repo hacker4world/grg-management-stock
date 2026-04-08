@@ -104,7 +104,7 @@ export class ArticlesComponent implements OnInit {
 
     currentUser.subscribe({
       next: (user) => {
-        this.role = user.role;
+        this.role = user?.role;
 
         if (rolePermissions[user?.role].includes('articles')) {
           this.fetchArticles();
@@ -113,6 +113,9 @@ export class ArticlesComponent implements OnInit {
           this.router.navigate(['../../login']);
         }
       },
+      error: () => {
+        this.router.navigate(['../../login']);
+      }
     });
   }
 

@@ -29,8 +29,6 @@ export async function authenticate(
   next: NextFunction,
 ): Promise<void> {
   const token = extractToken(req);
-
-  console.log(`Auth middleware : Extracted token : ${token}`);
   
 
   if (!token) {

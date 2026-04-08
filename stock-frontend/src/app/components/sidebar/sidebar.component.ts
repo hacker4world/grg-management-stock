@@ -31,8 +31,6 @@ export class SidebarComponent implements OnInit {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event) => {
-        console.log(event.url);
-
         this.currentRoute = event.url;
       });
   }
@@ -72,6 +70,9 @@ export class SidebarComponent implements OnInit {
       next: () => {
         this.router.navigate(['../../login']);
       },
+      error: () => {
+        this.router.navigate(['../../login']);
+      }
     });
   }
 }

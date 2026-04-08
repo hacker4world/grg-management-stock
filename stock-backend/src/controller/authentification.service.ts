@@ -98,11 +98,7 @@ export class AuthentificationService {
   }
 
   public async logout(request: Request, response: Response) {
-    response.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    response.clearCookie("token", cookieSettings);
 
     response.json({
       message: "Logout successful",
@@ -131,7 +127,7 @@ export class AuthentificationService {
 
     const newToken = generateToken({ user_id: compte.id });
 
-    response.cookie("token", token, cookieSettings);
+    response.cookie("token", newToken, cookieSettings);
 
     return response.json({
       token: newToken,

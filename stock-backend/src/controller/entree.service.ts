@@ -54,8 +54,6 @@ export class EntreeService {
       bande_livraison?: Express.Multer.File[];
     };
 
-    console.log(files);
-
     const bandeCommande = files?.bande_commande?.[0];
     const bandeLivraison = files?.bande_livraison?.[0];
 

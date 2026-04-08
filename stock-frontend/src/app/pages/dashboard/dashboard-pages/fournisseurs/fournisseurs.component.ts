@@ -119,7 +119,7 @@ export class FournisseursComponent {
 
     currentUser.subscribe({
       next: (user) => {
-        if (rolePermissions[user?.role].includes('fournisseurs')) {
+        if (rolePermissions[user?.role]?.includes('fournisseurs')) {
           this.loadPage();
         } else {
           this.router.navigate(['../../login']);

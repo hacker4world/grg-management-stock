@@ -239,9 +239,6 @@ export class RetourService {
         if (article) {
           article.stockActuel += item.quantite;
           await articlesRepositoy.save(article);
-          console.log(
-            `📦 Stock updated: ${article.nom} +${item.quantite} → ${article.stockActuel}`,
-          );
         }
       }
 

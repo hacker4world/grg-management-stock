@@ -22,8 +22,6 @@ export class DashboardComponent implements OnInit {
         this.authenticationService.setCurrentUser(response.account);
       },
       error: () => {
-        console.log('Failed at dashboard level');
-        
         this.router.navigate(['../../login']);
       },
     });

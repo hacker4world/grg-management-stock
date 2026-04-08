@@ -6,9 +6,6 @@ export function requireRole(...allowedRoles: Role[]) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const authReq = req as AuthRequest;
 
-    console.log(`Role middleware : Attached user : ${authReq.user}`);
-    
-
     if (!authReq.user) {
       res.status(401).json({ message: "Authentification requise" });
       return;
