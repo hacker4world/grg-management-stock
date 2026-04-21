@@ -20,6 +20,8 @@ import { FournisseursListModalComponent } from '../../../../components/details-m
 import { AuthenticationService } from '../../../../services/authentication.service';
 import { Router } from '@angular/router';
 import { rolePermissions } from '../../../../roles';
+import { take } from 'rxjs/operators'; 
+
 
 @Component({
   selector: 'app-articles',
@@ -102,7 +104,8 @@ export class ArticlesComponent implements OnInit {
   ngOnInit(): void {
     const currentUser = this.authenticationService.getCurrentUser();
 
-    currentUser.subscribe({
+    // Use pipe(take(1)) to automatically unsubscribe after the first emission
+    currentUser.pipe(take(1)).subscribe({
       next: (user) => {
         this.role = user?.role;
 
@@ -115,7 +118,7 @@ export class ArticlesComponent implements OnInit {
       },
       error: () => {
         this.router.navigate(['../../login']);
-      }
+      },
     });
   }
 
@@ -234,15 +237,14 @@ export class ArticlesComponent implements OnInit {
 
     this.exportService.exportArticles(articles).subscribe({
       next: (response: any) => {
-        this.exportService.downloadFile(response, 'articles.xlsx')
+        this.exportService.downloadFile(response, 'articles.xlsx');
       },
       error: () => {
         this.error = {
           show: true,
-          message: "Erreur de l'éxportation"
-        }
-      }
-        
+          message: "Erreur de l'éxportation",
+        };
+      },
     });
   }
 

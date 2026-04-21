@@ -1,4 +1,4 @@
-const isProduction = true;
+const isProduction = false;
 
 export const environement = {
   api_url: isProduction
