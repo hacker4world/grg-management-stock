@@ -66,7 +66,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-app.use(globalRateLimiter);
+// app.use(globalRateLimiter);
 
 app.use("/api/fournisseurs", fournisseurRouter);
 app.use("/api/fabriquants", fabriquantRouter);

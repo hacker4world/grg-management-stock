@@ -15,18 +15,21 @@ const articlesService = new ArticleService();
 articlesRouter.get(
   "/liste",
   authenticate,
-  requireRole(Role.ADMIN, Role.MAGAZINIER, Role.ADMIN1, Role.ADMIN2, Role.RESPONSABLE_CHANTIER, Role.MERCHANT),
+  requireRole(
+    Role.ADMIN,
+    Role.MAGAZINIER,
+    Role.ADMIN1,
+    Role.ADMIN2,
+    Role.RESPONSABLE_CHANTIER,
+    Role.MERCHANT,
+  ),
   articlesService.listArticles,
 );
 
 articlesRouter.get(
   "/fournisseur-list",
   authenticate,
-  requireRole(
-    Role.ADMIN,
-    Role.ADMIN1,
-    Role.ADMIN2,
-  ),
+  requireRole(Role.ADMIN, Role.ADMIN1, Role.ADMIN2, Role.MAGAZINIER),
   articlesService.listArticleFournisseurs,
 );
 

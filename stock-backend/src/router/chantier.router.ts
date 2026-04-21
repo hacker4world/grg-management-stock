@@ -17,7 +17,7 @@ const chantierService = new ChantierService();
 chantierRouter.get(
   "/liste",
   authenticate,
-  requireRole(Role.ADMIN, Role.ADMIN1, Role.ADMIN2),
+  requireRole(Role.ADMIN, Role.ADMIN1, Role.ADMIN2, Role.MAGAZINIER),
   chantierService.listeChantiers,
 );
 
@@ -70,7 +70,12 @@ chantierRouter.get(
 chantierRouter.get(
   "/stock/:chantierId",
   authenticate,
-  requireRole(Role.ADMIN, Role.ADMIN1, Role.ADMIN2, Role.RESPONSABLE_CHANTIER, Role.MERCHANT),
+  requireRole(
+    Role.ADMIN,
+    Role.ADMIN1,
+    Role.ADMIN2,
+    Role.RESPONSABLE_CHANTIER,
+    Role.MERCHANT,
+  ),
   chantierService.getChantierStock,
 );
-
